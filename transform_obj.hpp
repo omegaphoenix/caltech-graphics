@@ -19,9 +19,9 @@ vector<ThreeDModel *> *store_obj_transform_file(char *file_name);
 // parse camera lines
 Camera *get_camera_data(ifstream& obj_transform_file);
 // helper function to get objects from .obj files
-map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file);
+map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, Camera *cam);
 // helper function to create objects from line and place it in the map
-void create_obj(string line, map<string, ThreeDModelTransform *> *models);
+void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera *cam);
 // helper function to create new object
 ThreeDModelTransform *create_model(string obj_name, string obj_filename);
 // convert from string to char *

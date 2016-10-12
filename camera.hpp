@@ -6,7 +6,6 @@
 #include <vector>
 
 #include "geometric_transform.hpp"
-#include "three_d_model_transform.hpp"
 #include "vertex.hpp"
 
 #include "Eigen/Dense"
@@ -35,8 +34,11 @@ struct Camera {
 
   /* Returns Cartesian normalized device coordinates (NDC) */
   Vertex *cam_transform(Vertex *v) {
-    double homogeneous_component = v->z;
-    // Vertex *transformed = transform_vertex(cam_transform_mat->inverse(), v);
+    double homogeneous_component = 1 / v->z;
+    Eigen::MatrixXd inv_cam_transform_mat = cam_transform_mat->inverse();
+    Vertex *transformed = transform_vertex(&inv_cam_transform_mat, v);
+    transformed = transform_vertex(perspective_proj_mat, transformed);
+    return scale_vertex(homogeneous_component, transformed);
   }
 
   void set_position(string line) {
@@ -119,7 +121,6 @@ struct Camera {
         0, 0, p_33, p_34, // row2
         0, 0, -1, 0; // row2
   }
-
 };
 
 #endif

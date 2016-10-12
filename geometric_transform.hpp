@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include "vertex.hpp"
+
 #include "Eigen/Dense"
 
 using namespace std;
@@ -41,5 +43,9 @@ Eigen::MatrixXd *create_rotation_mat(double r_x, double r_y, double r_z, double 
 Eigen::MatrixXd *create_rx_mat(double angle_in_rad);
 Eigen::MatrixXd *create_ry_mat(double angle_in_rad);
 Eigen::MatrixXd *create_rz_mat(double angle_in_rad);
+
+// Multiply vertex coordinates by matrix or scalar
+Vertex *transform_vertex(Eigen::MatrixXd *trans_mat, Vertex *vertex);
+Vertex *scale_vertex(double factor, Vertex *vertex);
 
 #endif

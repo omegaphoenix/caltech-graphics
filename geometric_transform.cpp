@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "vertex.hpp"
+
 #include "Eigen/Dense"
 
 using namespace std;
@@ -169,4 +171,28 @@ Eigen::MatrixXd *create_rz_mat(double angle_in_rad) {
           0, 0, 0, 1;   // row4
 
   return mat;
+}
+
+Vertex *transform_vertex(Eigen::MatrixXd *trans_mat, Vertex *vertex) {
+  Eigen::MatrixXd *vertex_mat = new Eigen::MatrixXd(4, 1);
+  *vertex_mat << vertex->x, // row1
+                 vertex->y, // row2
+                 vertex->z, // row3
+                 1;         // row4
+
+  Eigen::MatrixXd transformed = *trans_mat * *vertex_mat;
+
+  double new_x = transformed(0) / transformed(3);
+  double new_y = transformed(1) / transformed(3);
+  double new_z = transformed(2) / transformed(3);
+
+  return new Vertex(new_x, new_y, new_z);
+}
+
+Vertex *scale_vertex(double factor, Vertex *vertex) {
+  double new_x = vertex->x * factor;
+  double new_y = vertex->y * factor;
+  double new_z = vertex->z * factor;
+
+  return new Vertex(new_x, new_y, new_z);
 }

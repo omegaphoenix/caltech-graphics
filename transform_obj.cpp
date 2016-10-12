@@ -12,11 +12,14 @@
 
 using namespace std;
 
+Camera *cam;
+
 vector<ThreeDModel *> *store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
-  Camera *cam = get_camera_data(obj_transform_file);
-  map<string, ThreeDModelTransform *> *models = get_objects(obj_transform_file);
-  return perform_transforms(obj_transform_file, models);
+  cam = get_camera_data(obj_transform_file);
+  map<string, ThreeDModelTransform *> *models = get_objects(obj_transform_file, cam);
+  vector<ThreeDModel *> *transformed = perform_transforms(obj_transform_file, models);
+  return transformed;
 }
 
 Camera *get_camera_data(ifstream& obj_transform_file) {
@@ -33,20 +36,20 @@ Camera *get_camera_data(ifstream& obj_transform_file) {
   return cam;
 }
 
-map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file) {
+map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, Camera *cam) {
   map<string, ThreeDModelTransform *> *models = new map<string, ThreeDModelTransform *>();
 
   string line;
   getline(obj_transform_file, line);
   while (line != "") {
-    create_obj(line, models);
+    create_obj(line, models, cam);
     getline(obj_transform_file, line);
   }
 
   return models;
 }
 
-void create_obj(string line, map<string, ThreeDModelTransform *> *models) {
+void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera *cam) {
   istringstream line_stream(line);
 
   string obj_name, obj_filename;
@@ -55,6 +58,7 @@ void create_obj(string line, map<string, ThreeDModelTransform *> *models) {
   }
 
   ThreeDModelTransform *new_model = create_model(obj_name, obj_filename);
+  new_model->cam = cam;
   (*models)[obj_name] = new_model;
 }
 
