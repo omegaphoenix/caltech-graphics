@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "camera.hpp"
 #include "three_d_model_transform.hpp"
 #include "three_d_model.hpp"
 
@@ -15,6 +16,8 @@ using namespace std;
 vector<ThreeDModel *> *store_obj_transform_file(char *file_name);
 
 // parsing helper functions
+// parse camera lines
+Camera *get_camera_data(ifstream& obj_transform_file);
 // helper function to get objects from .obj files
 map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file);
 // helper function to create objects from line and place it in the map

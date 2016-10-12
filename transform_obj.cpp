@@ -5,16 +5,32 @@
 #include <iostream>
 #include <map>
 
+#include "camera.hpp"
+#include "geometric_transform.hpp"
 #include "obj_file_parser.hpp"
-#include "transform_inverse_prod.hpp"
 #include "three_d_model_transform.hpp"
 
 using namespace std;
 
 vector<ThreeDModel *> *store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
+  Camera *cam = get_camera_data(obj_transform_file);
   map<string, ThreeDModelTransform *> *models = get_objects(obj_transform_file);
   return perform_transforms(obj_transform_file, models);
+}
+
+Camera *get_camera_data(ifstream& obj_transform_file) {
+  vector<string> *lines = new vector<string>;
+  string line;
+
+  getline(obj_transform_file, line);
+  while (line != "") {
+    lines->push_back(line);
+    getline(obj_transform_file, line);
+  }
+
+  Camera *cam = new Camera(lines);
+  return cam;
 }
 
 map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file) {
@@ -32,6 +48,7 @@ map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file) {
 
 void create_obj(string line, map<string, ThreeDModelTransform *> *models) {
   istringstream line_stream(line);
+
   string obj_name, obj_filename;
   if (!(line_stream >> obj_name >> obj_filename)) {
     throw "Wrong number of arguments to object line";
