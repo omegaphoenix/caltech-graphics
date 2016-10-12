@@ -33,6 +33,7 @@ vector<ThreeDModel *> *perform_transforms(ifstream& obj_transform_file, map<stri
 ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTransform *> *models);
 
 // main method - create copies, transform vectors, and print name and vectors
+void print_ppm(int xres, int yres, vector<ThreeDModel *> *models);
 void print_transformed_vertices(vector<ThreeDModel *> *models);
 
 // helper function to print model

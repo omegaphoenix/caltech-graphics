@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "draw_pixels.hpp"
 #include "face.hpp"
 #include "vertex.hpp"
 
@@ -37,6 +38,37 @@ struct ThreeDModel {
     vertices = new vector<Vertex *>();
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
+  }
+
+  Pixel **new_grid(int xres, int yres) {
+    Pixel **grid = new Pixel *[yres];
+    for (int y = 0; y < yres; y++) {
+      for (int x = 0; x < xres; x++) {
+        if (x == 0) {
+          grid[y] = new Pixel[xres];
+        }
+        grid[y][x].colored = false;
+      }
+    }
+    return grid;
+  }
+
+  void draw_model(int xres, int yres) {
+    Pixel **grid = new_grid(xres, yres);
+    for (vector<Face *>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
+      draw_face(xres, yres, *face_it, grid);
+    }
+    output_ppm(xres, yres, grid);
+  }
+
+  void draw_face(int xres, int yres, Face *face, Pixel **grid) {
+    Vertex *v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
+    Vertex *v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
+    Vertex *v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
+
+    rasterize(v1, v2, grid);
+    rasterize(v2, v3, grid);
+    rasterize(v1, v3, grid);
   }
 };
 

@@ -1,12 +1,44 @@
 #include "draw_pixels.hpp"
 
 #include <cstddef>
+#include <iostream>
 #include <math.h> // round
 #include <vector>
 
 #include "vertex.hpp"
 
 using namespace std;
+
+void output_ppm(int xres, int yres, Pixel **grid) {
+  start_ppm_output(xres, yres);
+  for (int y = 0; y < yres; y++) {
+    for (int x = 0; x < xres; x++) {
+      output_pixel(x, y, grid);
+    }
+  }
+}
+
+void start_ppm_output(int xres, int yres) {
+  cout << "P3" << endl;
+  cout << xres << " " << yres << endl;
+  cout << "255" << endl;
+}
+
+void output_pixel(int row, int col, Pixel **grid) {
+  if (grid[col][row].colored) {
+    purple();
+  } else {
+    gold();
+  }
+}
+
+void purple() {
+  cout << "85 37 130" << endl;
+}
+
+void gold() {
+  cout << "253 185 39" << endl;
+}
 
 vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_vertices) {
     vector<Vertex *> *vertices = new vector<Vertex *>();
@@ -27,8 +59,18 @@ Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex) {
   return new Vertex(new_x, new_y, ndc_vertex->z);
 }
 
+void rasterize(Vertex *v1, Vertex *v2, Pixel **grid) {
+  bresenham(v1->x, v1->y, v2->x, v2->y, grid);
+}
+
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
+  if (x_0 == x_1) {
+    vertical_line(x_0, y_0, x_1, y_1, grid);
+    return;
+  }
+
   double m = (y_1 - y_0)/(x_1 - x_0);
+
   if ((x_0 <= x_1) && (0 <= m) && (m <= 1)) {
     first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else if ((y_0 <= y_1) && (1 < m)) {
@@ -47,6 +89,14 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
     eighth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else {
     throw "No octant found";
+  }
+}
+
+void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
+  int y_small = y_0 > y_1 ? y_1 : y_0;
+  int y_big = y_0 > y_1 ? y_0 : y_1;
+  for (int y = y_small; y <= y_big; y++) {
+    fill(x_0, y, grid);
   }
 }
 
@@ -76,7 +126,7 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   for (int y = y_0; y <= y_1; y++) {
     fill(x, y, grid);
     if (((epsilon + dx) << 1) < dy) {
-      epsilon = epsilon + dy;
+      epsilon = epsilon + dx;
     } else {
       epsilon = epsilon + dx - dy;
       x = x + 1;
@@ -135,7 +185,5 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
 }
 
 void fill(int x, int y, Pixel **grid) {
-  grid[y][x].red = 100;
-  grid[y][x].blue = 100;
-  grid[y][x].yellow = 100;
+  grid[y][x].colored = true;
 }

@@ -8,14 +8,22 @@
 using namespace std;
 
 struct Pixel {
-  int red;
-  int blue;
-  int yellow;
+  bool colored;
 };
+
+void output_ppm(int xres, int yres, Pixel **grid);
+void start_ppm_output(int xres, int yres);
+void output_pixel(int row, int col, Pixel **grid);
+void purple();
+void gold();
 
 vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_vertices);
 Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex);
+
+void rasterize(Vertex *v1, Vertex *v2, Pixel **grid);
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
+
+void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void third_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);

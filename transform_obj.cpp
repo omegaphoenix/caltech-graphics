@@ -114,6 +114,12 @@ ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTra
   return (*models)[name]->apply_trans_mat(trans_mat);
 }
 
+void print_ppm(int xres, int yres, vector<ThreeDModel *> *models) {
+  for (vector<ThreeDModel *>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+    (*model_it)->draw_model(xres, yres);
+  }
+}
+
 void print_transformed_vertices(vector<ThreeDModel *> *models) {
   for (vector<ThreeDModel *>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print(*model_it);

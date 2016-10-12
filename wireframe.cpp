@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdlib.h> // atoi
 #include <string>
 #include <vector>
 
@@ -19,7 +20,7 @@ int main (int argc, char **argv) {
   // Store original objects
   vector<ThreeDModel *> *models = store_obj_transform_file(argv[1]);
   // Create copies, transform, and print
-  print_transformed_vertices(models);
+  print_ppm(atoi(argv[2]), atoi(argv[3]), models);
 
   return 0;
 }
