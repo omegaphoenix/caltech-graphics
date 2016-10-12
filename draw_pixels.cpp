@@ -59,8 +59,14 @@ Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex) {
   return new Vertex(new_x, new_y, ndc_vertex->z);
 }
 
-void rasterize(Vertex *v1, Vertex *v2, Pixel **grid) {
-  bresenham(v1->x, v1->y, v2->x, v2->y, grid);
+void rasterize(Vertex *v1, Vertex *v2, Pixel **grid, int xres, int yres) {
+  if (is_on_screen(v1, xres, yres) && is_on_screen(v2, xres, yres)) {
+    bresenham(v1->x, v1->y, v2->x, v2->y, grid);
+  }
+}
+
+bool is_on_screen(Vertex *v, int xres, int yres) {
+  return (v->x > 0) && (v->x < xres) && (v->y > 0) && (v->y < yres);
 }
 
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {

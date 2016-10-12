@@ -20,6 +20,7 @@ struct ThreeDModelTransform {
 
   Camera *cam;
 
+  // Perform geometric transforms on vertices
   vector<Vertex *> *transform_model_vertices(Eigen::MatrixXd *trans_mat) {
     vector<Vertex *> *vertices = new vector<Vertex *>();
     // Index 0 is NULL because vertices are 1-indexed
@@ -34,6 +35,7 @@ struct ThreeDModelTransform {
     return vertices;
   }
 
+  // Perform geometric and camera perspective transforms on vertices
   vector<Vertex *> *cartesian_NDC(Eigen::MatrixXd *trans_mat) {
     vector<Vertex *> *vertices = new vector<Vertex *>();
     vector<Vertex *> *geo_transformed_vertices = transform_model_vertices(trans_mat);
@@ -50,6 +52,7 @@ struct ThreeDModelTransform {
     return vertices;
   }
 
+  // Apply all transformations to the vertices to cartesian NDC
   ThreeDModel *apply_trans_mat(Eigen::MatrixXd *trans_mat) {
     ThreeDModel *copy = new ThreeDModel();
     copy->vertices = cartesian_NDC(trans_mat);

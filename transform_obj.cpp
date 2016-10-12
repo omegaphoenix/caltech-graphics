@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 
+#include "draw_pixels.hpp"
 #include "camera.hpp"
 #include "geometric_transform.hpp"
 #include "obj_file_parser.hpp"
@@ -115,9 +116,26 @@ ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTra
 }
 
 void print_ppm(int xres, int yres, vector<ThreeDModel *> *models) {
+  Pixel **grid = new_grid(xres, yres);
+
   for (vector<ThreeDModel *>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
-    (*model_it)->draw_model(xres, yres);
+    (*model_it)->draw_model(xres, yres, grid);
   }
+
+  output_ppm(xres, yres, grid);
+}
+
+Pixel **new_grid(int xres, int yres) {
+  Pixel **grid = new Pixel *[yres];
+  for (int y = 0; y < yres; y++) {
+    for (int x = 0; x < xres; x++) {
+      if (x == 0) {
+        grid[y] = new Pixel[xres];
+      }
+      grid[y][x].colored = false;
+    }
+  }
+  return grid;
 }
 
 void print_transformed_vertices(vector<ThreeDModel *> *models) {

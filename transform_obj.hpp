@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "draw_pixels.hpp"
 #include "camera.hpp"
 #include "three_d_model_transform.hpp"
 #include "three_d_model.hpp"
@@ -34,6 +35,7 @@ ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTra
 
 // main method - create copies, transform vectors, and print name and vectors
 void print_ppm(int xres, int yres, vector<ThreeDModel *> *models);
+Pixel **new_grid(int xres, int yres);
 void print_transformed_vertices(vector<ThreeDModel *> *models);
 
 // helper function to print model

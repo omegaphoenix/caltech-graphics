@@ -23,6 +23,7 @@ struct Camera {
 
   Eigen::MatrixXd *cam_transform_mat, *perspective_proj_mat;
 
+  // Parse lines for setting up camera transforms
   Camera(vector<string> *lines) {
     set_position((*lines)[1]);
     set_orient((*lines)[2]);
@@ -32,7 +33,7 @@ struct Camera {
     calc_perspect_mat();
   }
 
-  /* Returns Cartesian normalized device coordinates (NDC) */
+  // Returns Cartesian normalized device coordinates (NDC)
   Vertex *cam_transform(Vertex *v) {
     double homogeneous_component = 1 / v->z;
     Eigen::MatrixXd inv_cam_transform_mat = cam_transform_mat->inverse();
@@ -41,6 +42,7 @@ struct Camera {
     return scale_vertex(homogeneous_component, transformed);
   }
 
+  // Parse position translation line
   void set_position(string line) {
     istringstream line_stream(line);
 
@@ -53,6 +55,7 @@ struct Camera {
     pos = new Vertex(x, y, z);
   }
 
+  // Parse position orientation rotation line
   void set_orient(string line) {
     istringstream line_stream(line);
 
@@ -65,7 +68,7 @@ struct Camera {
     orient = new Vertex(x, y, z);
   }
 
-  /* Get all arguments for perspective projection transform */
+  // Get all arguments for perspective projection transform
   void set_perspective(vector<string> *lines) {
     istringstream near_line_stream((*lines)[3]);
     string _;
@@ -99,6 +102,7 @@ struct Camera {
     }
   }
 
+  // Calculate position transform matrix from translation and rotation.
   void calc_position_mat() {
     Eigen::MatrixXd *cam_translate_mat = create_translation_mat(pos->x, pos->y, pos->z);
     Eigen::MatrixXd *cam_rotate_mat = create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
@@ -107,6 +111,7 @@ struct Camera {
     *cam_transform_mat = *cam_translate_mat * *cam_rotate_mat;
   }
 
+  // Calculate perspective transform matrix
   void calc_perspect_mat() {
     double p_11 = 2*near/(right - left);
     double p_13 = (right + left)/(right - left);
