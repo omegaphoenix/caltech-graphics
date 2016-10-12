@@ -38,6 +38,7 @@ struct ThreeDModelTransform {
     vector<Vertex *> *vertices = new vector<Vertex *>();
     vector<Vertex *> *geo_transformed_vertices = transform_model_vertices(trans_mat);
 
+    // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
 
     vector<Vertex *>::iterator vertex_it = ++(geo_transformed_vertices->begin());

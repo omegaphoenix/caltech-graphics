@@ -10,9 +10,9 @@
 using namespace std;
 
 int main (int argc, char **argv) {
-  if (argc != 2) {
+  if (argc != 4) {
     cerr << "usage: " << argv[0]
-         << " obj_and_transform_file.txt" << endl;
+         << " [scene_description_file.txt] [xres] [yres]" << endl;
     exit(-1);
   }
 
