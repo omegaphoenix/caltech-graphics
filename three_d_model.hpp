@@ -1,6 +1,8 @@
 #ifndef THREE_D_MODEL_HPP
 #define THREE_D_MODEL_HPP
 
+#include <cstddef>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -55,7 +57,7 @@ struct ThreeDModel {
 
     rasterize(v1, v2, grid, xres, yres);
     rasterize(v2, v3, grid, xres, yres);
-    rasterize(v1, v3, grid, xres, yres);
+    rasterize(v3, v1, grid, xres, yres);
   }
 };
 

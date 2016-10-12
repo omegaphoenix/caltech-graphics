@@ -1,0 +1,4 @@
+make
+./wireframe data/*.txt [xres] [yres] | display
+
+Note: Currently I think there is a bug in the Bresenham algorithm
