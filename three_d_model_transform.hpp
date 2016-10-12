@@ -40,9 +40,9 @@ struct ThreeDModelTransform {
 
     vertices->push_back(NULL);
 
-    vector<Vertex *>::iterator vertex_it = ++(model->vertices->begin());
-    while (vertex_it != model->vertices->end()) {
-      vertices->push_back(transform_vertex(trans_mat, *vertex_it));
+    vector<Vertex *>::iterator vertex_it = ++(geo_transformed_vertices->begin());
+    while (vertex_it != geo_transformed_vertices->end()) {
+      vertices->push_back(cam->cam_transform(*vertex_it));
       ++vertex_it;
     }
 

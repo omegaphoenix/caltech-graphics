@@ -41,6 +41,7 @@ map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, C
 
   string line;
   getline(obj_transform_file, line);
+  getline(obj_transform_file, line);
   while (line != "") {
     create_obj(line, models, cam);
     getline(obj_transform_file, line);
@@ -56,6 +57,8 @@ void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera
   if (!(line_stream >> obj_name >> obj_filename)) {
     throw "Wrong number of arguments to object line";
   }
+
+  obj_filename = "data/" + obj_filename;
 
   ThreeDModelTransform *new_model = create_model(obj_name, obj_filename);
   new_model->cam = cam;

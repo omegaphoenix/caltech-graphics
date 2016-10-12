@@ -115,6 +115,7 @@ struct Camera {
     double p_33 = -(far + near)/(far - near);
     double p_34 = -2*far*near/(far - near);
 
+    perspective_proj_mat = new Eigen::MatrixXd(4, 4);
     *perspective_proj_mat <<
         p_11, 0, p_13, 0, // row1
         0, p_22, p_23, 0, // row2
