@@ -77,15 +77,15 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
 
   double m = (y_1 - y_0)/(x_1 - x_0);
 
-  if ((x_0 <= x_1) && (0 <= m) && (m <= 1)) {
+  if ((x_0 < x_1) && (0 <= m) && (m <= 1)) {
     first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else if ((y_0 < y_1) && (1 < m)) {
     second_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else if ((y_0 < y_1) && (-1 > m)) {
-    // third_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+    third_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else if ((x_0 > x_1) && (-1 <= m) && (m <= 0)) {
-    // fourth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((x_0 > x_1) && (0 < m) && (m <= 1)) {
+    fourth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+  } else if ((x_0 > x_1) && (0 < m) && (1 >= m)) {
     fifth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
   } else if ((y_0 > y_1) && (1 < m)) {
     sixth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
