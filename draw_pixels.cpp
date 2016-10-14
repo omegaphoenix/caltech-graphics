@@ -55,7 +55,7 @@ vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_verti
 
 Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex) {
   int new_x = round((ndc_vertex->x + 1)*xres/2);
-  int new_y = round((ndc_vertex->y + 1)*yres/2);
+  int new_y = round((ndc_vertex->y - 1)*yres/-2);
   return new Vertex(new_x, new_y, ndc_vertex->z);
 }
 
@@ -75,7 +75,7 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
     return;
   }
 
-  double m = (y_1 - y_0)/(x_1 - x_0);
+  double m = (y_1 - y_0)*1.0/(x_1 - x_0)*1.0;
 
   if ((x_0 < x_1) && (0 <= m) && (m <= 1)) {
     first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
@@ -162,13 +162,13 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) 
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int y = y_0; y < y_1; y++) {
+  for (int y = y_0; y > y_1; y--) {
     fill(x, y, grid);
-    if (((epsilon + dx) << 1) > -1*dy) {
+    if (((epsilon + dx) << 1) < -1*dy) {
       epsilon = epsilon + dx;
     } else {
       epsilon = epsilon + dx + dy;
-      x = x - 1;
+      x = x + 1;
     }
   }
 }

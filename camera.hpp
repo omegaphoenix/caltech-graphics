@@ -35,11 +35,10 @@ struct Camera {
 
   // Returns Cartesian normalized device coordinates (NDC)
   Vertex *cam_transform(Vertex *v) {
-    double homogeneous_component = 1 / v->z;
     Eigen::MatrixXd inv_cam_transform_mat = cam_transform_mat->inverse();
     Vertex *transformed = transform_vertex(&inv_cam_transform_mat, v);
     transformed = transform_vertex(perspective_proj_mat, transformed);
-    return scale_vertex(homogeneous_component, transformed);
+    return transformed;
   }
 
   // Parse position translation line
