@@ -14,7 +14,7 @@
 using namespace std;
 
 // main method - store original objects
-vector<ThreeDModel *> *store_obj_transform_file(char *file_name);
+vector<shared_ptr<ThreeDModel> > *store_obj_transform_file(char *file_name);
 
 // parsing helper functions
 // parse camera lines
@@ -29,19 +29,19 @@ ThreeDModelTransform *create_model(string obj_name, string obj_filename);
 char *convert_to_char_arr(string input_string);
 
 // transforms helper function for all transforms
-vector<ThreeDModel *> *perform_transforms(ifstream& obj_transform_file, map<string, ThreeDModelTransform *> *models);
+vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, ThreeDModelTransform *> *models);
 // transforms helper function for one copy
-ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTransform *> *models);
+shared_ptr<ThreeDModel> perform_transform(vector<string> *lines, map<string, ThreeDModelTransform *> *models);
 
 // main method - create copies, transform vectors, and print name and vectors
-void print_ppm(int xres, int yres, vector<ThreeDModel *> *models);
+void print_ppm(int xres, int yres, vector<shared_ptr<ThreeDModel> > *models);
 Pixel **new_grid(int xres, int yres);
 void delete_grid(int xres, int yres, Pixel **grid);
-void print_transformed_vertices(vector<ThreeDModel *> *models);
+void print_transformed_vertices(vector<shared_ptr<ThreeDModel> > *models);
 
 // helper function to print model
-void print(ThreeDModel *model);
+void print(shared_ptr<ThreeDModel> model);
 // helper function to print model vertices
-void print_vertices(ThreeDModel *model);
+void print_vertices(shared_ptr<ThreeDModel> model);
 
 #endif

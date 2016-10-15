@@ -15,14 +15,14 @@
 using namespace std;
 
 struct ThreeDModelTransform {
-  ThreeDModel *model;
+  shared_ptr<ThreeDModel> model;
   int copy_num;
   string name;
 
   Camera *cam;
 
   // Perform geometric transforms on vertices
-  vector<shared_ptr<Vertex> > *transform_model_vertices(Eigen::MatrixXd *trans_mat) {
+  vector<shared_ptr<Vertex> > *transform_model_vertices(shared_ptr<Eigen::MatrixXd> trans_mat) {
     vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
@@ -37,7 +37,7 @@ struct ThreeDModelTransform {
   }
 
   // Perform geometric and camera perspective transforms on vertices
-  vector<shared_ptr<Vertex> > *cartesian_NDC(Eigen::MatrixXd *trans_mat) {
+  vector<shared_ptr<Vertex> > *cartesian_NDC(shared_ptr<Eigen::MatrixXd> trans_mat) {
     vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
     vector<shared_ptr<Vertex> > *geo_transformed_vertices = transform_model_vertices(trans_mat);
 
@@ -54,8 +54,8 @@ struct ThreeDModelTransform {
   }
 
   // Apply all transformations to the vertices to cartesian NDC
-  ThreeDModel *apply_trans_mat(Eigen::MatrixXd *trans_mat) {
-    ThreeDModel *copy = new ThreeDModel();
+  shared_ptr<ThreeDModel> apply_trans_mat(shared_ptr<Eigen::MatrixXd> trans_mat) {
+    shared_ptr<ThreeDModel> copy = shared_ptr<ThreeDModel>(new ThreeDModel());
     copy->vertices = cartesian_NDC(trans_mat);
     copy->faces = model->faces;
 

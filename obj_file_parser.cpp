@@ -13,19 +13,19 @@
 
 using namespace std;
 
-vector<ThreeDModel *> *store_file_objects(int argc, char **argv) {
-  vector<ThreeDModel *> *models = new vector<ThreeDModel *>();
+vector<shared_ptr<ThreeDModel> > *store_file_objects(int argc, char **argv) {
+  vector<shared_ptr<ThreeDModel> > *models = new vector<shared_ptr<ThreeDModel> >();
   for (int i = 1; i < argc; i++) {
-    ThreeDModel *model = parse_file_to_model(argv[i]);
+    shared_ptr<ThreeDModel> model = parse_file_to_model(argv[i]);
     models->push_back(model);
   }
   return models;
 }
 
-ThreeDModel *parse_file_to_model(char *file_name) {
+shared_ptr<ThreeDModel> parse_file_to_model(char *file_name) {
   ifstream obj_file(file_name);
 
-  ThreeDModel *model = new ThreeDModel(file_name);
+  shared_ptr<ThreeDModel> model = shared_ptr<ThreeDModel>(new ThreeDModel(file_name));
   string line;
   while (getline(obj_file, line)) {
     store_line(line, model);
@@ -34,7 +34,7 @@ ThreeDModel *parse_file_to_model(char *file_name) {
   return model;
 }
 
-void store_line(string line, ThreeDModel *model) {
+void store_line(string line, shared_ptr<ThreeDModel> model) {
   if (is_vertex_line(line)) {
     store_vertex_line(line, model);
 
@@ -51,7 +51,7 @@ bool is_face_line(string line) {
   return line.at(0) == 'f';
 }
 
-void store_vertex_line(string line, ThreeDModel *model) {
+void store_vertex_line(string line, shared_ptr<ThreeDModel> model) {
   istringstream line_stream(line);
   char v;
   double x, y, z;
@@ -62,7 +62,7 @@ void store_vertex_line(string line, ThreeDModel *model) {
   model->vertices->push_back(shared_ptr<Vertex>(new Vertex(x, y, z)));
 }
 
-void store_face_line(string line, ThreeDModel *model) {
+void store_face_line(string line, shared_ptr<ThreeDModel> model) {
   istringstream line_stream(line);
   char f;
   int v1, v2, v3;

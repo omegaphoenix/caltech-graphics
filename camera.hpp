@@ -22,7 +22,7 @@ struct Camera {
 
   double near, far, left, right, top, bottom;
 
-  Eigen::MatrixXd *cam_transform_mat, *perspective_proj_mat;
+  shared_ptr<Eigen::MatrixXd> cam_transform_mat, perspective_proj_mat;
 
   // Parse lines for setting up camera transforms
   Camera(vector<string> *lines) {
@@ -36,8 +36,8 @@ struct Camera {
 
   // Returns Cartesian normalized device coordinates (NDC)
   shared_ptr<Vertex> cam_transform(shared_ptr<Vertex> v) {
-    Eigen::MatrixXd inv_cam_transform_mat = cam_transform_mat->inverse();
-    shared_ptr<Vertex> transformed = transform_vertex(&inv_cam_transform_mat, v);
+    shared_ptr<Eigen::MatrixXd> inv_cam_transform_mat = make_shared<Eigen::MatrixXd>(cam_transform_mat->inverse());
+    shared_ptr<Vertex> transformed = transform_vertex(inv_cam_transform_mat, v);
     transformed = transform_vertex(perspective_proj_mat, transformed);
     return transformed;
   }
@@ -104,10 +104,10 @@ struct Camera {
 
   // Calculate position transform matrix from translation and rotation.
   void calc_position_mat() {
-    Eigen::MatrixXd *cam_translate_mat = create_translation_mat(pos->x, pos->y, pos->z);
-    Eigen::MatrixXd *cam_rotate_mat = create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
+    shared_ptr<Eigen::MatrixXd> cam_translate_mat = create_translation_mat(pos->x, pos->y, pos->z);
+    shared_ptr<Eigen::MatrixXd> cam_rotate_mat = create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
 
-    cam_transform_mat = new Eigen::MatrixXd(4, 4);
+    cam_transform_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
     *cam_transform_mat = *cam_translate_mat * *cam_rotate_mat;
   }
 
@@ -120,7 +120,7 @@ struct Camera {
     double p_33 = -(far + near)/(far - near);
     double p_34 = -2*far*near/(far - near);
 
-    perspective_proj_mat = new Eigen::MatrixXd(4, 4);
+    perspective_proj_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
     *perspective_proj_mat <<
         p_11, 0, p_13, 0, // row1
         0, p_22, p_23, 0, // row2

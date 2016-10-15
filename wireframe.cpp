@@ -18,7 +18,7 @@ int main (int argc, char **argv) {
   }
 
   // Store original objects
-  vector<ThreeDModel *> *models = store_obj_transform_file(argv[1]);
+  vector<shared_ptr<ThreeDModel> > *models = store_obj_transform_file(argv[1]);
   // Create copies, transform, and print
   print_ppm(atoi(argv[2]), atoi(argv[3]), models);
 
