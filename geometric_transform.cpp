@@ -13,29 +13,29 @@
 
 using namespace std;
 
-shared_ptr<Eigen::MatrixXd> inverse_transform(vector<string> *lines) {
+shared_ptr<Eigen::MatrixXd> inverse_transform(vector<string> lines) {
   shared_ptr<Eigen::MatrixXd> prod = multiply_matrices(lines);
   shared_ptr<Eigen::MatrixXd> res = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
   *res =  prod->inverse();
 }
 
-vector<string> *parse_file_to_line_vector(char *file_name) {
+vector<string> parse_file_to_line_vector(char *file_name) {
   ifstream obj_file(file_name);
-  vector<string> *lines = new vector<string>;
+  vector<string> lines;
 
   string line;
   while (getline(obj_file, line)) {
-    lines->push_back(line);
+    lines.push_back(line);
   }
 
   return lines;
 }
 
-shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> *lines) {
+shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> lines) {
   shared_ptr<Eigen::MatrixXd> prod = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
   prod->setIdentity(4, 4);
 
-  for(vector<string>::iterator line_it = lines->begin(); line_it != lines->end(); ++line_it) {
+  for(vector<string>::iterator line_it = lines.begin(); line_it != lines.end(); ++line_it) {
     multiply_into_matrix(*line_it, prod);
   }
 

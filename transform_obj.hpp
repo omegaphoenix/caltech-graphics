@@ -20,18 +20,18 @@ vector<shared_ptr<ThreeDModel> > *store_obj_transform_file(char *file_name);
 // parse camera lines
 Camera *get_camera_data(ifstream& obj_transform_file);
 // helper function to get objects from .obj files
-map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, Camera *cam);
+map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transform_file, Camera *cam);
 // helper function to create objects from line and place it in the map
-void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera *cam);
+void create_obj(string line, map<string, shared_ptr<ThreeDModelTransform> > *models, Camera *cam);
 // helper function to create new object
-ThreeDModelTransform *create_model(string obj_name, string obj_filename);
+shared_ptr<ThreeDModelTransform> create_model(string obj_name, string obj_filename);
 // convert from string to char *
 char *convert_to_char_arr(string input_string);
 
 // transforms helper function for all transforms
-vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, ThreeDModelTransform *> *models);
+vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, shared_ptr<ThreeDModelTransform> > *models);
 // transforms helper function for one copy
-shared_ptr<ThreeDModel> perform_transform(vector<string> *lines, map<string, ThreeDModelTransform *> *models);
+shared_ptr<ThreeDModel> perform_transform(vector<string> lines, map<string, shared_ptr<ThreeDModelTransform> > *models);
 
 // main method - create copies, transform vectors, and print name and vectors
 void print_ppm(int xres, int yres, vector<shared_ptr<ThreeDModel> > *models);

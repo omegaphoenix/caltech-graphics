@@ -25,9 +25,9 @@ struct Camera {
   shared_ptr<Eigen::MatrixXd> cam_transform_mat, perspective_proj_mat;
 
   // Parse lines for setting up camera transforms
-  Camera(vector<string> *lines) {
-    set_position((*lines)[1]);
-    set_orient((*lines)[2]);
+  Camera(vector<string> lines) {
+    set_position(lines[1]);
+    set_orient(lines[2]);
     set_perspective(lines);
 
     calc_position_mat();
@@ -69,34 +69,34 @@ struct Camera {
   }
 
   // Get all arguments for perspective projection transform
-  void set_perspective(vector<string> *lines) {
-    istringstream near_line_stream((*lines)[3]);
+  void set_perspective(vector<string> lines) {
+    istringstream near_line_stream(lines[3]);
     string _;
     if (!(near_line_stream >> _ >> near)) {
       throw "Wrong number of arguments to camera perspective near line";
     }
 
-    istringstream far_line_stream((*lines)[4]);
+    istringstream far_line_stream(lines[4]);
     if (!(far_line_stream >> _ >> far)) {
       throw "Wrong number of arguments to camera perspective far line";
     }
 
-    istringstream left_line_stream((*lines)[5]);
+    istringstream left_line_stream(lines[5]);
     if (!(left_line_stream >> _ >> left)) {
       throw "Wrong number of arguments to camera perspective left line";
     }
 
-    istringstream right_line_stream((*lines)[6]);
+    istringstream right_line_stream(lines[6]);
     if (!(right_line_stream >> _ >> right)) {
       throw "Wrong number of arguments to camera perspective right line";
     }
 
-    istringstream top_line_stream((*lines)[7]);
+    istringstream top_line_stream(lines[7]);
     if (!(top_line_stream >> _ >> top)) {
       throw "Wrong number of arguments to camera perspective top line";
     }
 
-    istringstream bottom_line_stream((*lines)[8]);
+    istringstream bottom_line_stream(lines[8]);
     if (!(bottom_line_stream >> _ >> bottom)) {
       throw "Wrong number of arguments to camera perspective bottom line";
     }

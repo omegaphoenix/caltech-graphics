@@ -18,18 +18,19 @@ Camera *cam;
 vector<shared_ptr<ThreeDModel> > *store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   cam = get_camera_data(obj_transform_file);
-  map<string, ThreeDModelTransform *> *models = get_objects(obj_transform_file, cam);
+  map<string, shared_ptr<ThreeDModelTransform> > *models = get_objects(obj_transform_file, cam);
   vector<shared_ptr<ThreeDModel> > *transformed = perform_transforms(obj_transform_file, models);
+  delete cam;
   return transformed;
 }
 
 Camera *get_camera_data(ifstream& obj_transform_file) {
-  vector<string> *lines = new vector<string>;
+  vector<string> lines;
   string line;
 
   getline(obj_transform_file, line);
   while (line != "") {
-    lines->push_back(line);
+    lines.push_back(line);
     getline(obj_transform_file, line);
   }
 
@@ -37,8 +38,8 @@ Camera *get_camera_data(ifstream& obj_transform_file) {
   return cam;
 }
 
-map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, Camera *cam) {
-  map<string, ThreeDModelTransform *> *models = new map<string, ThreeDModelTransform *>();
+map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transform_file, Camera *cam) {
+  map<string, shared_ptr<ThreeDModelTransform> > *models = new map<string, shared_ptr<ThreeDModelTransform> >();
 
   string line;
   getline(obj_transform_file, line);
@@ -51,7 +52,7 @@ map<string, ThreeDModelTransform *> *get_objects(ifstream& obj_transform_file, C
   return models;
 }
 
-void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera *cam) {
+void create_obj(string line, map<string, shared_ptr<ThreeDModelTransform> > *models, Camera *cam) {
   istringstream line_stream(line);
 
   string obj_name, obj_filename;
@@ -61,19 +62,21 @@ void create_obj(string line, map<string, ThreeDModelTransform *> *models, Camera
 
   obj_filename = "data/" + obj_filename;
 
-  ThreeDModelTransform *new_model = create_model(obj_name, obj_filename);
+  shared_ptr<ThreeDModelTransform> new_model = create_model(obj_name, obj_filename);
   new_model->cam = cam;
   (*models)[obj_name] = new_model;
 }
 
-ThreeDModelTransform *create_model(string obj_name, string obj_filename) {
-  ThreeDModelTransform *transform_model = new ThreeDModelTransform();
+shared_ptr<ThreeDModelTransform> create_model(string obj_name, string obj_filename) {
+  shared_ptr<ThreeDModelTransform> transform_model = shared_ptr<ThreeDModelTransform>(new ThreeDModelTransform());
 
   char *filename = convert_to_char_arr(obj_filename);
 
   transform_model->model = parse_file_to_model(filename);
   transform_model->copy_num = 0;
   transform_model->name = obj_name;
+
+  delete[] filename;
   return transform_model;
 }
 
@@ -84,32 +87,32 @@ char *convert_to_char_arr(string input_string) {
 }
 
 // filename lines have been removed from the ifstream
-vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, ThreeDModelTransform *> *models) {
+vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, shared_ptr<ThreeDModelTransform> > *models) {
   vector<shared_ptr<ThreeDModel> > *trans_models = new vector<shared_ptr<ThreeDModel> >();
 
-  vector<string> *lines = new vector<string>;
+  vector<string> lines;
 
   string line;
   while (getline(obj_transform_file, line)) {
     if (line == "") {
       trans_models->push_back(perform_transform(lines, models));
-      lines = new vector<string>;
+      lines.erase(lines.begin(), lines.end());
     } else {
-      lines->push_back(line);
+      lines.push_back(line);
     }
   }
 
-  if (!lines->empty()) {
+  if (!lines.empty()) {
     trans_models->push_back(perform_transform(lines, models));
   }
 
   return trans_models;
 }
 
-shared_ptr<ThreeDModel> perform_transform(vector<string> *lines, map<string, ThreeDModelTransform *> *models) {
+shared_ptr<ThreeDModel> perform_transform(vector<string> lines, map<string, shared_ptr<ThreeDModelTransform> > *models) {
   // Remove name from vector of lines
-  string name = lines->front();
-  lines->erase(lines->begin());
+  string name = lines.front();
+  lines.erase(lines.begin());
 
   shared_ptr<Eigen::MatrixXd> trans_mat = multiply_matrices(lines);
   return (*models)[name]->apply_trans_mat(trans_mat);

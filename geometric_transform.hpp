@@ -11,13 +11,13 @@
 using namespace std;
 
 // Return the inverse transform from the vector of lines transformed to matrices
-shared_ptr<Eigen::MatrixXd> inverse_transform(vector<string> *lines);
+shared_ptr<Eigen::MatrixXd> inverse_transform(vector<string> lines);
 
 // Reads file and returns input to inverse_transform
-vector<string> *parse_file_to_line_vector(char *file_name);
+vector<string> parse_file_to_line_vector(char *file_name);
 
 // Multiply multiple vectors after transforming to matrices
-shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> *lines);
+shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> lines);
 
 // Return line_mat times mat
 void multiply_into_matrix(string line, shared_ptr<Eigen::MatrixXd> mat);
