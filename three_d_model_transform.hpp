@@ -19,7 +19,7 @@ struct ThreeDModelTransform {
   int copy_num;
   string name;
 
-  Camera *cam;
+  shared_ptr<Camera> cam;
 
   // Perform geometric transforms on vertices
   vector<shared_ptr<Vertex> > *transform_model_vertices(shared_ptr<Eigen::MatrixXd> trans_mat) {
@@ -49,6 +49,9 @@ struct ThreeDModelTransform {
       vertices->push_back(cam->cam_transform(*vertex_it));
       ++vertex_it;
     }
+
+    geo_transformed_vertices->clear();
+    delete geo_transformed_vertices;
 
     return vertices;
   }

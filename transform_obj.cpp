@@ -13,18 +13,21 @@
 
 using namespace std;
 
-Camera *cam;
+shared_ptr<Camera> cam;
 
 vector<shared_ptr<ThreeDModel> > *store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   cam = get_camera_data(obj_transform_file);
   map<string, shared_ptr<ThreeDModelTransform> > *models = get_objects(obj_transform_file, cam);
   vector<shared_ptr<ThreeDModel> > *transformed = perform_transforms(obj_transform_file, models);
-  delete cam;
+
+  models->clear();
+  delete models;
+
   return transformed;
 }
 
-Camera *get_camera_data(ifstream& obj_transform_file) {
+shared_ptr<Camera> get_camera_data(ifstream& obj_transform_file) {
   vector<string> lines;
   string line;
 
@@ -34,11 +37,11 @@ Camera *get_camera_data(ifstream& obj_transform_file) {
     getline(obj_transform_file, line);
   }
 
-  Camera *cam = new Camera(lines);
+  shared_ptr<Camera> cam = shared_ptr<Camera>(new Camera(lines));
   return cam;
 }
 
-map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transform_file, Camera *cam) {
+map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transform_file, shared_ptr<Camera> cam) {
   map<string, shared_ptr<ThreeDModelTransform> > *models = new map<string, shared_ptr<ThreeDModelTransform> >();
 
   string line;
@@ -52,7 +55,7 @@ map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transf
   return models;
 }
 
-void create_obj(string line, map<string, shared_ptr<ThreeDModelTransform> > *models, Camera *cam) {
+void create_obj(string line, map<string, shared_ptr<ThreeDModelTransform> > *models, shared_ptr<Camera> cam) {
   istringstream line_stream(line);
 
   string obj_name, obj_filename;
@@ -88,7 +91,7 @@ char *convert_to_char_arr(string input_string) {
 
 // filename lines have been removed from the ifstream
 vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, shared_ptr<ThreeDModelTransform> > *models) {
-  vector<shared_ptr<ThreeDModel> > *trans_models = new vector<shared_ptr<ThreeDModel> >();
+  vector<shared_ptr<ThreeDModel> > *trans_models = new vector<shared_ptr<ThreeDModel>>();
 
   vector<string> lines;
 

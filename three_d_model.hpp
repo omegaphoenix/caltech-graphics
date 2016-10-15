@@ -16,7 +16,7 @@ using namespace std;
 struct ThreeDModel {
   string name;
   vector<shared_ptr<Vertex> > *vertices;
-  vector<Face *> *faces;
+  vector<shared_ptr<Face> > *faces;
 
   // empty constructor
   ThreeDModel() {
@@ -26,7 +26,7 @@ struct ThreeDModel {
   ThreeDModel(char *raw_file_name) {
     name = get_name(raw_file_name);
     setup_vertices();
-    faces = new vector<Face *>();
+    faces = new vector<shared_ptr<Face> >();
   }
 
   // helper function for constructor to get object name
@@ -45,13 +45,13 @@ struct ThreeDModel {
 
   // Draw model on the grid representing the screen
   void draw_model(int xres, int yres, Pixel **grid) {
-    for (vector<Face *>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
+    for (vector<shared_ptr<Face> >::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
       draw_face(xres, yres, *face_it, grid);
     }
   }
 
   // Draw a single face on the grid representing the screen
-  void draw_face(int xres, int yres, Face *face, Pixel **grid) {
+  void draw_face(int xres, int yres, shared_ptr<Face> face, Pixel **grid) {
     shared_ptr<Vertex> v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
     shared_ptr<Vertex> v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
     shared_ptr<Vertex> v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);

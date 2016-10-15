@@ -7,7 +7,7 @@ struct Face {
   int vertex2;
   int vertex3;
 
-  Face(int v1, int v2, int v3) {
+  Face (int v1, int v2, int v3) {
     vertex1 = v1;
     vertex2 = v2;
     vertex3 = v3;

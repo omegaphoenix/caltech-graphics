@@ -22,5 +22,7 @@ int main (int argc, char **argv) {
   // Create copies, transform, and print
   print_ppm(atoi(argv[2]), atoi(argv[3]), models);
 
+  models->clear();
+  delete models;
   return 0;
 }

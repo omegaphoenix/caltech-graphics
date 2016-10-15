@@ -70,5 +70,5 @@ void store_face_line(string line, shared_ptr<ThreeDModel> model) {
     throw "Wrong number of arguments to face line";
   }
 
-  model->faces->push_back(new Face(v1, v2, v3));
+  model->faces->push_back(shared_ptr<Face>(new Face (v1, v2, v3)));
 }
