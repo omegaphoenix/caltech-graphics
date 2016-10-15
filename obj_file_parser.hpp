@@ -9,7 +9,7 @@
 using namespace std;
 
 // main method - parses multiple files
-vector<shared_ptr<ThreeDModel> > *store_file_objects(int argc, char **argv);
+shared_ptr<vector<shared_ptr<ThreeDModel>>> store_file_objects(int argc, char **argv);
 
 // helper function - parse one file
 shared_ptr<ThreeDModel> parse_file_to_model(char *file_name);

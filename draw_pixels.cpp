@@ -41,8 +41,8 @@ void gold() {
   cout << "253 185 39" << endl;
 }
 
-vector<shared_ptr<Vertex>> *NDCs_to_pixels(int xres, int yres, vector<shared_ptr<Vertex> > *ndc_vertices) {
-    vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
+shared_ptr<vector<shared_ptr<Vertex>>> NDCs_to_pixels(int xres, int yres, shared_ptr<vector<shared_ptr<Vertex>>> ndc_vertices) {
+    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
     vertices->push_back(NULL);
 
     vector<shared_ptr<Vertex> >::iterator vertex_it = ++(ndc_vertices->begin());

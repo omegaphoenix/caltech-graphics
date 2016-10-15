@@ -24,7 +24,7 @@ void purple();
 void gold();
 
 // Converts vertices from cartesian NDC to screen location
-vector<shared_ptr<Vertex> > *NDCs_to_pixels(int xres, int yres, vector<shared_ptr<Vertex> > *ndc_vertices);
+shared_ptr<vector<shared_ptr<Vertex>>> NDCs_to_pixels(int xres, int yres, shared_ptr<vector<shared_ptr<Vertex>>> ndc_vertices);
 // Converts one vertex from cartesian NDC to screen location
 shared_ptr<Vertex> NDC_to_pixel(int xres, int yres, shared_ptr<Vertex> ndc_vertex);
 

@@ -22,8 +22,8 @@ struct ThreeDModelTransform {
   shared_ptr<Camera> cam;
 
   // Perform geometric transforms on vertices
-  vector<shared_ptr<Vertex> > *transform_model_vertices(shared_ptr<Eigen::MatrixXd> trans_mat) {
-    vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
+  shared_ptr<vector<shared_ptr<Vertex>>> transform_model_vertices(shared_ptr<Eigen::MatrixXd> trans_mat) {
+    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
 
@@ -37,9 +37,9 @@ struct ThreeDModelTransform {
   }
 
   // Perform geometric and camera perspective transforms on vertices
-  vector<shared_ptr<Vertex> > *cartesian_NDC(shared_ptr<Eigen::MatrixXd> trans_mat) {
-    vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
-    vector<shared_ptr<Vertex> > *geo_transformed_vertices = transform_model_vertices(trans_mat);
+  shared_ptr<vector<shared_ptr<Vertex>>> cartesian_NDC(shared_ptr<Eigen::MatrixXd> trans_mat) {
+    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
+    shared_ptr<vector<shared_ptr<Vertex>>> geo_transformed_vertices = transform_model_vertices(trans_mat);
 
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
@@ -49,9 +49,6 @@ struct ThreeDModelTransform {
       vertices->push_back(cam->cam_transform(*vertex_it));
       ++vertex_it;
     }
-
-    geo_transformed_vertices->clear();
-    delete geo_transformed_vertices;
 
     return vertices;
   }

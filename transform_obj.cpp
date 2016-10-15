@@ -15,14 +15,11 @@ using namespace std;
 
 shared_ptr<Camera> cam;
 
-vector<shared_ptr<ThreeDModel> > *store_obj_transform_file(char *file_name) {
+shared_ptr<vector<shared_ptr<ThreeDModel>>> store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   cam = get_camera_data(obj_transform_file);
-  map<string, shared_ptr<ThreeDModelTransform> > *models = get_objects(obj_transform_file, cam);
-  vector<shared_ptr<ThreeDModel> > *transformed = perform_transforms(obj_transform_file, models);
-
-  models->clear();
-  delete models;
+  shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models = get_objects(obj_transform_file, cam);
+  shared_ptr<vector<shared_ptr<ThreeDModel>>> transformed = perform_transforms(obj_transform_file, models);
 
   return transformed;
 }
@@ -41,8 +38,8 @@ shared_ptr<Camera> get_camera_data(ifstream& obj_transform_file) {
   return cam;
 }
 
-map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transform_file, shared_ptr<Camera> cam) {
-  map<string, shared_ptr<ThreeDModelTransform> > *models = new map<string, shared_ptr<ThreeDModelTransform> >();
+shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> get_objects(ifstream& obj_transform_file, shared_ptr<Camera> cam) {
+  shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models = shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>>(new map<string, shared_ptr<ThreeDModelTransform> >());
 
   string line;
   getline(obj_transform_file, line);
@@ -55,7 +52,7 @@ map<string, shared_ptr<ThreeDModelTransform> > *get_objects(ifstream& obj_transf
   return models;
 }
 
-void create_obj(string line, map<string, shared_ptr<ThreeDModelTransform> > *models, shared_ptr<Camera> cam) {
+void create_obj(string line, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models, shared_ptr<Camera> cam) {
   istringstream line_stream(line);
 
   string obj_name, obj_filename;
@@ -79,7 +76,7 @@ shared_ptr<ThreeDModelTransform> create_model(string obj_name, string obj_filena
   transform_model->copy_num = 0;
   transform_model->name = obj_name;
 
-  delete[] filename;
+  free(filename);
   return transform_model;
 }
 
@@ -90,8 +87,8 @@ char *convert_to_char_arr(string input_string) {
 }
 
 // filename lines have been removed from the ifstream
-vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_file, map<string, shared_ptr<ThreeDModelTransform> > *models) {
-  vector<shared_ptr<ThreeDModel> > *trans_models = new vector<shared_ptr<ThreeDModel>>();
+shared_ptr<vector<shared_ptr<ThreeDModel>>> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models) {
+  shared_ptr<vector<shared_ptr<ThreeDModel>>> trans_models = shared_ptr<vector<shared_ptr<ThreeDModel>>>(new vector<shared_ptr<ThreeDModel>>());
 
   vector<string> lines;
 
@@ -112,7 +109,7 @@ vector<shared_ptr<ThreeDModel> > *perform_transforms(ifstream& obj_transform_fil
   return trans_models;
 }
 
-shared_ptr<ThreeDModel> perform_transform(vector<string> lines, map<string, shared_ptr<ThreeDModelTransform> > *models) {
+shared_ptr<ThreeDModel> perform_transform(vector<string> lines, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models) {
   // Remove name from vector of lines
   string name = lines.front();
   lines.erase(lines.begin());
@@ -121,7 +118,7 @@ shared_ptr<ThreeDModel> perform_transform(vector<string> lines, map<string, shar
   return (*models)[name]->apply_trans_mat(trans_mat);
 }
 
-void print_ppm(int xres, int yres, vector<shared_ptr<ThreeDModel> > *models) {
+void print_ppm(int xres, int yres, shared_ptr<vector<shared_ptr<ThreeDModel>>> models) {
   Pixel **grid = new_grid(xres, yres);
 
   for (vector<shared_ptr<ThreeDModel> >::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
@@ -129,6 +126,7 @@ void print_ppm(int xres, int yres, vector<shared_ptr<ThreeDModel> > *models) {
   }
 
   output_ppm(xres, yres, grid);
+
   delete_grid(xres, yres, grid);
   delete[] grid;
 }
@@ -152,7 +150,7 @@ void delete_grid(int xres, int yres, Pixel **grid) {
   }
 }
 
-void print_transformed_vertices(vector<shared_ptr<ThreeDModel> > *models) {
+void print_transformed_vertices(shared_ptr<vector<shared_ptr<ThreeDModel>>> models) {
   for (vector<shared_ptr<ThreeDModel> >::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print(*model_it);
   }
@@ -165,7 +163,7 @@ void print(shared_ptr<ThreeDModel> model) {
 }
 
 void print_vertices(shared_ptr<ThreeDModel> model) {
-  vector<shared_ptr<Vertex> > *vertices = model->vertices;
+  shared_ptr<vector<shared_ptr<Vertex>>> vertices = model->vertices;
 
   // 0-indexed vertex is NULL
   vector<shared_ptr<Vertex> >::iterator vertex_it = ++(vertices->begin());

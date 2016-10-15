@@ -15,8 +15,8 @@ using namespace std;
 
 struct ThreeDModel {
   string name;
-  vector<shared_ptr<Vertex> > *vertices;
-  vector<shared_ptr<Face> > *faces;
+  shared_ptr<vector<shared_ptr<Vertex>>> vertices;
+  shared_ptr<vector<shared_ptr<Face>>> faces;
 
   // empty constructor
   ThreeDModel() {
@@ -26,7 +26,7 @@ struct ThreeDModel {
   ThreeDModel(char *raw_file_name) {
     name = get_name(raw_file_name);
     setup_vertices();
-    faces = new vector<shared_ptr<Face> >();
+    faces = shared_ptr<vector<shared_ptr<Face>>>(new vector<shared_ptr<Face> >());
   }
 
   // helper function for constructor to get object name
@@ -38,7 +38,7 @@ struct ThreeDModel {
 
   // helper function for constructor to get vertices
   void setup_vertices() {
-    vertices = new vector<shared_ptr<Vertex> >();
+    vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
   }

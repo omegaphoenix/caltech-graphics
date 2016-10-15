@@ -13,8 +13,8 @@
 
 using namespace std;
 
-vector<shared_ptr<ThreeDModel> > *store_file_objects(int argc, char **argv) {
-  vector<shared_ptr<ThreeDModel> > *models = new vector<shared_ptr<ThreeDModel> >();
+shared_ptr<vector<shared_ptr<ThreeDModel>>> store_file_objects(int argc, char **argv) {
+  shared_ptr<vector<shared_ptr<ThreeDModel>>> models = shared_ptr<vector<shared_ptr<ThreeDModel>>>(new vector<shared_ptr<ThreeDModel> >());
   for (int i = 1; i < argc; i++) {
     shared_ptr<ThreeDModel> model = parse_file_to_model(argv[i]);
     models->push_back(model);
