@@ -2,6 +2,7 @@
 
 #include <fstream> // basic file operations
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -21,7 +22,7 @@ vector<ThreeDModel *> *store_file_objects(int argc, char **argv) {
   return models;
 }
 
-ThreeDModel *parse_file_to_model(char * file_name) {
+ThreeDModel *parse_file_to_model(char *file_name) {
   ifstream obj_file(file_name);
 
   ThreeDModel *model = new ThreeDModel(file_name);
@@ -58,7 +59,7 @@ void store_vertex_line(string line, ThreeDModel *model) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  model->vertices->push_back(new Vertex(x, y, z));
+  model->vertices->push_back(shared_ptr<Vertex>(new Vertex(x, y, z)));
 }
 
 void store_face_line(string line, ThreeDModel *model) {

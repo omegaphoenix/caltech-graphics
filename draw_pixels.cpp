@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <iostream>
 #include <math.h> // round
+#include <memory>
 #include <vector>
 
 #include "vertex.hpp"
@@ -40,11 +41,11 @@ void gold() {
   cout << "253 185 39" << endl;
 }
 
-vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_vertices) {
-    vector<Vertex *> *vertices = new vector<Vertex *>();
+vector<shared_ptr<Vertex>> *NDCs_to_pixels(int xres, int yres, vector<shared_ptr<Vertex> > *ndc_vertices) {
+    vector<shared_ptr<Vertex> > *vertices = new vector<shared_ptr<Vertex> >();
     vertices->push_back(NULL);
 
-    vector<Vertex *>::iterator vertex_it = ++(ndc_vertices->begin());
+    vector<shared_ptr<Vertex> >::iterator vertex_it = ++(ndc_vertices->begin());
     while (vertex_it != ndc_vertices->end()) {
       vertices->push_back(NDC_to_pixel(xres, yres, *vertex_it));
       ++vertex_it;
@@ -53,19 +54,19 @@ vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_verti
     return vertices;
 }
 
-Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex) {
+shared_ptr<Vertex> NDC_to_pixel(int xres, int yres, shared_ptr<Vertex> ndc_vertex) {
   int new_x = round((ndc_vertex->x + 1)*xres/2);
   int new_y = round((ndc_vertex->y - 1)*yres/-2);
-  return new Vertex(new_x, new_y, ndc_vertex->z);
+  return shared_ptr<Vertex>(new Vertex(new_x, new_y, ndc_vertex->z));
 }
 
-void rasterize(Vertex *v1, Vertex *v2, Pixel **grid, int xres, int yres) {
+void rasterize(shared_ptr<Vertex> v1, shared_ptr<Vertex> v2, Pixel **grid, int xres, int yres) {
   if (is_on_screen(v1, xres, yres) && is_on_screen(v2, xres, yres)) {
     bresenham(v1->x, v1->y, v2->x, v2->y, grid);
   }
 }
 
-bool is_on_screen(Vertex *v, int xres, int yres) {
+bool is_on_screen(shared_ptr<Vertex> v, int xres, int yres) {
   return (v->x > 0) && (v->x < xres) && (v->y > 0) && (v->y < yres);
 }
 

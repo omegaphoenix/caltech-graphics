@@ -1,6 +1,7 @@
 #ifndef DRAW_PIXELS_HPP
 #define DRAW_PIXELS_HPP
 
+#include <memory>
 #include <vector>
 
 #include "vertex.hpp"
@@ -23,16 +24,16 @@ void purple();
 void gold();
 
 // Converts vertices from cartesian NDC to screen location
-vector<Vertex *> *NDCs_to_pixels(int xres, int yres, vector<Vertex *> *ndc_vertices);
+vector<shared_ptr<Vertex> > *NDCs_to_pixels(int xres, int yres, vector<shared_ptr<Vertex> > *ndc_vertices);
 // Converts one vertex from cartesian NDC to screen location
-Vertex *NDC_to_pixel(int xres, int yres, Vertex *ndc_vertex);
+shared_ptr<Vertex> NDC_to_pixel(int xres, int yres, shared_ptr<Vertex> ndc_vertex);
 
 // Draw line between vertices on Pixel array
-void rasterize(Vertex *v1, Vertex *v2, Pixel **grid, int xres, int yres);
+void rasterize(shared_ptr<Vertex> v1, shared_ptr<Vertex> v2, Pixel **grid, int xres, int yres);
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 
 // Return true if vertex is within (0, xres) and (0, yres)
-bool is_on_screen(Vertex *v, int xres, int yres);
+bool is_on_screen(shared_ptr<Vertex> v, int xres, int yres);
 
 void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Use algorithm from lecture notes

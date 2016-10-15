@@ -123,6 +123,8 @@ void print_ppm(int xres, int yres, vector<ThreeDModel *> *models) {
   }
 
   output_ppm(xres, yres, grid);
+  delete_grid(xres, yres, grid);
+  delete[] grid;
 }
 
 Pixel **new_grid(int xres, int yres) {
@@ -138,6 +140,12 @@ Pixel **new_grid(int xres, int yres) {
   return grid;
 }
 
+void delete_grid(int xres, int yres, Pixel **grid) {
+  for (int y = 0; y < yres; y++) {
+    delete[] grid[y];
+  }
+}
+
 void print_transformed_vertices(vector<ThreeDModel *> *models) {
   for (vector<ThreeDModel *>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print(*model_it);
@@ -151,10 +159,10 @@ void print(ThreeDModel *model) {
 }
 
 void print_vertices(ThreeDModel *model) {
-  vector<Vertex *> *vertices = model->vertices;
+  vector<shared_ptr<Vertex> > *vertices = model->vertices;
 
   // 0-indexed vertex is NULL
-  vector<Vertex *>::iterator vertex_it = ++(vertices->begin());
+  vector<shared_ptr<Vertex> >::iterator vertex_it = ++(vertices->begin());
   while (vertex_it != vertices->end()) {
     cout << (*vertex_it)->x << " " << (*vertex_it)->y << " " << (*vertex_it)->z << endl;
     ++vertex_it;

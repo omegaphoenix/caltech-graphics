@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,7 @@ using namespace std;
 
 struct ThreeDModel {
   string name;
-  vector<Vertex *> *vertices;
+  vector<shared_ptr<Vertex> > *vertices;
   vector<Face *> *faces;
 
   // empty constructor
@@ -37,7 +38,7 @@ struct ThreeDModel {
 
   // helper function for constructor to get vertices
   void setup_vertices() {
-    vertices = new vector<Vertex *>();
+    vertices = new vector<shared_ptr<Vertex> >();
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
   }
@@ -51,9 +52,9 @@ struct ThreeDModel {
 
   // Draw a single face on the grid representing the screen
   void draw_face(int xres, int yres, Face *face, Pixel **grid) {
-    Vertex *v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
-    Vertex *v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
-    Vertex *v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
+    shared_ptr<Vertex> v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
+    shared_ptr<Vertex> v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
+    shared_ptr<Vertex> v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
 
     rasterize(v1, v2, grid, xres, yres);
     rasterize(v2, v3, grid, xres, yres);

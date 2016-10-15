@@ -1,6 +1,7 @@
 #ifndef TRANSFORM_INVERSE_PROD_HPP
 #define TRANSFORM_INVERSE_PROD_HPP
 
+#include <memory>
 #include <vector>
 
 #include "vertex.hpp"
@@ -45,7 +46,7 @@ Eigen::MatrixXd *create_ry_mat(double angle_in_rad);
 Eigen::MatrixXd *create_rz_mat(double angle_in_rad);
 
 // Multiply vertex coordinates by matrix or scalar
-Vertex *transform_vertex(Eigen::MatrixXd *trans_mat, Vertex *vertex);
-Vertex *scale_vertex(double factor, Vertex *vertex);
+shared_ptr<Vertex> transform_vertex(Eigen::MatrixXd *trans_mat, shared_ptr<Vertex> vertex);
+shared_ptr<Vertex> scale_vertex(double factor, shared_ptr<Vertex> vertex);
 
 #endif

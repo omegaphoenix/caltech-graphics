@@ -21,7 +21,6 @@ int main (int argc, char **argv) {
   vector<ThreeDModel *> *models = store_obj_transform_file(argv[1]);
   // Create copies, transform, and print
   print_ppm(atoi(argv[2]), atoi(argv[3]), models);
-  // print_transformed_vertices(models);
 
   return 0;
 }

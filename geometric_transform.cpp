@@ -3,6 +3,7 @@
 #include <fstream> // basic file operations
 #include <iostream>
 #include <math.h>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -173,7 +174,7 @@ Eigen::MatrixXd *create_rz_mat(double angle_in_rad) {
   return mat;
 }
 
-Vertex *transform_vertex(Eigen::MatrixXd *trans_mat, Vertex *vertex) {
+shared_ptr<Vertex> transform_vertex(Eigen::MatrixXd *trans_mat, shared_ptr<Vertex> vertex) {
   Eigen::MatrixXd *vertex_mat = new Eigen::MatrixXd(4, 1);
   *vertex_mat << vertex->x, // row1
                  vertex->y, // row2
@@ -186,13 +187,13 @@ Vertex *transform_vertex(Eigen::MatrixXd *trans_mat, Vertex *vertex) {
   double new_y = transformed(1) / transformed(3);
   double new_z = transformed(2) / transformed(3);
 
-  return new Vertex(new_x, new_y, new_z);
+  return shared_ptr<Vertex>(new Vertex(new_x, new_y, new_z));
 }
 
-Vertex *scale_vertex(double factor, Vertex *vertex) {
+shared_ptr<Vertex> scale_vertex(double factor, shared_ptr<Vertex> vertex) {
   double new_x = vertex->x * factor;
   double new_y = vertex->y * factor;
   double new_z = vertex->z * factor;
 
-  return new Vertex(new_x, new_y, new_z);
+  return shared_ptr<Vertex>(new Vertex(new_x, new_y, new_z));
 }

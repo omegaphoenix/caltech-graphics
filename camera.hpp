@@ -1,6 +1,7 @@
 #ifndef CAMERA_HPP
 #define CAMERA_HPP
 
+#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -14,9 +15,9 @@ using namespace std;
 
 // Represents the camera position, orientation, and perspective
 struct Camera {
-  Vertex *pos;
+  shared_ptr<Vertex> pos;
 
-  Vertex *orient;
+  shared_ptr<Vertex> orient;
   double orient_angle;
 
   double near, far, left, right, top, bottom;
@@ -34,9 +35,9 @@ struct Camera {
   }
 
   // Returns Cartesian normalized device coordinates (NDC)
-  Vertex *cam_transform(Vertex *v) {
+  shared_ptr<Vertex> cam_transform(shared_ptr<Vertex> v) {
     Eigen::MatrixXd inv_cam_transform_mat = cam_transform_mat->inverse();
-    Vertex *transformed = transform_vertex(&inv_cam_transform_mat, v);
+    shared_ptr<Vertex> transformed = transform_vertex(&inv_cam_transform_mat, v);
     transformed = transform_vertex(perspective_proj_mat, transformed);
     return transformed;
   }
@@ -51,7 +52,7 @@ struct Camera {
       throw "Wrong number of arguments to camera position line";
     }
 
-    pos = new Vertex(x, y, z);
+    pos = shared_ptr<Vertex>(new Vertex(x, y, z));
   }
 
   // Parse position orientation rotation line
@@ -64,7 +65,7 @@ struct Camera {
       throw "Wrong number of arguments to camera orientation line";
     }
 
-    orient = new Vertex(x, y, z);
+    orient = shared_ptr<Vertex>(new Vertex(x, y, z));
   }
 
   // Get all arguments for perspective projection transform

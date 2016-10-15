@@ -36,6 +36,7 @@ ThreeDModel *perform_transform(vector<string> *lines, map<string, ThreeDModelTra
 // main method - create copies, transform vectors, and print name and vectors
 void print_ppm(int xres, int yres, vector<ThreeDModel *> *models);
 Pixel **new_grid(int xres, int yres);
+void delete_grid(int xres, int yres, Pixel **grid);
 void print_transformed_vertices(vector<ThreeDModel *> *models);
 
 // helper function to print model
