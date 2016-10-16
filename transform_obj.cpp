@@ -14,20 +14,28 @@
 
 using namespace std;
 
-shared_ptr<vector<shared_ptr<ThreeDModel>>> store_obj_transform_file(char *file_name) {
+using CameraPtr = shared_ptr<Camera>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+using VertexPtr = shared_ptr<Vertex>;
+using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
+ModelVectorPtr store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
-  shared_ptr<Camera> cam = get_camera_data(obj_transform_file);
-  shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models =
+  CameraPtr cam = get_camera_data(obj_transform_file);
+  shared_ptr<map<string, ThreeDModelTransformPtr>> models =
     get_objects(obj_transform_file, cam);
-  shared_ptr<vector<shared_ptr<ThreeDModel>>> transformed =
+  ModelVectorPtr transformed =
     perform_transforms(obj_transform_file, models);
 
   return transformed;
 }
 
 // filename lines have been removed from the ifstream
-shared_ptr<vector<shared_ptr<ThreeDModel>>> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models) {
-  shared_ptr<vector<shared_ptr<ThreeDModel>>> trans_models = shared_ptr<vector<shared_ptr<ThreeDModel>>>(new vector<shared_ptr<ThreeDModel>>());
+ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ThreeDModelTransformPtr>> models) {
+  ModelVectorPtr trans_models = ModelVectorPtr(new vector<ThreeDModelPtr>());
 
   vector<string> lines;
 
@@ -48,19 +56,19 @@ shared_ptr<vector<shared_ptr<ThreeDModel>>> perform_transforms(ifstream& obj_tra
   return trans_models;
 }
 
-shared_ptr<ThreeDModel> perform_transform(vector<string> lines, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models) {
+ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ThreeDModelTransformPtr>> models) {
   // Remove name from vector of lines
   string name = lines.front();
   lines.erase(lines.begin());
 
-  shared_ptr<Eigen::MatrixXd> trans_mat = multiply_matrices(lines);
+  MatrixPtr trans_mat = multiply_matrices(lines);
   return (*models)[name]->apply_trans_mat(trans_mat);
 }
 
-void print_ppm(int xres, int yres, shared_ptr<vector<shared_ptr<ThreeDModel>>> models) {
+void print_ppm(int xres, int yres, ModelVectorPtr models) {
   Pixel **grid = new_grid(xres, yres);
 
-  for (vector<shared_ptr<ThreeDModel> >::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     (*model_it)->draw_model(xres, yres, grid);
   }
 
@@ -89,23 +97,23 @@ void delete_grid(int xres, int yres, Pixel **grid) {
   }
 }
 
-void print_transformed_vertices(shared_ptr<vector<shared_ptr<ThreeDModel>>> models) {
-  for (vector<shared_ptr<ThreeDModel> >::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+void print_transformed_vertices(ModelVectorPtr models) {
+  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print(*model_it);
   }
 }
 
-void print(shared_ptr<ThreeDModel> model) {
+void print(ThreeDModelPtr model) {
   cout << model->name << endl;
   print_vertices(model);
   cout << endl;
 }
 
-void print_vertices(shared_ptr<ThreeDModel> model) {
-  shared_ptr<vector<shared_ptr<Vertex>>> vertices = model->vertices;
+void print_vertices(ThreeDModelPtr model) {
+  VerVectorPtr vertices = model->vertices;
 
   // 0-indexed vertex is NULL
-  vector<shared_ptr<Vertex> >::iterator vertex_it = ++(vertices->begin());
+  vector<VertexPtr>::iterator vertex_it = ++(vertices->begin());
   while (vertex_it != vertices->end()) {
     cout << (*vertex_it)->x << " " << (*vertex_it)->y << " " << (*vertex_it)->z << endl;
     ++vertex_it;

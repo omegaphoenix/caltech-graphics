@@ -14,20 +14,26 @@
 
 using namespace std;
 
+using CameraPtr = shared_ptr<Camera>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+using VertexPtr = shared_ptr<Vertex>;
+using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
 struct ThreeDModelTransform {
-  shared_ptr<ThreeDModel> model;
+  ThreeDModelPtr model;
   int copy_num;
   string name;
 
-  shared_ptr<Camera> cam;
+  CameraPtr cam;
 
   // Perform geometric transforms on vertices
-  shared_ptr<vector<shared_ptr<Vertex>>> transform_model_vertices(shared_ptr<Eigen::MatrixXd> trans_mat) {
-    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
+  VerVectorPtr transform_model_vertices(MatrixPtr trans_mat) {
+    VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
 
-    vector<shared_ptr<Vertex> >::iterator vertex_it = ++(model->vertices->begin());
+    vector<VertexPtr>::iterator vertex_it = ++(model->vertices->begin());
     while (vertex_it != model->vertices->end()) {
       vertices->push_back(transform_vertex(trans_mat, *vertex_it));
       ++vertex_it;
@@ -37,15 +43,15 @@ struct ThreeDModelTransform {
   }
 
   // Perform geometric and camera perspective transforms on vertices
-  shared_ptr<vector<shared_ptr<Vertex>>> cartesian_NDC(shared_ptr<Eigen::MatrixXd> trans_mat) {
-    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
-    shared_ptr<vector<shared_ptr<Vertex>>> geo_transformed_vertices = transform_model_vertices(trans_mat);
+  VerVectorPtr cartesian_NDC(MatrixPtr trans_mat) {
+    VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
+    VerVectorPtr geo_transform_vertices = transform_model_vertices(trans_mat);
 
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
 
-    vector<shared_ptr<Vertex> >::iterator vertex_it = ++(geo_transformed_vertices->begin());
-    while (vertex_it != geo_transformed_vertices->end()) {
+    vector<VertexPtr>::iterator vertex_it = ++(geo_transform_vertices->begin());
+    while (vertex_it != geo_transform_vertices->end()) {
       vertices->push_back(cam->cam_transform(*vertex_it));
       ++vertex_it;
     }
@@ -54,8 +60,8 @@ struct ThreeDModelTransform {
   }
 
   // Apply all transformations to the vertices to cartesian NDC
-  shared_ptr<ThreeDModel> apply_trans_mat(shared_ptr<Eigen::MatrixXd> trans_mat) {
-    shared_ptr<ThreeDModel> copy = shared_ptr<ThreeDModel>(new ThreeDModel());
+  ThreeDModelPtr apply_trans_mat(MatrixPtr trans_mat) {
+    ThreeDModelPtr copy = ThreeDModelPtr(new ThreeDModel());
     copy->vertices = cartesian_NDC(trans_mat);
     copy->faces = model->faces;
 

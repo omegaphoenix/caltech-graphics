@@ -14,23 +14,27 @@
 
 using namespace std;
 
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+
 // main method - store original objects
-shared_ptr<vector<shared_ptr<ThreeDModel>>> store_obj_transform_file(char *file_name);
+ModelVectorPtr store_obj_transform_file(char *file_name);
 
 // transforms helper function for all transforms
-shared_ptr<vector<shared_ptr<ThreeDModel>>> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models);
+ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ThreeDModelTransformPtr>> models);
 // transforms helper function for one copy
-shared_ptr<ThreeDModel> perform_transform(vector<string> lines, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models);
+ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ThreeDModelTransformPtr>> models);
 
 // main method - create copies, transform vectors, and print name and vectors
-void print_ppm(int xres, int yres, shared_ptr<vector<shared_ptr<ThreeDModel>>> models);
+void print_ppm(int xres, int yres, ModelVectorPtr models);
 Pixel **new_grid(int xres, int yres);
 void delete_grid(int xres, int yres, Pixel **grid);
-void print_transformed_vertices(shared_ptr<vector<shared_ptr<ThreeDModel>>> models);
+void print_transformed_vertices(ModelVectorPtr models);
 
 // helper function to print model
-void print(shared_ptr<ThreeDModel> model);
+void print(ThreeDModelPtr model);
 // helper function to print model vertices
-void print_vertices(shared_ptr<ThreeDModel> model);
+void print_vertices(ThreeDModelPtr model);
 
 #endif

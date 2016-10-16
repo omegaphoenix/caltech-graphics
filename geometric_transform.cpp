@@ -12,10 +12,12 @@
 #include "Eigen/Dense"
 
 using namespace std;
+using VertexPtr = shared_ptr<Vertex>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 
-shared_ptr<Eigen::MatrixXd> inverse_transform(vector<string> lines) {
-  shared_ptr<Eigen::MatrixXd> prod = multiply_matrices(lines);
-  shared_ptr<Eigen::MatrixXd> res = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr inverse_transform(vector<string> lines) {
+  MatrixPtr prod = multiply_matrices(lines);
+  MatrixPtr res = MatrixPtr(new Eigen::MatrixXd(4, 4));
   *res =  prod->inverse();
 }
 
@@ -31,8 +33,8 @@ vector<string> parse_file_to_line_vector(char *file_name) {
   return lines;
 }
 
-shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> lines) {
-  shared_ptr<Eigen::MatrixXd> prod = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr multiply_matrices(vector<string> lines) {
+  MatrixPtr prod = MatrixPtr(new Eigen::MatrixXd(4, 4));
   prod->setIdentity(4, 4);
 
   for(vector<string>::iterator line_it = lines.begin(); line_it != lines.end(); ++line_it) {
@@ -42,12 +44,12 @@ shared_ptr<Eigen::MatrixXd> multiply_matrices(vector<string> lines) {
   return prod;
 }
 
-void multiply_into_matrix(string line, shared_ptr<Eigen::MatrixXd> mat) {
-  shared_ptr<Eigen::MatrixXd> new_mat = parse_transform_line(line);
+void multiply_into_matrix(string line, MatrixPtr mat) {
+  MatrixPtr new_mat = parse_transform_line(line);
   *mat = *new_mat * *mat;
 }
 
-shared_ptr<Eigen::MatrixXd> parse_transform_line(string line) {
+MatrixPtr parse_transform_line(string line) {
   if (is_translation_line(line)) {
     return parse_translation_line(line);
 
@@ -71,7 +73,7 @@ bool is_scaling_line(string line) {
   return line.at(0) == 's';
 }
 
-shared_ptr<Eigen::MatrixXd> parse_scaling_line(string line) {
+MatrixPtr parse_scaling_line(string line) {
   istringstream line_stream(line);
   char s;
   double s_x, s_y, s_z;
@@ -82,7 +84,7 @@ shared_ptr<Eigen::MatrixXd> parse_scaling_line(string line) {
   return create_scaling_mat(s_x, s_y, s_z);
 }
 
-shared_ptr<Eigen::MatrixXd> parse_translation_line(string line) {
+MatrixPtr parse_translation_line(string line) {
   istringstream line_stream(line);
   char t;
   double t_x, t_y, t_z;
@@ -93,7 +95,7 @@ shared_ptr<Eigen::MatrixXd> parse_translation_line(string line) {
   return create_translation_mat(t_x, t_y, t_z);
 }
 
-shared_ptr<Eigen::MatrixXd> parse_rotation_line(string line) {
+MatrixPtr parse_rotation_line(string line) {
   istringstream line_stream(line);
   char r;
   double r_x, r_y, r_z, angle_in_rad;
@@ -104,8 +106,8 @@ shared_ptr<Eigen::MatrixXd> parse_rotation_line(string line) {
   return create_rotation_mat(r_x, r_y, r_z, angle_in_rad);
 }
 
-shared_ptr<Eigen::MatrixXd> create_translation_mat(double t_x, double t_y, double t_z) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_translation_mat(double t_x, double t_y, double t_z) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
 
   *mat << 1, 0, 0, t_x, // row1
           0, 1, 0, t_y, // row2
@@ -115,8 +117,8 @@ shared_ptr<Eigen::MatrixXd> create_translation_mat(double t_x, double t_y, doubl
   return mat;
 }
 
-shared_ptr<Eigen::MatrixXd> create_scaling_mat(double s_x, double s_y, double s_z) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_scaling_mat(double s_x, double s_y, double s_z) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
 
   *mat << s_x, 0, 0, 0, // row1
           0, s_y, 0, 0, // row2
@@ -126,8 +128,8 @@ shared_ptr<Eigen::MatrixXd> create_scaling_mat(double s_x, double s_y, double s_
   return mat;
 }
 
-shared_ptr<Eigen::MatrixXd> create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
   *mat = Eigen::MatrixXd::Identity(4, 4);
 
   if (r_z) {
@@ -146,8 +148,8 @@ shared_ptr<Eigen::MatrixXd> create_rotation_mat(double r_x, double r_y, double r
   return mat;
 }
 
-shared_ptr<Eigen::MatrixXd> create_rx_mat(double angle_in_rad) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_rx_mat(double angle_in_rad) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
 
   *mat << 1, 0, 0, 0, // row1
           0, cos(angle_in_rad), -sin(angle_in_rad), 0, // row2
@@ -157,8 +159,8 @@ shared_ptr<Eigen::MatrixXd> create_rx_mat(double angle_in_rad) {
   return mat;
 }
 
-shared_ptr<Eigen::MatrixXd> create_ry_mat(double angle_in_rad) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_ry_mat(double angle_in_rad) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
 
   *mat << cos(angle_in_rad), 0, sin(angle_in_rad), 0, // row1
           0, 1, 0, 0, // row2
@@ -168,8 +170,8 @@ shared_ptr<Eigen::MatrixXd> create_ry_mat(double angle_in_rad) {
   return mat;
 }
 
-shared_ptr<Eigen::MatrixXd> create_rz_mat(double angle_in_rad) {
-  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+MatrixPtr create_rz_mat(double angle_in_rad) {
+  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
 
   *mat << cos(angle_in_rad), -sin(angle_in_rad), 0, 0, // row1
           sin(angle_in_rad), cos(angle_in_rad), 0, 0, // row2
@@ -179,8 +181,8 @@ shared_ptr<Eigen::MatrixXd> create_rz_mat(double angle_in_rad) {
   return mat;
 }
 
-shared_ptr<Vertex> transform_vertex(shared_ptr<Eigen::MatrixXd> trans_mat, shared_ptr<Vertex> vertex) {
-  shared_ptr<Eigen::MatrixXd> vertex_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 1));
+VertexPtr transform_vertex(MatrixPtr trans_mat, VertexPtr vertex) {
+  MatrixPtr vertex_mat = MatrixPtr(new Eigen::MatrixXd(4, 1));
   *vertex_mat << vertex->x, // row1
                  vertex->y, // row2
                  vertex->z, // row3
@@ -192,13 +194,13 @@ shared_ptr<Vertex> transform_vertex(shared_ptr<Eigen::MatrixXd> trans_mat, share
   double new_y = transformed(1) / transformed(3);
   double new_z = transformed(2) / transformed(3);
 
-  return shared_ptr<Vertex>(new Vertex(new_x, new_y, new_z));
+  return VertexPtr(new Vertex(new_x, new_y, new_z));
 }
 
-shared_ptr<Vertex> scale_vertex(double factor, shared_ptr<Vertex> vertex) {
+VertexPtr scale_vertex(double factor, VertexPtr vertex) {
   double new_x = vertex->x * factor;
   double new_y = vertex->y * factor;
   double new_z = vertex->z * factor;
 
-  return shared_ptr<Vertex>(new Vertex(new_x, new_y, new_z));
+  return VertexPtr(new Vertex(new_x, new_y, new_z));
 }

@@ -13,14 +13,17 @@
 
 using namespace std;
 
+using VertexPtr = shared_ptr<Vertex>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+
 // Represents the camera position, orientation, and perspective
 struct Camera {
-  shared_ptr<Vertex> pos, orient;
+  VertexPtr pos, orient;
   double orient_angle;
 
   double near, far, left, right, top, bottom;
 
-  shared_ptr<Eigen::MatrixXd> cam_transform_mat, perspective_proj_mat;
+  MatrixPtr cam_transform_mat, perspective_proj_mat;
 
   // Parse lines for setting up camera transforms
   Camera(vector<string> lines) {
@@ -33,9 +36,8 @@ struct Camera {
   }
 
   // Returns Cartesian normalized device coordinates (NDC)
-  shared_ptr<Vertex> cam_transform(shared_ptr<Vertex> v) {
-    shared_ptr<Vertex> transformed =
-      transform_vertex(cam_transform_mat, v);
+  VertexPtr cam_transform(VertexPtr v) {
+    VertexPtr transformed = transform_vertex(cam_transform_mat, v);
 
     transformed = transform_vertex(perspective_proj_mat, transformed);
     return transformed;
@@ -51,7 +53,7 @@ struct Camera {
       throw "Wrong number of arguments to camera position line";
     }
 
-    pos = shared_ptr<Vertex>(new Vertex(x, y, z));
+    pos = VertexPtr(new Vertex(x, y, z));
   }
 
   // Parse position orientation rotation line
@@ -64,7 +66,7 @@ struct Camera {
       throw "Wrong number of arguments to camera orientation line";
     }
 
-    orient = shared_ptr<Vertex>(new Vertex(x, y, z));
+    orient = VertexPtr(new Vertex(x, y, z));
   }
 
   // Get all arguments for perspective projection transform
@@ -103,10 +105,12 @@ struct Camera {
 
   // Calculate position transform matrix from translation and rotation.
   void calc_position_mat() {
-    shared_ptr<Eigen::MatrixXd> cam_translate_mat = create_translation_mat(pos->x, pos->y, pos->z);
-    shared_ptr<Eigen::MatrixXd> cam_rotate_mat = create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
+    MatrixPtr cam_translate_mat =
+      create_translation_mat(pos->x, pos->y, pos->z);
+    MatrixPtr cam_rotate_mat =
+      create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
 
-    cam_transform_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+    cam_transform_mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
     *cam_transform_mat = (*cam_translate_mat * *cam_rotate_mat).inverse();
   }
 
@@ -119,7 +123,7 @@ struct Camera {
     double p_33 = -(far + near)/(far - near);
     double p_34 = -2*far*near/(far - near);
 
-    perspective_proj_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+    perspective_proj_mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
     *perspective_proj_mat <<
         p_11, 0, p_13, 0, // row1
         0, p_22, p_23, 0, // row2

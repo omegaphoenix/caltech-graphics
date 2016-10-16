@@ -11,6 +11,8 @@
 
 using namespace std;
 
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+
 int main (int argc, char **argv) {
   if (argc != 4) {
     cerr << "usage: " << argv[0]
@@ -19,7 +21,7 @@ int main (int argc, char **argv) {
   }
 
   // Store original objects
-  shared_ptr<vector<shared_ptr<ThreeDModel>>> models = store_obj_transform_file(argv[1]);
+  shared_ptr<vector<ThreeDModelPtr>> models = store_obj_transform_file(argv[1]);
 
   // Create copies, transform, and print
   print_ppm(atoi(argv[2]), atoi(argv[3]), models);

@@ -8,6 +8,9 @@
 
 using namespace std;
 
+using VertexPtr = shared_ptr<Vertex>;
+using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
 struct Pixel {
   bool colored;
 };
@@ -24,12 +27,12 @@ void purple();
 void gold();
 
 // Converts vertices from cartesian NDC to screen location
-shared_ptr<vector<shared_ptr<Vertex>>> NDCs_to_pixels(int xres, int yres, shared_ptr<vector<shared_ptr<Vertex>>> ndc_vertices);
+VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices);
 // Converts one vertex from cartesian NDC to screen location
-shared_ptr<Vertex> NDC_to_pixel(int xres, int yres, shared_ptr<Vertex> ndc_vertex);
+VertexPtr NDC_to_pixel(int xres, int yres, VertexPtr ndc_vertex);
 
 // Draw line between vertices on Pixel array
-void rasterize(shared_ptr<Vertex> v1, shared_ptr<Vertex> v2, Pixel **grid, int xres, int yres);
+void rasterize(VertexPtr v1, VertexPtr v2, Pixel **grid, int xres, int yres);
 // Swap points if vector pointing left (octants 3-6)
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 /*
@@ -42,7 +45,7 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
  */
 
 // Return true if vertex is within (0, xres) and (0, yres)
-bool is_on_screen(shared_ptr<Vertex> v, int xres, int yres);
+bool is_on_screen(VertexPtr v, int xres, int yres);
 
 void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Use algorithm from lecture notes without floating point operations

@@ -16,7 +16,12 @@
 
 using namespace std;
 
-shared_ptr<Camera> get_camera_data(ifstream& obj_transform_file) {
+using CameraPtr = shared_ptr<Camera>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+using VertexPtr = shared_ptr<Vertex>;
+
+CameraPtr get_camera_data(ifstream& obj_transform_file) {
   vector<string> lines;
   string line;
 
@@ -26,23 +31,25 @@ shared_ptr<Camera> get_camera_data(ifstream& obj_transform_file) {
     getline(obj_transform_file, line);
   }
 
-  shared_ptr<Camera> cam = shared_ptr<Camera>(new Camera(lines));
+  CameraPtr cam = CameraPtr(new Camera(lines));
   return cam;
 }
 
-shared_ptr<vector<shared_ptr<ThreeDModel>>> store_file_objects(int argc, char **argv) {
-  shared_ptr<vector<shared_ptr<ThreeDModel>>> models = shared_ptr<vector<shared_ptr<ThreeDModel>>>(new vector<shared_ptr<ThreeDModel> >());
+shared_ptr<vector<ThreeDModelPtr>> store_file_objects(int argc, char **argv) {
+  shared_ptr<vector<ThreeDModelPtr>> models =
+    shared_ptr<vector<ThreeDModelPtr>>(new vector<ThreeDModelPtr>());
   for (int i = 1; i < argc; i++) {
-    shared_ptr<ThreeDModel> model = parse_file_to_model(string(argv[i]));
+    ThreeDModelPtr model = parse_file_to_model(string(argv[i]));
     models->push_back(model);
   }
   return models;
 }
 
-shared_ptr<ThreeDModel> parse_file_to_model(string file_name) {
+ThreeDModelPtr parse_file_to_model(string file_name) {
   ifstream obj_file(file_name);
 
-  shared_ptr<ThreeDModel> model = shared_ptr<ThreeDModel>(new ThreeDModel(file_name));
+  ThreeDModelPtr model =
+    ThreeDModelPtr(new ThreeDModel(file_name));
   string line;
   while (getline(obj_file, line)) {
     store_line(line, model);
@@ -51,7 +58,7 @@ shared_ptr<ThreeDModel> parse_file_to_model(string file_name) {
   return model;
 }
 
-void store_line(string line, shared_ptr<ThreeDModel> model) {
+void store_line(string line, ThreeDModelPtr model) {
   if (is_vertex_line(line)) {
     store_vertex_line(line, model);
 
@@ -68,7 +75,7 @@ bool is_face_line(string line) {
   return line.at(0) == 'f';
 }
 
-void store_vertex_line(string line, shared_ptr<ThreeDModel> model) {
+void store_vertex_line(string line, ThreeDModelPtr model) {
   istringstream line_stream(line);
   char v;
   double x, y, z;
@@ -76,10 +83,10 @@ void store_vertex_line(string line, shared_ptr<ThreeDModel> model) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  model->vertices->push_back(shared_ptr<Vertex>(new Vertex(x, y, z)));
+  model->vertices->push_back(VertexPtr(new Vertex(x, y, z)));
 }
 
-void store_face_line(string line, shared_ptr<ThreeDModel> model) {
+void store_face_line(string line, ThreeDModelPtr model) {
   istringstream line_stream(line);
   char f;
   int v1, v2, v3;
@@ -90,8 +97,9 @@ void store_face_line(string line, shared_ptr<ThreeDModel> model) {
   model->faces->push_back(shared_ptr<Face>(new Face (v1, v2, v3)));
 }
 
-shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> get_objects(ifstream& obj_transform_file, shared_ptr<Camera> cam) {
-  shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models = shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>>(new map<string, shared_ptr<ThreeDModelTransform> >());
+shared_ptr<map<string, ThreeDModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam) {
+  shared_ptr<map<string, ThreeDModelTransformPtr>> models =
+    shared_ptr<map<string, ThreeDModelTransformPtr>>(new map<string, ThreeDModelTransformPtr >());
 
   string line;
   getline(obj_transform_file, line);
@@ -104,7 +112,7 @@ shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> get_objects(ifstream& 
   return models;
 }
 
-void create_obj(string line, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models, shared_ptr<Camera> cam) {
+void create_obj(string line, shared_ptr<map<string, ThreeDModelTransformPtr>> models, CameraPtr cam) {
   istringstream line_stream(line);
 
   string obj_name, obj_filename;
@@ -114,13 +122,14 @@ void create_obj(string line, shared_ptr<map<string, shared_ptr<ThreeDModelTransf
 
   obj_filename = "data/" + obj_filename;
 
-  shared_ptr<ThreeDModelTransform> new_model = create_model(obj_name, obj_filename);
+  ThreeDModelTransformPtr new_model = create_model(obj_name, obj_filename);
   new_model->cam = cam;
   (*models)[obj_name] = new_model;
 }
 
-shared_ptr<ThreeDModelTransform> create_model(string obj_name, string obj_filename) {
-  shared_ptr<ThreeDModelTransform> transform_model = shared_ptr<ThreeDModelTransform>(new ThreeDModelTransform());
+ThreeDModelTransformPtr create_model(string obj_name, string obj_filename) {
+  ThreeDModelTransformPtr transform_model =
+    ThreeDModelTransformPtr(new ThreeDModelTransform());
 
   transform_model->model = parse_file_to_model(obj_filename.c_str());
   transform_model->copy_num = 0;

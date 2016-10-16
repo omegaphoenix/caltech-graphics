@@ -13,33 +13,37 @@
 
 using namespace std;
 
+using CameraPtr = shared_ptr<Camera>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+
 // parse camera lines
-shared_ptr<Camera> get_camera_data(ifstream& obj_transform_file);
+CameraPtr get_camera_data(ifstream& obj_transform_file);
 
 // parses multiple .obj files
-shared_ptr<vector<shared_ptr<ThreeDModel>>> store_file_objects(int argc, char **argv);
+shared_ptr<vector<ThreeDModelPtr>> store_file_objects(int argc, char **argv);
 
 // helper function - parse one file
-shared_ptr<ThreeDModel> parse_file_to_model(string file_name);
+ThreeDModelPtr parse_file_to_model(string file_name);
 
 // store one line of file as face or vertex
-void store_line(string line, shared_ptr<ThreeDModel> model);
+void store_line(string line, ThreeDModelPtr model);
 
 // return true if vertex line
 bool is_vertex_line(string line);
 // return true if face line
 bool is_face_line(string line);
 // helper functions for storing lines of file
-void store_vertex_line(string line, shared_ptr<ThreeDModel> model);
-void store_face_line(string line, shared_ptr<ThreeDModel> model);
+void store_vertex_line(string line, ThreeDModelPtr model);
+void store_face_line(string line, ThreeDModelPtr model);
 
 // parsing helper functions
 // helper function to get objects from .obj files
-shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> get_objects(ifstream& obj_transform_file, shared_ptr<Camera> cam);
+shared_ptr<map<string, ThreeDModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam);
 // helper function to create objects from line and place it in the map
-void create_obj(string line, shared_ptr<map<string, shared_ptr<ThreeDModelTransform>>> models, shared_ptr<Camera> cam);
+void create_obj(string line, shared_ptr<map<string, ThreeDModelTransformPtr>> models, CameraPtr cam);
 // helper function to create new object
-shared_ptr<ThreeDModelTransform> create_model(string obj_name, string obj_filename);
+ThreeDModelTransformPtr create_model(string obj_name, string obj_filename);
 // convert from string to char *
 char *convert_to_char_arr(string input_string);
 

@@ -13,10 +13,14 @@
 
 using namespace std;
 
+using FacePtr = shared_ptr<Face>;
+using VertexPtr = shared_ptr<Vertex>;
+using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
 struct ThreeDModel {
   string name;
-  shared_ptr<vector<shared_ptr<Vertex>>> vertices;
-  shared_ptr<vector<shared_ptr<Face>>> faces;
+  VerVectorPtr vertices;
+  shared_ptr<vector<FacePtr>> faces;
 
   // empty constructor
   ThreeDModel() {
@@ -26,7 +30,8 @@ struct ThreeDModel {
   ThreeDModel(string raw_file_name) {
     name = get_name(raw_file_name);
     setup_vertices();
-    faces = shared_ptr<vector<shared_ptr<Face>>>(new vector<shared_ptr<Face> >());
+    faces =
+      shared_ptr<vector<FacePtr>>(new vector<FacePtr>());
   }
 
   // helper function for constructor to get object name
@@ -37,23 +42,23 @@ struct ThreeDModel {
 
   // helper function for constructor to get vertices
   void setup_vertices() {
-    vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
+    vertices = VerVectorPtr(new vector<VertexPtr>());
     // Index 0 is NULL because vertices are 1-indexed
     vertices->push_back(NULL);
   }
 
   // Draw model on the grid representing the screen
   void draw_model(int xres, int yres, Pixel **grid) {
-    for (vector<shared_ptr<Face> >::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
+    for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
       draw_face(xres, yres, *face_it, grid);
     }
   }
 
   // Draw a single face on the grid representing the screen
-  void draw_face(int xres, int yres, shared_ptr<Face> face, Pixel **grid) {
-    shared_ptr<Vertex> v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
-    shared_ptr<Vertex> v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
-    shared_ptr<Vertex> v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
+  void draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
+    VertexPtr v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
+    VertexPtr v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
+    VertexPtr v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
 
     rasterize(v1, v2, grid, xres, yres);
     rasterize(v2, v3, grid, xres, yres);
