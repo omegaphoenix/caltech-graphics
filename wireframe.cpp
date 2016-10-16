@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory> // shared_ptr
 #include <stdlib.h> // atoi
 #include <string>
 #include <vector>
@@ -19,6 +20,7 @@ int main (int argc, char **argv) {
 
   // Store original objects
   shared_ptr<vector<shared_ptr<ThreeDModel>>> models = store_obj_transform_file(argv[1]);
+
   // Create copies, transform, and print
   print_ppm(atoi(argv[2]), atoi(argv[3]), models);
 

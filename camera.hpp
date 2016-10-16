@@ -15,9 +15,7 @@ using namespace std;
 
 // Represents the camera position, orientation, and perspective
 struct Camera {
-  shared_ptr<Vertex> pos;
-
-  shared_ptr<Vertex> orient;
+  shared_ptr<Vertex> pos, orient;
   double orient_angle;
 
   double near, far, left, right, top, bottom;
@@ -36,8 +34,9 @@ struct Camera {
 
   // Returns Cartesian normalized device coordinates (NDC)
   shared_ptr<Vertex> cam_transform(shared_ptr<Vertex> v) {
-    shared_ptr<Eigen::MatrixXd> inv_cam_transform_mat = make_shared<Eigen::MatrixXd>(cam_transform_mat->inverse());
-    shared_ptr<Vertex> transformed = transform_vertex(inv_cam_transform_mat, v);
+    shared_ptr<Vertex> transformed =
+      transform_vertex(cam_transform_mat, v);
+
     transformed = transform_vertex(perspective_proj_mat, transformed);
     return transformed;
   }
@@ -108,7 +107,7 @@ struct Camera {
     shared_ptr<Eigen::MatrixXd> cam_rotate_mat = create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
 
     cam_transform_mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
-    *cam_transform_mat = *cam_translate_mat * *cam_rotate_mat;
+    *cam_transform_mat = (*cam_translate_mat * *cam_rotate_mat).inverse();
   }
 
   // Calculate perspective transform matrix

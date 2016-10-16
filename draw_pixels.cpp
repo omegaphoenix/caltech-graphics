@@ -3,7 +3,7 @@
 #include <cstddef>
 #include <iostream>
 #include <math.h> // round
-#include <memory>
+#include <memory> // shared_ptr
 #include <vector>
 
 #include "vertex.hpp"
@@ -42,7 +42,8 @@ void gold() {
 }
 
 shared_ptr<vector<shared_ptr<Vertex>>> NDCs_to_pixels(int xres, int yres, shared_ptr<vector<shared_ptr<Vertex>>> ndc_vertices) {
-    shared_ptr<vector<shared_ptr<Vertex>>> vertices = shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
+    shared_ptr<vector<shared_ptr<Vertex>>> vertices =
+      shared_ptr<vector<shared_ptr<Vertex>>>(new vector<shared_ptr<Vertex> >());
     vertices->push_back(NULL);
 
     vector<shared_ptr<Vertex> >::iterator vertex_it = ++(ndc_vertices->begin());
@@ -78,24 +79,21 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
 
   double m = (y_1 - y_0)*1.0/(x_1 - x_0)*1.0;
 
-  if ((x_0 < x_1) && (0 <= m) && (m <= 1)) {
-    first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((y_0 < y_1) && (1 < m)) {
-    second_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((y_0 < y_1) && (-1 > m)) {
-    third_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((x_0 > x_1) && (-1 <= m) && (m <= 0)) {
-    fourth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((x_0 > x_1) && (0 < m) && (1 >= m)) {
-    fifth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((y_0 > y_1) && (1 < m)) {
-    sixth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((y_0 > y_1) && (-1 > m)) {
-    seventh_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-  } else if ((x_0 < x_1) && (0 > m) && (m >= -1)) {
-    eighth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+  if (x_0 > x_1) {
+    // Swap points so we only have to consider 4 octants
+    bresenham(x_1, y_1, x_0, y_0, grid);
   } else {
-    throw "No octant found";
+    if ((0 <= m) && (m <= 1)) {
+      first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+    } else if (1 < m) {
+      second_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+    } else if (-1 > m) {
+      seventh_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+    } else if ((0 > m) && (m >= -1)) {
+      eighth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
+    } else {
+      throw "No octant found";
+    }
   }
 }
 
@@ -139,22 +137,6 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
       x = x + 1;
     }
   }
-}
-
-void third_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  seventh_octant_bresenham(x_1, y_1, x_0, y_0, grid);
-}
-
-void fourth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  eighth_octant_bresenham(x_1, y_1, x_0, y_0, grid);
-}
-
-void fifth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  first_octant_bresenham(x_1, y_1, x_0, y_0, grid);
-}
-
-void sixth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  second_octant_bresenham(x_1, y_1, x_0, y_0, grid);
 }
 
 void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {

@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_INVERSE_PROD_HPP
 #define TRANSFORM_INVERSE_PROD_HPP
 
-#include <memory>
+#include <memory> // shared_ptr
 #include <vector>
 
 #include "vertex.hpp"

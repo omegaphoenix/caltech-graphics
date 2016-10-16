@@ -3,7 +3,7 @@
 
 #include <cstddef>
 #include <iostream>
-#include <memory>
+#include <memory> // shared_ptr
 #include <string>
 #include <vector>
 
@@ -23,17 +23,16 @@ struct ThreeDModel {
   }
 
   // constructor using file
-  ThreeDModel(char *raw_file_name) {
+  ThreeDModel(string raw_file_name) {
     name = get_name(raw_file_name);
     setup_vertices();
     faces = shared_ptr<vector<shared_ptr<Face>>>(new vector<shared_ptr<Face> >());
   }
 
   // helper function for constructor to get object name
-  string get_name(char *raw_file_name) {
+  string get_name(string raw_file_name) {
     // Remove .obj from name
-    string str_name(raw_file_name);
-    return str_name.substr(0, str_name.size() - 4);
+    return raw_file_name.substr(0, raw_file_name.size() - 4);
   }
 
   // helper function for constructor to get vertices

@@ -1,7 +1,7 @@
 #ifndef DRAW_PIXELS_HPP
 #define DRAW_PIXELS_HPP
 
-#include <memory>
+#include <memory> // shared_ptr
 #include <vector>
 
 #include "vertex.hpp"
@@ -30,13 +30,22 @@ shared_ptr<Vertex> NDC_to_pixel(int xres, int yres, shared_ptr<Vertex> ndc_verte
 
 // Draw line between vertices on Pixel array
 void rasterize(shared_ptr<Vertex> v1, shared_ptr<Vertex> v2, Pixel **grid, int xres, int yres);
+// Swap points if vector pointing left (octants 3-6)
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
+/*
+ *  Octants:
+ *    \3|2/
+ *    4\|/1
+ *   ---+---
+ *    5/|\8
+ *    /6|7\
+ */
 
 // Return true if vertex is within (0, xres) and (0, yres)
 bool is_on_screen(shared_ptr<Vertex> v, int xres, int yres);
 
 void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
-// Use algorithm from lecture notes
+// Use algorithm from lecture notes without floating point operations
 void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Switch x and y from first_octant_bresenham()
 void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
@@ -44,12 +53,6 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Slight modification to first octant algorithm for negative slope
 void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
-
-// These call the *_octant_bresenham function of the opposite octant by swapping the two vertices
-void third_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
-void fourth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
-void fifth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
-void sixth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 
 // Indicate that this pixel should be colored
 void fill(int x, int y, Pixel **grid);

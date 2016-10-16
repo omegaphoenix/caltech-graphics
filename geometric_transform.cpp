@@ -3,7 +3,7 @@
 #include <fstream> // basic file operations
 #include <iostream>
 #include <math.h>
-#include <memory>
+#include <memory> // shared_ptr
 #include <string>
 #include <vector>
 

@@ -1,7 +1,7 @@
 #ifndef THREE_D_MODEL_TRANSFORM_HPP
 #define THREE_D_MODEL_TRANSFORM_HPP
 
-#include <memory>
+#include <memory> // shared_ptr
 #include <sstream>
 #include <string>
 #include <vector>
