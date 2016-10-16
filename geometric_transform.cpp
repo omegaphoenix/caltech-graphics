@@ -127,18 +127,23 @@ shared_ptr<Eigen::MatrixXd> create_scaling_mat(double s_x, double s_y, double s_
 }
 
 shared_ptr<Eigen::MatrixXd> create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad) {
-  if (r_x == 1) {
-    return create_rx_mat(angle_in_rad);
+  shared_ptr<Eigen::MatrixXd> mat = shared_ptr<Eigen::MatrixXd>(new Eigen::MatrixXd(4, 4));
+  *mat = Eigen::MatrixXd::Identity(4, 4);
 
-  } else if (r_y == 1) {
-    return create_ry_mat(angle_in_rad);
+  if (r_z) {
+    *mat = *mat * (r_z * *create_rz_mat(angle_in_rad));
 
-  } else if (r_z == 1) {
-    return create_rz_mat(angle_in_rad);
+  } else if (r_y) {
+    *mat = *mat * (r_y * *create_ry_mat(angle_in_rad));
+
+  } else if (r_x) {
+    *mat = *mat * (r_x * *create_rx_mat(angle_in_rad));
 
   } else {
     throw "No axis specified for rotation";
   }
+
+  return mat;
 }
 
 shared_ptr<Eigen::MatrixXd> create_rx_mat(double angle_in_rad) {
