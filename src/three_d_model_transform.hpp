@@ -20,57 +20,22 @@ using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
-struct ThreeDModelTransform {
-  ThreeDModelPtr model;
-  int copy_num;
-  string name;
+class ThreeDModelTransform {
+  public:
+    ThreeDModelPtr model;
+    int copy_num;
+    string name;
 
-  CameraPtr cam;
+    CameraPtr cam;
 
-  // Perform geometric transforms on vertices
-  VerVectorPtr transform_model_vertices(MatrixPtr trans_mat) {
-    VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
-    // Index 0 is NULL because vertices are 1-indexed
-    vertices->push_back(NULL);
+    // Perform geometric transforms on vertices
+    VerVectorPtr transform_model_vertices(MatrixPtr trans_mat);
 
-    vector<VertexPtr>::iterator vertex_it = ++(model->vertices->begin());
-    while (vertex_it != model->vertices->end()) {
-      vertices->push_back(transform_vertex(trans_mat, *vertex_it));
-      ++vertex_it;
-    }
+    // Perform geometric and camera perspective transforms on vertices
+    VerVectorPtr cartesian_NDC(MatrixPtr trans_mat);
 
-    return vertices;
-  }
-
-  // Perform geometric and camera perspective transforms on vertices
-  VerVectorPtr cartesian_NDC(MatrixPtr trans_mat) {
-    VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
-    VerVectorPtr geo_transform_vertices = transform_model_vertices(trans_mat);
-
-    // Index 0 is NULL because vertices are 1-indexed
-    vertices->push_back(NULL);
-
-    vector<VertexPtr>::iterator vertex_it = ++(geo_transform_vertices->begin());
-    while (vertex_it != geo_transform_vertices->end()) {
-      vertices->push_back(cam->cam_transform(*vertex_it));
-      ++vertex_it;
-    }
-
-    return vertices;
-  }
-
-  // Apply all transformations to the vertices to cartesian NDC
-  ThreeDModelPtr apply_trans_mat(MatrixPtr trans_mat) {
-    ThreeDModelPtr copy = ThreeDModelPtr(new ThreeDModel());
-    copy->vertices = cartesian_NDC(trans_mat);
-    copy->faces = model->faces;
-
-    std::stringstream copy_name;
-    copy_name << name << "_copy" << (++copy_num);
-    copy->name = copy_name.str();
-
-    return copy;
-  }
+    // Apply all transformations to the vertices to cartesian NDC
+    ThreeDModelPtr apply_trans_mat(MatrixPtr trans_mat);
 };
 
 #endif

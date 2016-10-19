@@ -12,6 +12,7 @@
 #include "Eigen/Dense"
 
 using namespace std;
+
 using VertexPtr = shared_ptr<Vertex>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 

@@ -113,7 +113,7 @@ void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int x = x_0; x < x_1; x++) {
+  for (int x = x_0; x <= x_1; x++) {
     fill(x, y, grid);
     if (((epsilon + dy) << 1) < dx) {
       epsilon = epsilon + dy;
@@ -130,7 +130,7 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int y = y_0; y < y_1; y++) {
+  for (int y = y_0; y <= y_1; y++) {
     fill(x, y, grid);
     if (((epsilon + dx) << 1) < dy) {
       epsilon = epsilon + dx;
@@ -147,7 +147,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) 
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int y = y_0; y > y_1; y--) {
+  for (int y = y_0; y >= y_1; y--) {
     fill(x, y, grid);
     if (((epsilon + dx) << 1) < -1*dy) {
       epsilon = epsilon + dx;
@@ -164,7 +164,7 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int x = x_0; x < x_1; x++) {
+  for (int x = x_0; x <= x_1; x++) {
     fill(x, y, grid);
     if (((epsilon + dy) << 1) > -1*dx) {
       epsilon = epsilon + dy;
