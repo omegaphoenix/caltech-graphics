@@ -130,53 +130,28 @@ MatrixPtr create_scaling_mat(double s_x, double s_y, double s_z) {
 }
 
 MatrixPtr create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad) {
-  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
-  *mat = Eigen::MatrixXd::Identity(4, 4);
+  double u_x = r_x/(r_x + r_y + r_z);
+  double u_y = r_y/(r_x + r_y + r_z);
+  double u_z = r_z/(r_x + r_y + r_z);
 
-  if (r_z) {
-    *mat = *mat * (r_z * *create_rz_mat(angle_in_rad));
-
-  } else if (r_y) {
-    *mat = *mat * (r_y * *create_ry_mat(angle_in_rad));
-
-  } else if (r_x) {
-    *mat = *mat * (r_x * *create_rx_mat(angle_in_rad));
-
-  } else {
-    throw "No axis specified for rotation";
-  }
-
-  return mat;
+  return create_rot_mat_helper(u_x, u_y, u_z, angle_in_rad);
 }
 
-MatrixPtr create_rx_mat(double angle_in_rad) {
+MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle_in_rad) {
   MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
+  double m11 = u_x*u_x + (1 - u_x*u_x)*cos(angle_in_rad);
+  double m12 = u_x*u_y*(1 - cos(angle_in_rad)) - u_z*sin(angle_in_rad);
+  double m13 = u_x*u_z*(1 - cos(angle_in_rad)) + u_y*sin(angle_in_rad);
+  double m21 = u_y*u_x*(1 - cos(angle_in_rad)) + u_z*sin(angle_in_rad);
+  double m22 = u_y*u_y + (1 - u_y*u_y)*cos(angle_in_rad);
+  double m23 = u_y*u_z*(1 - cos(angle_in_rad)) - u_x*sin(angle_in_rad);
+  double m31 = u_z*u_x*(1 - cos(angle_in_rad)) - u_y*sin(angle_in_rad);
+  double m32 = u_z*u_y*(1 - cos(angle_in_rad)) + u_x*sin(angle_in_rad);
+  double m33 = u_z*u_z + (1 - u_z*u_z)*cos(angle_in_rad);
 
-  *mat << 1, 0, 0, 0, // row1
-          0, cos(angle_in_rad), -sin(angle_in_rad), 0, // row2
-          0, sin(angle_in_rad), cos(angle_in_rad), 0, // row3
-          0, 0, 0, 1;   // row4
-
-  return mat;
-}
-
-MatrixPtr create_ry_mat(double angle_in_rad) {
-  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
-
-  *mat << cos(angle_in_rad), 0, sin(angle_in_rad), 0, // row1
-          0, 1, 0, 0, // row2
-          -sin(angle_in_rad), 0, cos(angle_in_rad), 0, // row3
-          0, 0, 0, 1;   // row4
-
-  return mat;
-}
-
-MatrixPtr create_rz_mat(double angle_in_rad) {
-  MatrixPtr mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
-
-  *mat << cos(angle_in_rad), -sin(angle_in_rad), 0, 0, // row1
-          sin(angle_in_rad), cos(angle_in_rad), 0, 0, // row2
-          0, 0, 1, 0, // row3
+  *mat << m11, m12, m13, 0, // row1
+          m21, m22, m23, 0, // row2
+          m31, m32, m33, 0, // row3
           0, 0, 0, 1;   // row4
 
   return mat;

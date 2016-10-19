@@ -42,6 +42,18 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
  *   ---+---
  *    5/|\8
  *    /6|7\
+ *
+ * To generalize Bresenham to the 2nd octant, we switched x and y in the
+ * algorithm since each y row has exactly one pixel.
+ * To generalize to the 8th octant, we went right and down instead of
+ * right and up.  x still increased as normal but when epsilon decreased
+ * to less than -dx/2, we decremented y.
+ * To generalize to the 7th octant, we switched x and y in the algorithm
+ * used for the 8th octant.
+ * For the 3rd octant, we reversed the vertices to get the 7th octant.
+ * For the 4th octant, we reversed the vertices to get the 8th octant.
+ * For the 5th octant, we reversed the vertices to get the 1st octant.
+ * For the 6th octant, we reversed the vertices to get the 2nd octant.
  */
 
 // Return true if vertex is within (0, xres) and (0, yres)

@@ -74,24 +74,20 @@ bool is_on_screen(VertexPtr v, int xres, int yres) {
 }
 
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  if (x_0 == x_1) {
-    vertical_line(x_0, y_0, x_1, y_1, grid);
-    return;
-  }
-
-  double m = (y_1 - y_0)*1.0/(x_1 - x_0)*1.0;
+  int dx = x_1 - x_0;
+  int dy = y_1 - y_0;
 
   if (x_0 > x_1) {
     // Swap points so we only have to consider 4 octants
     bresenham(x_1, y_1, x_0, y_0, grid);
   } else {
-    if ((0 <= m) && (m <= 1)) {
+    if (dy >= 0 && dx >= dy) {
       first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if (1 < m) {
+    } else if (dy >= dx) {
       second_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if (-1 > m) {
+    } else if (-1*dy >= dx) {
       seventh_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if ((0 > m) && (m >= -1)) {
+    } else if (dy < 0 && dx >= -1*dy) {
       eighth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
     } else {
       throw "No octant found";

@@ -25,7 +25,7 @@ all: $(TARGET)
 	./$(TARGET) data/scene_cube2.txt 800 800 > data/scene_cube2.new
 	diff data/scene_cube2.new data/scene_cube2.expected
 	./$(TARGET) data/scene_face1.txt 800 800 > data/scene_face1.new
-	diff data/scene_face1.new data/scene_face1.expected
+	 diff data/scene_face1.new data/scene_face1.expected
 	./$(TARGET) data/scene_face2.txt 800 800 > data/scene_face2.new
 	diff data/scene_face2.new data/scene_face2.expected
 	./$(TARGET) data/scene_fourCubes.txt 800 800 > data/scene_fourCubes.new
