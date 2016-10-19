@@ -1,1 +1,7 @@
-data/*
+# Ignore the data, build, and lib directories
+data
+build
+lib/*
+
+# Ignore executables
+bin/*
