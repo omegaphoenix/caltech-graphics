@@ -4,22 +4,33 @@
 # This is a template Makefile for the assignment. Edit it however you find
 # convenient.
 ###############################################################################
-CC = g++
-FLAGS = -g -std=c++11
+CC := g++
+CFLAGS := -g -std=c++11
+
+SRCDIR := src
+BUILDDIR := build
+TARGET = bin/shaded
 
 # The following line is a relative directory reference that assumes the Eigen
 # folder--which your program will depend on--is located one directory above the
 # directory that contains this Makefile.
-INCLUDE = -I../
-SOURCES = *.hpp *.cpp
+SRCEXT := cpp
+SOURCES:=$(wildcard $(SRCDIR)/*.$(SRCEXT))
+OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
+INC := -I include
 
-EXENAME = wireframe
+all: $(TARGET)
 
-all: $(SOURCES)
-	$(CC) $(FLAGS) -o $(EXENAME) $(INCLUDE) $(SOURCES)
+$(TARGET): $(OBJECTS)
+	@echo " Linking..."
+	@echo " $(CC) $^ -o $(TARGET)"; $(CC) $^ -o $(TARGET)
+
+$(BUILDDIR)/%.o: $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(BUILDDIR)
+	@echo " $(CC) $(CFLAGS) $(INC) -c -o $@ $<"; $(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	rm -f *.o $(EXENAME)
+	@echo " Cleaning..."; 
+	@echo " $(RM) -r $(BUILDDIR) $(TARGET)"; $(RM) -r $(BUILDDIR) $(TARGET)
 
 .PHONY: all clean
-
