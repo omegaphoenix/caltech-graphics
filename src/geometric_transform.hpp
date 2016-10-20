@@ -4,14 +4,16 @@
 #include <memory> // shared_ptr
 #include <vector>
 
+#include "normal.hpp"
 #include "vertex.hpp"
 
 #include "Eigen/Dense"
 
 using namespace std;
 
-using VertexPtr = shared_ptr<Vertex>;
+using NormalPtr = shared_ptr<Normal>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+using VertexPtr = shared_ptr<Vertex>;
 
 // Return the inverse transform from the vector of lines transformed to matrices
 MatrixPtr inverse_transform(vector<string> lines);
@@ -21,6 +23,8 @@ vector<string> parse_file_to_line_vector(char *file_name);
 
 // Multiply multiple vectors after transforming to matrices
 MatrixPtr multiply_matrices(vector<string> lines);
+// Multiply multiple normals after transforming to matrices
+MatrixPtr create_norm_trans_mat(vector<string> lines);
 
 // Return line_mat times mat
 void multiply_into_matrix(string line, MatrixPtr mat);
@@ -46,6 +50,7 @@ MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle
 
 // Multiply vertex coordinates by matrix or scalar
 VertexPtr transform_vertex(MatrixPtr trans_mat, VertexPtr vertex);
+NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr vertex);
 VertexPtr scale_vertex(double factor, VertexPtr vertex);
 
 #endif

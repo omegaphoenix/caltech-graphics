@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "camera.hpp"
+#include "normal.hpp"
 #include "three_d_model.hpp"
 #include "vertex.hpp"
 
@@ -17,7 +18,9 @@ using CameraPtr = shared_ptr<Camera>;
 using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
+using NormalPtr = shared_ptr<Normal>;
 
+using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Perform geometric transforms on vertices
@@ -33,6 +36,21 @@ VerVectorPtr ThreeDModelTransform :: transform_model_vertices(MatrixPtr trans_ma
   }
 
   return vertices;
+}
+
+// Perform geometric transforms on normals
+NormVectorPtr ThreeDModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
+  NormVectorPtr normals = NormVectorPtr(new vector<NormalPtr>());
+  // Index 0 is NULL because normals are 1-indexed
+  normals->push_back(NULL);
+
+  vector<NormalPtr>::iterator normal_it = ++(model->normals->begin());
+  while (normal_it != model->normals->end()) {
+    normals->push_back(transform_normal(trans_mat, *normal_it));
+    ++normal_it;
+  }
+
+  return normals;
 }
 
 // Perform geometric and camera perspective transforms on vertices
@@ -53,9 +71,10 @@ VerVectorPtr ThreeDModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
 }
 
 // Apply all transformations to the vertices to cartesian NDC
-ThreeDModelPtr ThreeDModelTransform :: apply_trans_mat(MatrixPtr trans_mat) {
+ThreeDModelPtr ThreeDModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
   ThreeDModelPtr copy = ThreeDModelPtr(new ThreeDModel());
   copy->vertices = transform_model_vertices(trans_mat);
+  copy->normals = transform_model_normals(norm_trans_mat);
   // copy->vertices = cartesian_NDC(trans_mat);
   copy->faces = model->faces;
 

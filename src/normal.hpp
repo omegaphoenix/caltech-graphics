@@ -12,9 +12,9 @@ struct Normal {
   }
 
   void set_normal(double x0, double y0, double z0) {
-    x = x0;
-    y = y0;
-    z = z0;
+    x = x0/(x0 + y0 + z0);
+    y = y0/(x0 + y0 + z0);
+    z = z0/(x0 + y0 + z0);
   }
 };
 

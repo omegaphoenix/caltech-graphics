@@ -68,7 +68,9 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
   lines.erase(lines.begin(), lines.begin() + 4);
 
   MatrixPtr trans_mat = multiply_matrices(lines);
-  return (*models)[name]->apply_trans_mat(trans_mat);
+  MatrixPtr norm_trans_mat = create_norm_trans_mat(lines);
+
+  return (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
 }
 
 void print_ppm(int xres, int yres, ModelVectorPtr models) {
