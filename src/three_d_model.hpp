@@ -14,6 +14,8 @@
 
 using namespace std;
 
+struct Pixel;
+
 using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<struct Material>;
 using NormalPtr = shared_ptr<Normal>;
@@ -22,6 +24,7 @@ using VertexPtr = shared_ptr<Vertex>;
 
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
+
 
 struct Reflectance {
   double red, green, blue;
@@ -34,7 +37,8 @@ struct Reflectance {
 };
 
 struct Material {
-  ReflectPtr ambient, diffuse, specular, shininess;
+  ReflectPtr ambient, diffuse, specular;
+  double shininess;
   // constructor
   Material() {
   }

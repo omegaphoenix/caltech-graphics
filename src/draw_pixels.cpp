@@ -1,5 +1,6 @@
 #include "draw_pixels.hpp"
 
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <math.h> // round
@@ -15,17 +16,71 @@
 #include "Eigen/Dense"
 
 using namespace std;
+
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using NormalPtr = shared_ptr<Normal>;
+using ReflectPtr = shared_ptr<struct Reflectance>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
-Pixel lighting(VertexPtr v, NormalPtr n, Material material, LightVecPtr lights, CameraPtr cam) {
-  // Vector3d diffuse_sum(0,0,0);
+Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
+  Eigen::MatrixXd c_d, c_a, c_s, diffuse_sum, specular_sum, e_dir;
+  Eigen::MatrixXd l_p, l_c, l_dir, l_diffuse, l_specular;
+
+  c_d = ref_to_mat(material->diffuse);
+  c_a = ref_to_mat(material->ambient);
+  c_s = ref_to_mat(material->specular);
+  double p = material->shininess;
+
+  diffuse_sum << 0, 0, 0;
+  specular_sum << 0, 0, 0;
+  e_dir = normalize_vec(ver_to_mat(cam->pos) - ver_to_mat(v));
+
+  for (vector<LightPtr>::iterator light_it = lights->begin(); light_it != lights->end(); ++light_it) {
+    l_p << (*light_it)->x, (*light_it)->y, (*light_it)->z;
+    l_c << (*light_it)->r, (*light_it)->g, (*light_it)->b;
+    l_dir = normalize_vec(l_p - ver_to_mat(v));
+
+    l_diffuse = l_c * (max(0, (int)(norm_to_mat(n) * l_dir.transpose()).sum()));
+    diffuse_sum = diffuse_sum + l_diffuse;
+
+    l_specular = l_c * pow((max(0, (int)(round((norm_to_mat(n) * normalize_vec(e_dir + l_dir)).sum())))),p);
+    specular_sum = specular_sum + l_specular;
+  }
+
+  int red = min(1, (int)(round(c_a(0,0) + diffuse_sum(0,0)*c_d(0,0) + specular_sum(0,0)*c_s(0,0))));
+  int green = min(1, (int)(round(c_a(0,1) + diffuse_sum(0,1)*c_d(0,1) + specular_sum(0,1)*c_s(0,1))));
+  int blue = min(1, (int)(round(c_a(0,2) + diffuse_sum(0,2)*c_d(0,2) + specular_sum(0,2)*c_s(0,2))));
+
+  return Pixel(red, green, blue);
+}
+
+Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {
+  Eigen::MatrixXd res;
+  res << reflect->red, reflect->green, reflect->blue;
+  return res;
+}
+
+Eigen::MatrixXd ver_to_mat(VertexPtr ver) {
+  Eigen::MatrixXd res;
+  res << ver->x, ver->y, ver->z;
+  return res;
+}
+
+Eigen::MatrixXd norm_to_mat(NormalPtr norm) {
+  Eigen::MatrixXd res;
+  res << norm->x, norm->y, norm->z;
+  return res;
+}
+
+Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat) {
+  double sum = mat.sum();
+  return mat/sum;
 }
 
 void output_ppm(int xres, int yres, Pixel **grid) {

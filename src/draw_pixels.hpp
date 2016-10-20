@@ -4,19 +4,45 @@
 #include <memory> // shared_ptr
 #include <vector>
 
+#include "camera.hpp"
+#include "light.hpp"
+#include "normal.hpp"
+#include "three_d_model.hpp"
 #include "vertex.hpp"
 
 using namespace std;
 
+struct Material;
+
+using CameraPtr = shared_ptr<Camera>;
+using LightPtr = shared_ptr<Light>;
+using MaterialPtr = shared_ptr<Material>;
+using NormalPtr = shared_ptr<Normal>;
+using ReflectPtr = shared_ptr<struct Reflectance>;
 using VertexPtr = shared_ptr<Vertex>;
+
+using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 struct Pixel {
-  int red;
-  int green;
-  int blue;
+  int red, green, blue;
+  Pixel() {
+    red = 1;
+    green = 1;
+    blue = 1;
+  }
+  Pixel(int r, int g, int b) {
+    red = r;
+    green = g;
+    blue = b;
+  }
 };
 
+Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam);
+Eigen::MatrixXd ref_to_mat(ReflectPtr reflect);
+Eigen::MatrixXd ver_to_mat(VertexPtr ver);
+Eigen::MatrixXd norm_to_mat(NormalPtr norm);
+Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat);
 // Print .ppm file
 void output_ppm(int xres, int yres, Pixel **grid);
 // Helper method for start of .ppm output

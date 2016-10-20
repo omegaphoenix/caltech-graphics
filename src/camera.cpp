@@ -12,8 +12,8 @@
 
 using namespace std;
 
-using VertexPtr = shared_ptr<Vertex>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+using VertexPtr = shared_ptr<Vertex>;
 
 // Parse lines for setting up camera transforms
 Camera :: Camera(vector<string> lines) {

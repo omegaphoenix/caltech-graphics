@@ -157,12 +157,12 @@ void store_shininess_prop(vector<string> lines, ThreeDModelPtr model) {
 
   istringstream line_stream(line);
   string _;
-  double r, g, b;
-  if (!(line_stream >> _ >> r >> g >> b)) {
+  double shiny;
+  if (!(line_stream >> _ >> shiny)) {
     throw "Wrong number of arguments to shininess line";
   }
 
-  model->material->shininess = ReflectPtr(new Reflectance(r, g, b));
+  model->material->shininess = shiny;
 }
 
 void store_obj_line(string line, ThreeDModelPtr model) {
