@@ -15,6 +15,7 @@
 using namespace std;
 
 using FacePtr = shared_ptr<Face>;
+using MaterialPtr = shared_ptr<struct Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 using VertexPtr = shared_ptr<Vertex>;
@@ -32,13 +33,21 @@ struct Reflectance {
   }
 };
 
+struct Material {
+  ReflectPtr ambient, diffuse, specular, shininess;
+  // constructor
+  Material() {
+  }
+};
+
 class ThreeDModel {
   public:
     string name;
     VerVectorPtr vertices;
     NormVectorPtr normals;
     shared_ptr<vector<FacePtr>> faces;
-    ReflectPtr ambient, diffuse, specular, shininess;
+    MaterialPtr material;
+    // ReflectPtr ambient, diffuse, specular, shininess;
 
     // empty constructor
     ThreeDModel();

@@ -120,7 +120,7 @@ void store_ambient_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to diffuse line";
   }
 
-  model->ambient = ReflectPtr(new Reflectance(r, g, b));
+  model->material->ambient = ReflectPtr(new Reflectance(r, g, b));
 }
 
 void store_diffuse_prop(vector<string> lines, ThreeDModelPtr model) {
@@ -134,7 +134,7 @@ void store_diffuse_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to diffuse line";
   }
 
-  model->diffuse = ReflectPtr(new Reflectance(r, g, b));
+  model->material->diffuse = ReflectPtr(new Reflectance(r, g, b));
 }
 
 void store_specular_prop(vector<string> lines, ThreeDModelPtr model) {
@@ -148,7 +148,7 @@ void store_specular_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to specular line";
   }
 
-  model->specular = ReflectPtr(new Reflectance(r, g, b));
+  model->material->specular = ReflectPtr(new Reflectance(r, g, b));
 }
 
 void store_shininess_prop(vector<string> lines, ThreeDModelPtr model) {
@@ -162,7 +162,7 @@ void store_shininess_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to shininess line";
   }
 
-  model->shininess = ReflectPtr(new Reflectance(r, g, b));
+  model->material->shininess = ReflectPtr(new Reflectance(r, g, b));
 }
 
 void store_obj_line(string line, ThreeDModelPtr model) {
@@ -244,7 +244,7 @@ void store_face_line(string line, ThreeDModelPtr model) {
 
 shared_ptr<map<string, ThreeDModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam) {
   shared_ptr<map<string, ThreeDModelTransformPtr>> models =
-    shared_ptr<map<string, ThreeDModelTransformPtr>>(new map<string, ThreeDModelTransformPtr >());
+    shared_ptr<map<string, ThreeDModelTransformPtr>>(new map<string, ThreeDModelTransformPtr>());
 
   string line;
   getline(obj_transform_file, line); // Ignore first line

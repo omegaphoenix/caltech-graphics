@@ -6,11 +6,27 @@
 #include <memory> // shared_ptr
 #include <vector>
 
+#include "camera.hpp"
+#include "light.hpp"
+#include "normal.hpp"
+#include "three_d_model.hpp"
 #include "vertex.hpp"
 
+#include "Eigen/Dense"
+
 using namespace std;
+using CameraPtr = shared_ptr<Camera>;
+using LightPtr = shared_ptr<Light>;
+using MaterialPtr = shared_ptr<Material>;
+using NormalPtr = shared_ptr<Normal>;
 using VertexPtr = shared_ptr<Vertex>;
+
+using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
+Pixel lighting(VertexPtr v, NormalPtr n, Material material, LightVecPtr lights, CameraPtr cam) {
+  // Vector3d diffuse_sum(0,0,0);
+}
 
 void output_ppm(int xres, int yres, Pixel **grid) {
   start_ppm_output(xres, yres);
@@ -28,11 +44,6 @@ void start_ppm_output(int xres, int yres) {
 }
 
 void output_pixel(int row, int col, Pixel **grid) {
-  if (grid[col][row].colored) {
-    purple();
-  } else {
-    gold();
-  }
 }
 
 void purple() {
@@ -172,5 +183,4 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
 }
 
 void fill(int x, int y, Pixel **grid) {
-  grid[y][x].colored = true;
 }

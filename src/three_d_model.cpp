@@ -14,17 +14,21 @@
 using namespace std;
 
 using FacePtr = shared_ptr<Face>;
+using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using VertexPtr = shared_ptr<Vertex>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
+using FaceVectorPtr = shared_ptr<vector<FacePtr>>;
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
+using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // empty constructor
 ThreeDModel :: ThreeDModel() {
   name = "";
   setup_vertices();
   setup_normals();
-  faces = shared_ptr<vector<FacePtr>>(new vector<FacePtr>());
+  faces = FaceVectorPtr(new vector<FacePtr>());
+  material = MaterialPtr(new Material());
 }
 
 // constructor using file
@@ -32,7 +36,8 @@ ThreeDModel :: ThreeDModel(string raw_file_name) {
   name = get_name(raw_file_name);
   setup_vertices();
   setup_normals();
-  faces = shared_ptr<vector<FacePtr>>(new vector<FacePtr>());
+  faces = FaceVectorPtr(new vector<FacePtr>());
+  material = MaterialPtr(new Material());
 }
 
 // helper function for constructor to get object name
