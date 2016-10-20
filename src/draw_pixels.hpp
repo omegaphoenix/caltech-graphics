@@ -12,7 +12,9 @@ using VertexPtr = shared_ptr<Vertex>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 struct Pixel {
-  bool colored;
+  int red;
+  int green;
+  int blue;
 };
 
 // Print .ppm file

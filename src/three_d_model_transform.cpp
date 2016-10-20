@@ -17,6 +17,7 @@ using CameraPtr = shared_ptr<Camera>;
 using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
+
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Perform geometric transforms on vertices
@@ -54,7 +55,8 @@ VerVectorPtr ThreeDModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
 // Apply all transformations to the vertices to cartesian NDC
 ThreeDModelPtr ThreeDModelTransform :: apply_trans_mat(MatrixPtr trans_mat) {
   ThreeDModelPtr copy = ThreeDModelPtr(new ThreeDModel());
-  copy->vertices = cartesian_NDC(trans_mat);
+  copy->vertices = transform_model_vertices(trans_mat);
+  // copy->vertices = cartesian_NDC(trans_mat);
   copy->faces = model->faces;
 
   std::stringstream copy_name;

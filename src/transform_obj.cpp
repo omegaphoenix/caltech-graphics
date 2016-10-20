@@ -15,20 +15,23 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
+using LightPtr = shared_ptr<Light>;
 using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
+
+using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 ModelVectorPtr store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   CameraPtr cam = get_camera_data(obj_transform_file);
+  get_light_data(obj_transform_file);
   shared_ptr<map<string, ThreeDModelTransformPtr>> models =
     get_objects(obj_transform_file, cam);
-  ModelVectorPtr transformed =
-    perform_transforms(obj_transform_file, models);
+  ModelVectorPtr transformed = perform_transforms(obj_transform_file, models);
 
   return transformed;
 }
@@ -61,6 +64,9 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
   string name = lines.front();
   lines.erase(lines.begin());
 
+  store_material_properties(lines, (*models)[name]->model);
+  lines.erase(lines.begin(), lines.begin() + 4);
+
   MatrixPtr trans_mat = multiply_matrices(lines);
   return (*models)[name]->apply_trans_mat(trans_mat);
 }
@@ -85,7 +91,9 @@ Pixel **new_grid(int xres, int yres) {
       if (x == 0) {
         grid[y] = new Pixel[xres];
       }
-      grid[y][x].colored = false;
+      grid[y][x].red = 0;
+      grid[y][x].blue = 0;
+      grid[y][x].green = 0;
     }
   }
   return grid;

@@ -8,22 +8,30 @@
 
 #include "draw_pixels.hpp"
 #include "face.hpp"
+#include "normal.hpp"
 #include "vertex.hpp"
 
 using namespace std;
 
 using FacePtr = shared_ptr<Face>;
+using NormalPtr = shared_ptr<Normal>;
 using VertexPtr = shared_ptr<Vertex>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 // empty constructor
 ThreeDModel :: ThreeDModel() {
+  name = "";
+  setup_vertices();
+  setup_normals();
+  faces = shared_ptr<vector<FacePtr>>(new vector<FacePtr>());
 }
 
 // constructor using file
 ThreeDModel :: ThreeDModel(string raw_file_name) {
   name = get_name(raw_file_name);
   setup_vertices();
+  setup_normals();
   faces = shared_ptr<vector<FacePtr>>(new vector<FacePtr>());
 }
 
@@ -38,6 +46,13 @@ void ThreeDModel :: setup_vertices() {
   vertices = VerVectorPtr(new vector<VertexPtr>());
   // Index 0 is NULL because vertices are 1-indexed
   vertices->push_back(NULL);
+}
+
+// helper function for constructor to get normals
+void ThreeDModel :: setup_normals() {
+  normals = NormVectorPtr(new vector<NormalPtr>());
+  // Index 0 is NULL because vertices are 1-indexed
+  normals->push_back(NULL);
 }
 
 // Draw model on the grid representing the screen
