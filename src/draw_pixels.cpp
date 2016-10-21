@@ -44,6 +44,8 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   for (vector<LightPtr>::iterator light_it = lights->begin(); light_it != lights->end(); ++light_it) {
     l_p << (*light_it)->x, (*light_it)->y, (*light_it)->z;
     l_c << (*light_it)->r, (*light_it)->g, (*light_it)->b;
+    double dist = vec_distance(l_p - ver_to_mat(v));
+    l_c = l_c / (1 + (*light_it)->attenuation * dist*dist);
     l_dir = normalize_vec(l_p - ver_to_mat(v));
 
     l_diffuse = l_c * (max(0, (int)(norm_to_mat(n) * l_dir.transpose()).sum()));
@@ -58,6 +60,13 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   int blue = min(1, (int)(round(c_a(0,2) + diffuse_sum(0,2)*c_d(0,2) + specular_sum(0,2)*c_s(0,2))));
 
   return Pixel(red, green, blue);
+}
+
+double vec_distance(Eigen::MatrixXd diff_mat) {
+  double x = diff_mat(0,0);
+  double y = diff_mat(0,1);
+  double z = diff_mat(0,2);
+  return sqrt(x*x + y*y + z*z);
 }
 
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {

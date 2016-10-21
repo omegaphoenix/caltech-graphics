@@ -39,6 +39,7 @@ struct Pixel {
 };
 
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam);
+double vec_distance(Eigen::MatrixXd diff_mat);
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect);
 Eigen::MatrixXd ver_to_mat(VertexPtr ver);
 Eigen::MatrixXd norm_to_mat(NormalPtr norm);
