@@ -12,6 +12,8 @@
 #include "three_d_model.hpp"
 #include "three_d_model_transform.hpp"
 
+const int MAX_INTENSITY = 255;
+
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;

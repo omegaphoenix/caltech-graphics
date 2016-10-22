@@ -116,9 +116,9 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
         if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver) && (NDC->z <= buffer[y][x])) {
           buffer[y][x] = NDC->z;
 
-          int red = round(alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_b.col.red);
-          int green = round(alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_b.col.green);
-          int blue = round(alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_b.col.blue);
+          double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_b.col.red;
+          double green = alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_b.col.green;
+          double blue = alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_b.col.blue;
 
           Pixel color = Pixel(red, green, blue);
           fill(x, y, grid, color);
@@ -216,9 +216,9 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
     specular_sum = specular_sum + l_specular;
   }
 
-  int red = min(1, (int)(round(c_a(0,0) + diffuse_sum(0,0)*c_d(0,0) + specular_sum(0,0)*c_s(0,0))));
-  int green = min(1, (int)(round(c_a(0,1) + diffuse_sum(0,1)*c_d(0,1) + specular_sum(0,1)*c_s(0,1))));
-  int blue = min(1, (int)(round(c_a(0,2) + diffuse_sum(0,2)*c_d(0,2) + specular_sum(0,2)*c_s(0,2))));
+  double red = min(1.0, c_a(0,0) + diffuse_sum(0,0)*c_d(0,0) + specular_sum(0,0)*c_s(0,0));
+  double green = min(1.0, c_a(0,1) + diffuse_sum(0,1)*c_d(0,1) + specular_sum(0,1)*c_s(0,1));
+  double blue = min(1.0, c_a(0,2) + diffuse_sum(0,2)*c_d(0,2) + specular_sum(0,2)*c_s(0,2));
 
   return Pixel(red, green, blue);
 }
@@ -270,7 +270,10 @@ void start_ppm_output(int xres, int yres) {
 
 void output_pixel(int row, int col, Pixel **grid) {
   Pixel pix = grid[row][col];
-  cout << pix.red << " " << pix.green << " " << pix.blue << endl;
+  int red = (int)(round(pix.red * MAX_INTENSITY));
+  int green = (int)(round(pix.green * MAX_INTENSITY));
+  int blue = (int)(round(pix.blue * MAX_INTENSITY));
+  cout << red << " " << green << " " << blue << endl;
 }
 
 void purple() {
@@ -340,7 +343,7 @@ void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int x = x_0; x <= x_1; x++) {
-    // fill(x, y, grid);
+    fill(x, y, grid);
     if (((epsilon + dy) << 1) < dx) {
       epsilon = epsilon + dy;
     } else {
@@ -357,7 +360,7 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int y = y_0; y <= y_1; y++) {
-    // fill(x, y, grid);
+    fill(x, y, grid);
     if (((epsilon + dx) << 1) < dy) {
       epsilon = epsilon + dx;
     } else {
@@ -374,7 +377,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) 
   int dy = y_1 - y_0;
 
   for (int y = y_0; y >= y_1; y--) {
-    // fill(x, y, grid);
+    fill(x, y, grid);
     if (((epsilon + dx) << 1) < -1*dy) {
       epsilon = epsilon + dx;
     } else {
@@ -391,7 +394,7 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int x = x_0; x <= x_1; x++) {
-    // fill(x, y, grid);
+    fill(x, y, grid);
     if (((epsilon + dy) << 1) > -1*dx) {
       epsilon = epsilon + dy;
     } else {
@@ -399,6 +402,10 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
       y = y - 1;
     }
   }
+}
+
+void fill(int x, int y, Pixel **grid) {
+  grid[y][x] = Pixel(MAX_INTENSITY, MAX_INTENSITY, MAX_INTENSITY);
 }
 
 void fill(int x, int y, Pixel **grid, Pixel color) {

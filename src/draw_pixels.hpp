@@ -28,7 +28,8 @@ using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 struct Pixel {
-  int red, green, blue;
+  // [0, 1]
+  double red, green, blue;
 
   Pixel() {
     red = 1;
@@ -36,7 +37,7 @@ struct Pixel {
     blue = 1;
   }
 
-  Pixel(int r, int g, int b) {
+  Pixel(double r, double g, double b) {
     red = r;
     green = g;
     blue = b;
@@ -138,6 +139,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 
 // Indicate that this pixel should be colored
+void fill(int x, int y, Pixel **grid);
 void fill(int x, int y, Pixel **grid, Pixel color);
 
 #endif
