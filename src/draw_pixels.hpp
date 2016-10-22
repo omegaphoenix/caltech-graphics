@@ -54,6 +54,11 @@ struct ColorVertex {
   }
 };
 
+void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c);
+VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c);
 void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 double **new_buffer(int xres, int yres);
 void delete_buffer(int xres, int yres, double **buffer);

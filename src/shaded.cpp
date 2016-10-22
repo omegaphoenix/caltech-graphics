@@ -44,7 +44,7 @@ int main (int argc, char **argv) {
   if (mode == 0) {
     gouraud(models, lights, cam, xres, yres, grid);
   } else if (mode == 1) {
-    // phong(models, lights, cam, grid);
+    phong(models, lights, cam, xres, yres, grid);
   } else {
     cerr << "mode must be 0 or 1" << endl;
   }

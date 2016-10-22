@@ -22,8 +22,21 @@ INC := -I include
 all: $(TARGET)
 	./$(TARGET) data/scene_cube1.txt 800 800 0
 
-display: $(TARGET)
+cube1: $(TARGET)
 	./$(TARGET) data/scene_cube1.txt 800 800 0 | display
+	./$(TARGET) data/scene_cube1.txt 800 800 1 | display
+
+cube2: $(TARGET)
+	./$(TARGET) data/scene_cube2.txt 800 800 0 | display
+	./$(TARGET) data/scene_cube2.txt 800 800 1 | display
+
+bunny1: $(TARGET)
+	./$(TARGET) data/scene_bunny1.txt 800 800 0 | display
+	./$(TARGET) data/scene_bunny1.txt 800 800 1 | display
+
+bunny2: $(TARGET)
+	./$(TARGET) data/scene_bunny2.txt 800 800 0 | display
+	./$(TARGET) data/scene_bunny2.txt 800 800 1 | display
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."

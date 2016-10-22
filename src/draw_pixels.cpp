@@ -35,6 +35,16 @@ using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
+void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+  double **buffer = new_buffer(xres, yres);
+  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+    phong_faces(*model_it, lights, cam, xres, yres, grid, buffer);
+  }
+
+  delete_buffer(xres, yres, buffer);
+  delete[] buffer;
+}
+
 void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres);
   for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
@@ -60,6 +70,76 @@ void delete_buffer(int xres, int yres, double **buffer) {
   for (int y = 0; y < yres; y++) {
     delete[] buffer[y];
   }
+}
+
+void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VerVectorPtr vertices = model->vertices;
+  NormVectorPtr normals = model->normals;
+  for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
+    FacePtr face = *face_it;
+
+    VertexPtr v_a = (*vertices)[face->vertex1];
+    VertexPtr v_b = (*vertices)[face->vertex2];
+    VertexPtr v_c = (*vertices)[face->vertex3];
+
+    NormalPtr n_a = (*normals)[face->normal1];
+    NormalPtr n_b = (*normals)[face->normal2];
+    NormalPtr n_c = (*normals)[face->normal3];
+
+    phong_shading(v_a, v_b, v_c, n_a, n_b, n_c, model->material, lights, cam, xres, yres, grid, buffer);
+  }
+}
+
+void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VertexPtr NDC_a = cam->cam_transform(v_a);
+  VertexPtr NDC_b = cam->cam_transform(v_b);
+  VertexPtr NDC_c = cam->cam_transform(v_c);
+
+  VertexPtr screen_a = NDC_to_pixel(xres, yres, NDC_a);
+  VertexPtr screen_b = NDC_to_pixel(xres, yres, NDC_b);
+  VertexPtr screen_c = NDC_to_pixel(xres, yres, NDC_c);
+
+  int min_x = min_x_coord(screen_a, screen_b, screen_c);
+  int max_x = max_x_coord(screen_a, screen_b, screen_c);
+  int min_y = min_y_coord(screen_a, screen_b, screen_c);
+  int max_y = max_y_coord(screen_a, screen_b, screen_c);
+
+  for (int x = min_x; x <= max_x; x++) {
+    for (int y = min_y; y <= max_y; y++) {
+      double alpha = compute_alpha(screen_a, screen_b, screen_c, x, y);
+      double beta = compute_beta(screen_a, screen_b, screen_c, x, y);
+      double gamma = compute_gamma(screen_a, screen_b, screen_c, x, y);
+
+      if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
+        VertexPtr NDC = create_NDC_point(alpha, beta, gamma, NDC_a, NDC_b, NDC_c);
+        if (inside_NDC_cube(alpha, beta, gamma, NDC_a, NDC_b, NDC_c) && (NDC->z <= buffer[y][x])) {
+          buffer[y][x] = NDC->z;
+
+          VertexPtr v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
+          NormalPtr n = combine_normals(alpha, beta, gamma, n_a, n_b, n_c);
+
+          Pixel color = lighting(v, n, material, lights, cam);
+          fill(x, y, grid, color);
+        }
+      }
+    }
+  }
+}
+
+NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c) {
+  double x = alpha*n_a->x + beta*n_b->x + gamma*n_c->x;
+  double y = alpha*n_a->y + beta*n_b->y + gamma*n_c->y;
+  double z = alpha*n_a->z + beta*n_b->z + gamma*n_c->z;
+
+  return NormalPtr(new Normal(x, y, z));
+}
+
+VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c) {
+  double x = alpha*v_a->x + beta*v_b->x + gamma*v_c->x;
+  double y = alpha*v_a->y + beta*v_b->y + gamma*v_c->y;
+  double z = alpha*v_a->z + beta*v_b->z + gamma*v_c->z;
+
+  return VertexPtr(new Vertex(x, y, z));
 }
 
 void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
@@ -116,9 +196,9 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
         if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver) && (NDC->z <= buffer[y][x])) {
           buffer[y][x] = NDC->z;
 
-          double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_b.col.red;
-          double green = alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_b.col.green;
-          double blue = alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_b.col.blue;
+          double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_c.col.red;
+          double green = alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_c.col.green;
+          double blue = alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_c.col.blue;
 
           Pixel color = Pixel(red, green, blue);
           fill(x, y, grid, color);
@@ -130,9 +210,9 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 
 Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v) {
   Eigen::MatrixXd res(1, 3);
-  double i_val = vec_u(0,1)*vec_v(0,2) - vec_u(0,2)*vec_v(0,1);
-  double j_val = vec_u(0,2)*vec_v(0,0) - vec_u(0,0)*vec_v(0,2);
-  double k_val = vec_u(0,0)*vec_v(0,1) - vec_u(0,0)*vec_v(0,1);
+  double i_val = vec_u(0, 1)*vec_v(0, 2) - vec_u(0, 2)*vec_v(0, 1);
+  double j_val = vec_u(0, 2)*vec_v(0, 0) - vec_u(0, 0)*vec_v(0, 2);
+  double k_val = vec_u(0, 0)*vec_v(0, 1) - vec_u(0, 1)*vec_v(0, 0);
   res << i_val, j_val, k_val;
   return res;
 }
@@ -200,6 +280,7 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
 
   diffuse_sum << 0, 0, 0;
   specular_sum << 0, 0, 0;
+
   e_dir = normalize_vec(ver_to_mat(cam->pos) - ver_to_mat(v));
 
   for (vector<LightPtr>::iterator light_it = lights->begin(); light_it != lights->end(); ++light_it) {
@@ -209,24 +290,24 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
     l_c = l_c / (1 + (*light_it)->attenuation * dist*dist);
     l_dir = normalize_vec(l_p - ver_to_mat(v));
 
-    l_diffuse = l_c * (max(0, (int)(norm_to_mat(n) * l_dir.transpose()).sum()));
+    l_diffuse = l_c * (max(0.0, (norm_to_mat(n) * l_dir.transpose()).sum()));
     diffuse_sum = diffuse_sum + l_diffuse;
 
-    l_specular = l_c * pow((max(0, (int)(round((norm_to_mat(n).sum() * normalize_vec(e_dir + l_dir)).sum())))),p);
+    l_specular = l_c * pow((max(0.0, (norm_to_mat(n) * (normalize_vec(e_dir + l_dir)).transpose()).sum())),p);
     specular_sum = specular_sum + l_specular;
   }
 
-  double red = min(1.0, c_a(0,0) + diffuse_sum(0,0)*c_d(0,0) + specular_sum(0,0)*c_s(0,0));
-  double green = min(1.0, c_a(0,1) + diffuse_sum(0,1)*c_d(0,1) + specular_sum(0,1)*c_s(0,1));
-  double blue = min(1.0, c_a(0,2) + diffuse_sum(0,2)*c_d(0,2) + specular_sum(0,2)*c_s(0,2));
+  double red = min(1.0, c_a(0, 0) + diffuse_sum(0, 0)*c_d(0, 0) + specular_sum(0, 0)*c_s(0, 0));
+  double green = min(1.0, c_a(0, 1) + diffuse_sum(0, 1)*c_d(0, 1) + specular_sum(0, 1)*c_s(0, 1));
+  double blue = min(1.0, c_a(0, 2) + diffuse_sum(0, 2)*c_d(0, 2) + specular_sum(0, 2)*c_s(0, 2));
 
   return Pixel(red, green, blue);
 }
 
 double vec_distance(Eigen::MatrixXd diff_mat) {
-  double x = diff_mat(0,0);
-  double y = diff_mat(0,1);
-  double z = diff_mat(0,2);
+  double x = diff_mat(0, 0);
+  double y = diff_mat(0, 1);
+  double z = diff_mat(0, 2);
   return sqrt(x*x + y*y + z*z);
 }
 
@@ -257,7 +338,7 @@ void output_ppm(int xres, int yres, Pixel **grid) {
   start_ppm_output(xres, yres);
   for (int y = 0; y < yres; y++) {
     for (int x = 0; x < xres; x++) {
-      output_pixel(x, y, grid);
+      output_pixel(y, x, grid);
     }
   }
 }
