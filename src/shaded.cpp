@@ -50,7 +50,7 @@ int main (int argc, char **argv) {
   }
 
   // Print
-  // print_ppm(grid, xres, yres);
+  output_ppm(xres, yres, grid);
 
   delete_grid(xres, yres, grid);
   delete[] grid;

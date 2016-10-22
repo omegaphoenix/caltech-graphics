@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <float.h>
 #include <iostream>
 #include <math.h> // round
 #include <memory> // shared_ptr
@@ -47,7 +48,7 @@ double **new_buffer(int xres, int yres) {
   for (int y = 0; y < yres; y++) {
     buffer[y] = new double[xres];
     for (int x = 0; x < xres; x++) {
-      buffer[y][x] = 0;
+      buffer[y][x] = DBL_MAX;
     }
   }
   return buffer;
@@ -266,6 +267,8 @@ void start_ppm_output(int xres, int yres) {
 }
 
 void output_pixel(int row, int col, Pixel **grid) {
+  Pixel pix = grid[row][col];
+  cout << pix.red << " " << pix.green << " " << pix.blue << endl;
 }
 
 void purple() {
