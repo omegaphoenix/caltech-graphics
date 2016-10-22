@@ -77,7 +77,6 @@ ThreeDModelPtr ThreeDModelTransform :: apply_trans_mat(MatrixPtr trans_mat, Matr
   copy->normals = transform_model_normals(norm_trans_mat);
   // copy->vertices = cartesian_NDC(trans_mat);
   copy->faces = model->faces;
-  copy->material = model->material;
 
   std::stringstream copy_name;
   copy_name << name << "_copy" << (++copy_num);

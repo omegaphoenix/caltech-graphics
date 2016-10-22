@@ -33,11 +33,11 @@ void store_light_line(string line, LightVecPtr lights);
 shared_ptr<vector<ThreeDModelPtr>> store_file_objects(int argc, char **argv);
 
 // store material properties of object copy
-void store_material_properties(vector<string> lines, ThreeDModelPtr model);
-void store_ambient_prop(vector<string> lines, ThreeDModelPtr model);
-void store_diffuse_prop(vector<string> lines, ThreeDModelPtr model);
-void store_specular_prop(vector<string> lines, ThreeDModelPtr model);
-void store_shininess_prop(vector<string> lines, ThreeDModelPtr model);
+MaterialPtr store_material_properties(vector<string> lines);
+void store_ambient_prop(vector<string> lines, MaterialPtr material);
+void store_diffuse_prop(vector<string> lines, MaterialPtr material);
+void store_specular_prop(vector<string> lines, MaterialPtr material);
+void store_shininess_prop(vector<string> lines, MaterialPtr material);
 
 // helper function - parse one file
 ThreeDModelPtr parse_file_to_model(string file_name);

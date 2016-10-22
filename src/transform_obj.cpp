@@ -64,13 +64,15 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
   string name = lines.front();
   lines.erase(lines.begin());
 
-  store_material_properties(lines, (*models)[name]->model);
+  MaterialPtr material = store_material_properties(lines);
   lines.erase(lines.begin(), lines.begin() + 4);
 
   MatrixPtr trans_mat = multiply_matrices(lines);
   MatrixPtr norm_trans_mat = create_norm_trans_mat(lines);
 
-  return (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
+  ThreeDModelPtr new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
+  new_copy->material = material;
+  return new_copy;
 }
 
 void print_ppm(int xres, int yres, ModelVectorPtr models) {

@@ -102,14 +102,18 @@ ThreeDModelPtr parse_file_to_model(string file_name) {
   return model;
 }
 
-void store_material_properties(vector<string> lines, ThreeDModelPtr model) {
-  store_ambient_prop(lines, model);
-  store_diffuse_prop(lines, model);
-  store_specular_prop(lines, model);
-  store_shininess_prop(lines, model);
+MaterialPtr store_material_properties(vector<string> lines) {
+  MaterialPtr material = MaterialPtr(new Material());
+
+  store_ambient_prop(lines, material);
+  store_diffuse_prop(lines, material);
+  store_specular_prop(lines, material);
+  store_shininess_prop(lines, material);
+
+  return material;
 }
 
-void store_ambient_prop(vector<string> lines, ThreeDModelPtr model) {
+void store_ambient_prop(vector<string> lines, MaterialPtr material) {
   string line = lines.front();;
   lines.erase(lines.begin());
 
@@ -120,10 +124,10 @@ void store_ambient_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to diffuse line";
   }
 
-  model->material->ambient = ReflectPtr(new Reflectance(r, g, b));
+  material->ambient = ReflectPtr(new Reflectance(r, g, b));
 }
 
-void store_diffuse_prop(vector<string> lines, ThreeDModelPtr model) {
+void store_diffuse_prop(vector<string> lines, MaterialPtr material) {
   string line = lines.front();;
   lines.erase(lines.begin());
 
@@ -134,10 +138,10 @@ void store_diffuse_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to diffuse line";
   }
 
-  model->material->diffuse = ReflectPtr(new Reflectance(r, g, b));
+  material->diffuse = ReflectPtr(new Reflectance(r, g, b));
 }
 
-void store_specular_prop(vector<string> lines, ThreeDModelPtr model) {
+void store_specular_prop(vector<string> lines, MaterialPtr material) {
   string line = lines.front();;
   lines.erase(lines.begin());
 
@@ -148,10 +152,10 @@ void store_specular_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to specular line";
   }
 
-  model->material->specular = ReflectPtr(new Reflectance(r, g, b));
+  material->specular = ReflectPtr(new Reflectance(r, g, b));
 }
 
-void store_shininess_prop(vector<string> lines, ThreeDModelPtr model) {
+void store_shininess_prop(vector<string> lines, MaterialPtr material) {
   string line = lines.front();;
   lines.erase(lines.begin());
 
@@ -162,7 +166,7 @@ void store_shininess_prop(vector<string> lines, ThreeDModelPtr model) {
     throw "Wrong number of arguments to shininess line";
   }
 
-  model->material->shininess = shiny;
+  material->shininess = shiny;
 }
 
 void store_obj_line(string line, ThreeDModelPtr model) {
