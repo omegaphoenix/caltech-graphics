@@ -28,6 +28,107 @@ using VertexPtr = shared_ptr<Vertex>;
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
+void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer) {
+  Eigen::MatrixXd cross = cross_product_vec(ver_to_mat(NDC_c.ver) - ver_to_mat(NDC_b.ver),
+      ver_to_mat(NDC_a.ver) - ver_to_mat(NDC_b.ver)) ;
+
+  if (cross(0, 2) < 0) {
+    return;
+  }
+
+  VertexPtr a = NDC_to_pixel(xres, yres, NDC_a.ver);
+  VertexPtr b = NDC_to_pixel(xres, yres, NDC_b.ver);
+  VertexPtr c = NDC_to_pixel(xres, yres, NDC_c.ver);
+
+  int min_x = min_x_coord(a, b, c);
+  int max_x = max_x_coord(a, b, c);
+  int min_y = min_y_coord(a, b, c);
+  int max_y = min_y_coord(a, b, c);
+
+  for (int x = min_x; x <= max_x; x++) {
+    for (int y = min_y; y <= max_y; y++) {
+      double alpha = compute_alpha(a, b, c, x, y);
+      double beta = compute_beta(a, b, c, x, y);
+      double gamma = compute_gamma(a, b, c, x, y);
+
+      if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
+        VertexPtr NDC = create_NDC_point(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
+        if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver)
+            && !(NDC->z > buffer[y][x])) {
+          buffer[y][x] = NDC->z;
+
+          int red = round(alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_b.col.red);
+          int green = round(alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_b.col.green);
+          int blue = round(alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_b.col.blue);
+
+          Pixel color = Pixel(red, green, blue);
+          fill(x, y, grid, color);
+        }
+      }
+    }
+  }
+}
+
+Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v) {
+  Eigen::MatrixXd res;
+  double i_val = vec_u(0,1)*vec_v(0,2) - vec_u(0,2)*vec_v(0,1);
+  double j_val = vec_u(0,2)*vec_v(0,0) - vec_u(0,0)*vec_v(0,2);
+  double k_val = vec_u(0,0)*vec_v(0,1) - vec_u(0,0)*vec_v(0,1);
+  res << i_val, j_val, k_val;
+}
+
+VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c) {
+  double x = alpha*a->x + beta*b->x + gamma*c->x;
+  double y = alpha*a->y + beta*b->y + gamma*c->y;
+  double z = alpha*a->z + beta*b->z + gamma*c->z;
+  return VertexPtr(new Vertex(x, y, z));
+}
+
+bool inside_NDC_cube(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c) {
+  return in_range(alpha*a->x, -1, 1) && in_range(beta*b->x, -1, 1) && in_range(gamma*c->x, -1, 1)
+    && in_range(alpha*a->y, -1, 1) && in_range(beta*b->y, -1, 1) && in_range(gamma*c->y, -1, 1);
+}
+
+bool valid_alpha_beta_gamma(double alpha, double beta, double gamma) {
+  return in_range(alpha, 0, 1) && in_range(beta, 0, 1) && in_range(gamma, 0, 1);
+}
+
+bool in_range(double val, double low, double high) {
+  return low <= val && high >= val;
+}
+
+double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(b, c, x, y) / f_ij(b, c, a->x, a->y);
+}
+
+double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(a, c, x, y) / f_ij(a, c, b->x, b->y);
+}
+
+double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(a, b, x, y) / f_ij(a, b, c->x, c->y);
+}
+
+int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return (int)min(a->x, min(b->x, c->x));
+}
+
+int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return (int)max(a->x, max(b->x, c->x));
+}
+
+int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return (int)min(a->y, min(b->y, c->y));
+}
+
+int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return (int)max(a->y, max(b->y, c->y));
+}
+
+double f_ij(VertexPtr i, VertexPtr j, double x, double y) {
+  return (i->y - j->y)*x + (j->x - i->x)*y + i->x*j->y - j->x*i->y;
+}
+
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
   Eigen::MatrixXd c_d, c_a, c_s, diffuse_sum, specular_sum, e_dir;
   Eigen::MatrixXd l_p, l_c, l_dir, l_diffuse, l_specular;
@@ -170,14 +271,6 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   }
 }
 
-void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  int y_small = y_0 > y_1 ? y_1 : y_0;
-  int y_big = y_0 > y_1 ? y_0 : y_1;
-  for (int y = y_small; y <= y_big; y++) {
-    fill(x_0, y, grid);
-  }
-}
-
 void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int epsilon = 0;
   int y = y_0;
@@ -185,7 +278,7 @@ void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int x = x_0; x <= x_1; x++) {
-    fill(x, y, grid);
+    // fill(x, y, grid);
     if (((epsilon + dy) << 1) < dx) {
       epsilon = epsilon + dy;
     } else {
@@ -202,7 +295,7 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int y = y_0; y <= y_1; y++) {
-    fill(x, y, grid);
+    // fill(x, y, grid);
     if (((epsilon + dx) << 1) < dy) {
       epsilon = epsilon + dx;
     } else {
@@ -219,7 +312,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) 
   int dy = y_1 - y_0;
 
   for (int y = y_0; y >= y_1; y--) {
-    fill(x, y, grid);
+    // fill(x, y, grid);
     if (((epsilon + dx) << 1) < -1*dy) {
       epsilon = epsilon + dx;
     } else {
@@ -236,7 +329,7 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dy = y_1 - y_0;
 
   for (int x = x_0; x <= x_1; x++) {
-    fill(x, y, grid);
+    // fill(x, y, grid);
     if (((epsilon + dy) << 1) > -1*dx) {
       epsilon = epsilon + dy;
     } else {
@@ -246,5 +339,6 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   }
 }
 
-void fill(int x, int y, Pixel **grid) {
+void fill(int x, int y, Pixel **grid, Pixel color) {
+  grid[y][x] = color;
 }

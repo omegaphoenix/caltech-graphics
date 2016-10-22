@@ -26,17 +26,49 @@ using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 struct Pixel {
   int red, green, blue;
+
   Pixel() {
     red = 1;
     green = 1;
     blue = 1;
   }
+
   Pixel(int r, int g, int b) {
     red = r;
     green = g;
     blue = b;
   }
 };
+
+struct ColorVertex {
+  VertexPtr ver;
+  Pixel col;
+
+  ColorVertex(VertexPtr vertex, Pixel color) {
+    ver = vertex;
+    col = color;
+  }
+};
+
+void raster_tri(VertexPtr a, VertexPtr b, VertexPtr c, Pixel **grid);
+
+Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v);
+VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c);
+
+bool inside_NDC_cube(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c);
+bool valid_alpha_beta_gamma(double alpha, double beta, double gamma);
+bool in_range(double val, double low, double high);
+
+double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
+double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
+double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
+
+int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c);
+int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c);
+int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c);
+int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c);
+
+double f_ij(VertexPtr i, VertexPtr j, double x, double y);
 
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam);
 double vec_distance(Eigen::MatrixXd diff_mat);
@@ -88,7 +120,6 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Return true if vertex is within (0, xres) and (0, yres)
 bool is_on_screen(VertexPtr v, int xres, int yres);
 
-void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Use algorithm from lecture notes without floating point operations
 void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Switch x and y from first_octant_bresenham()
@@ -99,6 +130,6 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 
 // Indicate that this pixel should be colored
-void fill(int x, int y, Pixel **grid);
+void fill(int x, int y, Pixel **grid, Pixel color);
 
 #endif
