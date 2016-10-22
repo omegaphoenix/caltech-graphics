@@ -96,6 +96,13 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
   VertexPtr NDC_b = cam->cam_transform(v_b);
   VertexPtr NDC_c = cam->cam_transform(v_c);
 
+  Eigen::MatrixXd cross = cross_product_vec(ver_to_mat(NDC_c) - ver_to_mat(NDC_b),
+      ver_to_mat(NDC_a) - ver_to_mat(NDC_b)) ;
+
+  if (cross(0,2) < 0) {
+    return;
+  }
+
   VertexPtr screen_a = NDC_to_pixel(xres, yres, NDC_a);
   VertexPtr screen_b = NDC_to_pixel(xres, yres, NDC_b);
   VertexPtr screen_c = NDC_to_pixel(xres, yres, NDC_c);
@@ -331,6 +338,9 @@ Eigen::MatrixXd norm_to_mat(NormalPtr norm) {
 }
 
 Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat) {
-  double sum = mat.sum();
-  return mat/sum;
+  double x = mat(0, 0);
+  double y = mat(0, 1);
+  double z = mat(0, 2);
+  double magnitude = sqrt(x*x + y*y + z*z);
+  return mat/magnitude;
 }

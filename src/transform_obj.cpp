@@ -109,13 +109,25 @@ void delete_grid(int xres, int yres, Pixel **grid) {
 
 void print_transformed_vertices(ModelVectorPtr models) {
   for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
-    print(*model_it);
+    print_model_vertices(*model_it);
   }
 }
 
-void print(ThreeDModelPtr model) {
+void print_transformed_normals(ModelVectorPtr models) {
+  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+    print_model_normals(*model_it);
+  }
+}
+
+void print_model_vertices(ThreeDModelPtr model) {
   cout << model->name << endl;
   print_vertices(model);
+  cout << endl;
+}
+
+void print_model_normals(ThreeDModelPtr model) {
+  cout << model->name << endl;
+  print_normals(model);
   cout << endl;
 }
 
@@ -127,5 +139,16 @@ void print_vertices(ThreeDModelPtr model) {
   while (vertex_it != vertices->end()) {
     cout << (*vertex_it)->x << " " << (*vertex_it)->y << " " << (*vertex_it)->z << endl;
     ++vertex_it;
+  }
+}
+
+void print_normals(ThreeDModelPtr model) {
+  NormVectorPtr normals = model->normals;
+
+  // 0-indexed vertex is NULL
+  vector<NormalPtr>::iterator normal_it = ++(normals->begin());
+  while (normal_it != normals->end()) {
+    cout << (*normal_it)->x << " " << (*normal_it)->y << " " << (*normal_it)->z << endl;
+    ++normal_it;
   }
 }

@@ -31,10 +31,14 @@ void print_ppm(int xres, int yres, ModelVectorPtr models);
 Pixel **new_grid(int xres, int yres);
 void delete_grid(int xres, int yres, Pixel **grid);
 void print_transformed_vertices(ModelVectorPtr models);
+void print_transformed_normals(ModelVectorPtr models);
 
 // helper function to print model
-void print(ThreeDModelPtr model);
+void print_model_vertices(ThreeDModelPtr models);
+void print_model_normals(ThreeDModelPtr models);
 // helper function to print model vertices
 void print_vertices(ThreeDModelPtr model);
+// helper function to print model normals
+void print_normals(ThreeDModelPtr model);
 
 #endif
