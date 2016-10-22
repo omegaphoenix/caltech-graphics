@@ -13,15 +13,18 @@
 using namespace std;
 
 struct Material;
+struct ThreeDModel;
 
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 struct Pixel {
@@ -50,7 +53,12 @@ struct ColorVertex {
   }
 };
 
-void raster_tri(VertexPtr a, VertexPtr b, VertexPtr c, Pixel **grid);
+void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+double **new_buffer(int xres, int yres);
+void delete_buffer(int xres, int yres, double **buffer);
+void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+
+void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer);
 
 Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v);
 VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c);

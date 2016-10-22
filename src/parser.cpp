@@ -230,12 +230,12 @@ void store_face_line(string line, ThreeDModelPtr model) {
 
   pos = vn2.find(delimiter);
   int v2 = atoi(vn2.substr(0, pos).c_str());
-  vn1.erase(0, pos + delimiter.length());
+  vn2.erase(0, pos + delimiter.length());
   int n2 = atoi(vn2.c_str());
 
   pos = vn3.find(delimiter);
   int v3 = atoi(vn3.substr(0, pos).c_str());
-  vn1.erase(0, pos + delimiter.length());
+  vn3.erase(0, pos + delimiter.length());
   int n3 = atoi(vn3.c_str());
 
 

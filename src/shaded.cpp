@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "camera.hpp"
+#include "draw_pixels.hpp"
 #include "light.hpp"
 #include "parser.hpp"
 #include "three_d_model_transform.hpp"
@@ -41,18 +42,18 @@ int main (int argc, char **argv) {
   // Apply lighting model and rasterize
   Pixel **grid = new_grid(xres, yres);
   if (mode == 0) {
-    // gouraud(models, lights, cam, grid);
+    gouraud(models, lights, cam, xres, yres, grid);
   } else if (mode == 1) {
     // phong(models, lights, cam, grid);
   } else {
     cerr << "mode must be 0 or 1" << endl;
   }
 
-  delete_grid(xres, yres, grid);
-  delete[] grid;
-
   // Print
   // print_ppm(grid, xres, yres);
+
+  delete_grid(xres, yres, grid);
+  delete[] grid;
 
   return 0;
 }

@@ -89,10 +89,8 @@ void print_ppm(int xres, int yres, ModelVectorPtr models) {
 Pixel **new_grid(int xres, int yres) {
   Pixel **grid = new Pixel *[yres];
   for (int y = 0; y < yres; y++) {
+    grid[y] = new Pixel[xres];
     for (int x = 0; x < xres; x++) {
-      if (x == 0) {
-        grid[y] = new Pixel[xres];
-      }
       grid[y][x].red = 0;
       grid[y][x].blue = 0;
       grid[y][x].green = 0;

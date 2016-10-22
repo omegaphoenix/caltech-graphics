@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "camera.hpp"
+#include "face.hpp"
 #include "light.hpp"
 #include "normal.hpp"
 #include "three_d_model.hpp"
@@ -18,21 +19,77 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
+using FacePtr = shared_ptr<Face>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
+void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+  double **buffer = new_buffer(xres, yres);
+  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+    gouraud_faces(*model_it, lights, cam, xres, yres, grid, buffer);
+  }
+
+  delete_buffer(xres, yres, buffer);
+  delete[] buffer;
+}
+
+double **new_buffer(int xres, int yres) {
+  double **buffer = new double *[yres];
+  for (int y = 0; y < yres; y++) {
+    buffer[y] = new double[xres];
+    for (int x = 0; x < xres; x++) {
+      buffer[y][x] = 0;
+    }
+  }
+  return buffer;
+}
+
+void delete_buffer(int xres, int yres, double **buffer) {
+  for (int y = 0; y < yres; y++) {
+    delete[] buffer[y];
+  }
+}
+
+void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VerVectorPtr vertices = model->vertices;
+  NormVectorPtr normals = model->normals;
+  for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
+    FacePtr face = *face_it;
+
+    VertexPtr v_a = (*vertices)[face->vertex1];
+    VertexPtr v_b = (*vertices)[face->vertex2];
+    VertexPtr v_c = (*vertices)[face->vertex3];
+
+    Pixel color_a = lighting(v_a, (*normals)[face->normal1], model->material, lights, cam);
+    Pixel color_b = lighting(v_a, (*normals)[face->normal2], model->material, lights, cam);
+    Pixel color_c = lighting(v_a, (*normals)[face->normal3], model->material, lights, cam);
+
+    VertexPtr NDC_a = cam->cam_transform(v_a);
+    VertexPtr NDC_b = cam->cam_transform(v_b);
+    VertexPtr NDC_c = cam->cam_transform(v_c);
+
+    ColorVertex a = ColorVertex(NDC_a, color_a);
+    ColorVertex b = ColorVertex(NDC_b, color_b);
+    ColorVertex c = ColorVertex(NDC_c, color_c);
+
+    raster_tri(a, b, c, xres, yres, grid, buffer);
+  }
+}
 
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer) {
   Eigen::MatrixXd cross = cross_product_vec(ver_to_mat(NDC_c.ver) - ver_to_mat(NDC_b.ver),
       ver_to_mat(NDC_a.ver) - ver_to_mat(NDC_b.ver)) ;
 
-  if (cross(0, 2) < 0) {
+  if (cross(0,2) < 0) {
     return;
   }
 
@@ -53,8 +110,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
         VertexPtr NDC = create_NDC_point(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
-        if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver)
-            && !(NDC->z > buffer[y][x])) {
+        if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver) && (NDC->z <= buffer[y][x])) {
           buffer[y][x] = NDC->z;
 
           int red = round(alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_b.col.red);
@@ -70,11 +126,12 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 }
 
 Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v) {
-  Eigen::MatrixXd res;
+  Eigen::MatrixXd res(1, 3);
   double i_val = vec_u(0,1)*vec_v(0,2) - vec_u(0,2)*vec_v(0,1);
   double j_val = vec_u(0,2)*vec_v(0,0) - vec_u(0,0)*vec_v(0,2);
   double k_val = vec_u(0,0)*vec_v(0,1) - vec_u(0,0)*vec_v(0,1);
   res << i_val, j_val, k_val;
+  return res;
 }
 
 VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c) {
@@ -130,8 +187,8 @@ double f_ij(VertexPtr i, VertexPtr j, double x, double y) {
 }
 
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
-  Eigen::MatrixXd c_d, c_a, c_s, diffuse_sum, specular_sum, e_dir;
-  Eigen::MatrixXd l_p, l_c, l_dir, l_diffuse, l_specular;
+  Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
+  Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
 
   c_d = ref_to_mat(material->diffuse);
   c_a = ref_to_mat(material->ambient);
@@ -152,7 +209,7 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
     l_diffuse = l_c * (max(0, (int)(norm_to_mat(n) * l_dir.transpose()).sum()));
     diffuse_sum = diffuse_sum + l_diffuse;
 
-    l_specular = l_c * pow((max(0, (int)(round((norm_to_mat(n) * normalize_vec(e_dir + l_dir)).sum())))),p);
+    l_specular = l_c * pow((max(0, (int)(round((norm_to_mat(n).sum() * normalize_vec(e_dir + l_dir)).sum())))),p);
     specular_sum = specular_sum + l_specular;
   }
 
@@ -171,19 +228,19 @@ double vec_distance(Eigen::MatrixXd diff_mat) {
 }
 
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {
-  Eigen::MatrixXd res;
+  Eigen::MatrixXd res(1, 3);
   res << reflect->red, reflect->green, reflect->blue;
   return res;
 }
 
 Eigen::MatrixXd ver_to_mat(VertexPtr ver) {
-  Eigen::MatrixXd res;
+  Eigen::MatrixXd res(1, 3);
   res << ver->x, ver->y, ver->z;
   return res;
 }
 
 Eigen::MatrixXd norm_to_mat(NormalPtr norm) {
-  Eigen::MatrixXd res;
+  Eigen::MatrixXd res(1, 3);
   res << norm->x, norm->y, norm->z;
   return res;
 }
