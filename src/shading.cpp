@@ -154,8 +154,8 @@ void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int 
     VertexPtr v_c = (*vertices)[face->vertex3];
 
     Pixel color_a = lighting(v_a, (*normals)[face->normal1], model->material, lights, cam);
-    Pixel color_b = lighting(v_a, (*normals)[face->normal2], model->material, lights, cam);
-    Pixel color_c = lighting(v_a, (*normals)[face->normal3], model->material, lights, cam);
+    Pixel color_b = lighting(v_b, (*normals)[face->normal2], model->material, lights, cam);
+    Pixel color_c = lighting(v_c, (*normals)[face->normal3], model->material, lights, cam);
 
     VertexPtr NDC_a = cam->cam_transform(v_a);
     VertexPtr NDC_b = cam->cam_transform(v_b);

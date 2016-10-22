@@ -1,5 +1,5 @@
-#ifndef DRAW_SHADING_HPP
-#define DRAW_SHADING_HPP
+#ifndef SHADING_HPP
+#define SHADING_HPP
 
 #include <memory> // shared_ptr
 #include <vector>

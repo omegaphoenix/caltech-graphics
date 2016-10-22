@@ -20,7 +20,7 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 INC := -I include
 
 all: $(TARGET)
-	./$(TARGET) data/scene_cube1.txt 800 800 0
+	./$(TARGET) data/scene_cube2.txt 800 800 0
 
 cube1: $(TARGET)
 	./$(TARGET) data/scene_cube1.txt 800 800 0 | display
