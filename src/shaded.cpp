@@ -8,6 +8,7 @@
 #include "draw_pixels.hpp"
 #include "light.hpp"
 #include "parser.hpp"
+#include "shading.hpp"
 #include "three_d_model_transform.hpp"
 #include "transform_obj.hpp"
 
