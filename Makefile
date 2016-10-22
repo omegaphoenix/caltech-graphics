@@ -30,6 +30,10 @@ cube2: $(TARGET)
 	./$(TARGET) data/scene_cube2.txt 800 800 0 | display
 	./$(TARGET) data/scene_cube2.txt 800 800 1 | display
 
+cube3: $(TARGET)
+	./$(TARGET) data/scene_cube3.txt 800 800 0 | display
+	./$(TARGET) data/scene_cube3.txt 800 800 1 | display
+
 bunny1: $(TARGET)
 	./$(TARGET) data/scene_bunny1.txt 800 800 0 | display
 	./$(TARGET) data/scene_bunny1.txt 800 800 1 | display
@@ -37,6 +41,18 @@ bunny1: $(TARGET)
 bunny2: $(TARGET)
 	./$(TARGET) data/scene_bunny2.txt 800 800 0 | display
 	./$(TARGET) data/scene_bunny2.txt 800 800 1 | display
+
+fourCubes: $(TARGET)
+	./$(TARGET) data/scene_fourCubes.txt 800 800 0 | display
+	./$(TARGET) data/scene_fourCubes.txt 800 800 1 | display
+
+kitten: $(TARGET)
+	./$(TARGET) data/scene_kitten.txt 800 800 0 | display
+	./$(TARGET) data/scene_kitten.txt 800 800 1 | display
+
+sphere: $(TARGET)
+	./$(TARGET) data/scene_sphere.txt 800 800 0 | display
+	./$(TARGET) data/scene_sphere.txt 800 800 1 | display
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."

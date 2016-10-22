@@ -357,14 +357,6 @@ void output_pixel(int row, int col, Pixel **grid) {
   cout << red << " " << green << " " << blue << endl;
 }
 
-void purple() {
-  cout << "85 37 130" << endl;
-}
-
-void gold() {
-  cout << "253 185 39" << endl;
-}
-
 VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices) {
     VerVectorPtr vertices =
       VerVectorPtr(new vector<VertexPtr>());

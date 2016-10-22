@@ -97,10 +97,6 @@ void start_ppm_output(int xres, int yres);
 // Helper method for outputing a line for a single pixel
 void output_pixel(int row, int col, Pixel **grid);
 
-// Output line representing pixel of the specified color
-void purple();
-void gold();
-
 // Converts vertices from cartesian NDC to screen location
 VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices);
 // Converts one vertex from cartesian NDC to screen location
