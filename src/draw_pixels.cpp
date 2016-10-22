@@ -17,6 +17,8 @@
 
 #include "Eigen/Dense"
 
+const int MAX_INTENSITY = 255;
+
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
@@ -101,7 +103,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   int min_x = min_x_coord(a, b, c);
   int max_x = max_x_coord(a, b, c);
   int min_y = min_y_coord(a, b, c);
-  int max_y = min_y_coord(a, b, c);
+  int max_y = max_y_coord(a, b, c);
 
   for (int x = min_x; x <= max_x; x++) {
     for (int y = min_y; y <= max_y; y++) {
@@ -263,7 +265,7 @@ void output_ppm(int xres, int yres, Pixel **grid) {
 void start_ppm_output(int xres, int yres) {
   cout << "P3" << endl;
   cout << xres << " " << yres << endl;
-  cout << "255" << endl;
+  cout << MAX_INTENSITY << endl;
 }
 
 void output_pixel(int row, int col, Pixel **grid) {
