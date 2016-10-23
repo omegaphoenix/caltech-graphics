@@ -50,6 +50,10 @@ kitten: $(TARGET)
 	./$(TARGET) data/scene_kitten.txt 800 800 0 | display
 	./$(TARGET) data/scene_kitten.txt 800 800 1 | display
 
+armadillo: $(TARGET)
+	./$(TARGET) data/scene_armadillo.txt 800 800 0 | display
+	./$(TARGET) data/scene_armadillo.txt 800 800 1 | display
+
 sphere: $(TARGET)
 	./$(TARGET) data/scene_sphere.txt 800 800 0 | display
 	./$(TARGET) data/scene_sphere.txt 800 800 1 | display

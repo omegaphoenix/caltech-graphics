@@ -114,8 +114,7 @@ MaterialPtr store_material_properties(vector<string> lines) {
 }
 
 void store_ambient_prop(vector<string> lines, MaterialPtr material) {
-  string line = lines.front();;
-  lines.erase(lines.begin());
+  string line = lines[0];
 
   istringstream line_stream(line);
   string _;
@@ -128,8 +127,7 @@ void store_ambient_prop(vector<string> lines, MaterialPtr material) {
 }
 
 void store_diffuse_prop(vector<string> lines, MaterialPtr material) {
-  string line = lines.front();;
-  lines.erase(lines.begin());
+  string line = lines[1];
 
   istringstream line_stream(line);
   string _;
@@ -142,11 +140,11 @@ void store_diffuse_prop(vector<string> lines, MaterialPtr material) {
 }
 
 void store_specular_prop(vector<string> lines, MaterialPtr material) {
-  string line = lines.front();;
-  lines.erase(lines.begin());
+  string line = lines[2];
 
   istringstream line_stream(line);
   string _;
+  cout << line;
   double r, g, b;
   if (!(line_stream >> _ >> r >> g >> b)) {
     throw "Wrong number of arguments to specular line";
@@ -156,8 +154,7 @@ void store_specular_prop(vector<string> lines, MaterialPtr material) {
 }
 
 void store_shininess_prop(vector<string> lines, MaterialPtr material) {
-  string line = lines.front();;
-  lines.erase(lines.begin());
+  string line = lines[3];
 
   istringstream line_stream(line);
   string _;
