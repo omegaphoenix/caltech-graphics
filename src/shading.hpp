@@ -45,10 +45,10 @@ void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres,
 
 // Use phong shading on single model copy
 void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
-// Use gouraud shading on single model copy
-void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use phong shading on single triangular face
 void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+// Use gouraud shading on single model copy
+void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single triangular face
 void gouraud_shading(ThreeDModelPtr model, FacePtr face, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 
@@ -82,9 +82,6 @@ int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c, int xres);
 int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c);
 int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c, int yres);
 
-// Calculates the magnitude of a 3d vector
-double magnitude(Eigen::MatrixXd diff_mat);
-
 // Convert to matrix (3d vector)
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect);
 Eigen::MatrixXd ver_to_mat(VertexPtr ver);
@@ -94,6 +91,8 @@ Eigen::MatrixXd norm_to_mat(NormalPtr norm);
 Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat);
 // Take the cross product of 3D vectors
 Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v);
+// Calculates the magnitude of a 3d vector
+double magnitude(Eigen::MatrixXd diff_mat);
 
 // Create 2D array for keeping track of z-coordinate of pixels
 double **new_buffer(int xres, int yres);

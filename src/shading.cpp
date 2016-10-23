@@ -56,23 +56,6 @@ void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres,
   delete[] buffer;
 }
 
-double **new_buffer(int xres, int yres) {
-  double **buffer = new double *[yres];
-  for (int y = 0; y < yres; y++) {
-    buffer[y] = new double[xres];
-    for (int x = 0; x < xres; x++) {
-      buffer[y][x] = DBL_MAX;
-    }
-  }
-  return buffer;
-}
-
-void delete_buffer(int xres, int yres, double **buffer) {
-  for (int y = 0; y < yres; y++) {
-    delete[] buffer[y];
-  }
-}
-
 void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   VerVectorPtr vertices = model->vertices;
   NormVectorPtr normals = model->normals;
@@ -134,22 +117,6 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
   }
 }
 
-NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c) {
-  double x = alpha*n_a->x + beta*n_b->x + gamma*n_c->x;
-  double y = alpha*n_a->y + beta*n_b->y + gamma*n_c->y;
-  double z = alpha*n_a->z + beta*n_b->z + gamma*n_c->z;
-
-  return NormalPtr(new Normal(x, y, z));
-}
-
-VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c) {
-  double x = alpha*v_a->x + beta*v_b->x + gamma*v_c->x;
-  double y = alpha*v_a->y + beta*v_b->y + gamma*v_c->y;
-  double z = alpha*v_a->z + beta*v_b->z + gamma*v_c->z;
-
-  return VertexPtr(new Vertex(x, y, z));
-}
-
 void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
     FacePtr face = *face_it;
@@ -178,6 +145,22 @@ void gouraud_shading(ThreeDModelPtr model, FacePtr face, LightVecPtr lights, Cam
   ColorVertex c = ColorVertex(NDC_c, color_c);
 
   raster_tri(a, b, c, xres, yres, grid, buffer);
+}
+
+NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c) {
+  double x = alpha*n_a->x + beta*n_b->x + gamma*n_c->x;
+  double y = alpha*n_a->y + beta*n_b->y + gamma*n_c->y;
+  double z = alpha*n_a->z + beta*n_b->z + gamma*n_c->z;
+
+  return NormalPtr(new Normal(x, y, z));
+}
+
+VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c) {
+  double x = alpha*v_a->x + beta*v_b->x + gamma*v_c->x;
+  double y = alpha*v_a->y + beta*v_b->y + gamma*v_c->y;
+  double z = alpha*v_a->z + beta*v_b->z + gamma*v_c->z;
+
+  return VertexPtr(new Vertex(x, y, z));
 }
 
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer) {
@@ -220,59 +203,6 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   }
 }
 
-Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v) {
-  Eigen::MatrixXd res(1, 3);
-  double i_val = vec_u(0, 1)*vec_v(0, 2) - vec_u(0, 2)*vec_v(0, 1);
-  double j_val = vec_u(0, 2)*vec_v(0, 0) - vec_u(0, 0)*vec_v(0, 2);
-  double k_val = vec_u(0, 0)*vec_v(0, 1) - vec_u(0, 1)*vec_v(0, 0);
-  res << i_val, j_val, k_val;
-  return res;
-}
-
-bool inside_NDC_cube(VertexPtr NDC) {
-  return in_range(NDC->x, -1, 1) && in_range(NDC->y, -1, 1) && in_range(NDC->z, -1, 1);
-}
-
-bool valid_alpha_beta_gamma(double alpha, double beta, double gamma) {
-  return in_range(alpha, 0, 1) && in_range(beta, 0, 1) && in_range(gamma, 0, 1);
-}
-
-bool in_range(double val, double low, double high) {
-  return low <= val && high >= val;
-}
-
-double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(b, c, x, y) / f_ij(b, c, a->x, a->y);
-}
-
-double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(a, c, x, y) / f_ij(a, c, b->x, b->y);
-}
-
-double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(a, b, x, y) / f_ij(a, b, c->x, c->y);
-}
-
-int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
-  return max(0, (int)min(a->x, min(b->x, c->x)));
-}
-
-int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c, int xres) {
-  return min(xres-1, (int)max(a->x, max(b->x, c->x)));
-}
-
-int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
-  return max(0, (int)min(a->y, min(b->y, c->y)));
-}
-
-int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c, int yres) {
-  return min(yres-1, (int)max(a->y, max(b->y, c->y)));
-}
-
-double f_ij(VertexPtr i, VertexPtr j, double x, double y) {
-  return (i->y - j->y)*x + (j->x - i->x)*y + i->x*j->y - j->x*i->y;
-}
-
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
@@ -308,11 +238,48 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   return Pixel(red, green, blue);
 }
 
-double magnitude(Eigen::MatrixXd diff_mat) {
-  double x = diff_mat(0, 0);
-  double y = diff_mat(0, 1);
-  double z = diff_mat(0, 2);
-  return sqrt(x*x + y*y + z*z);
+bool inside_NDC_cube(VertexPtr NDC) {
+  return in_range(NDC->x, -1, 1) && in_range(NDC->y, -1, 1) && in_range(NDC->z, -1, 1);
+}
+
+bool valid_alpha_beta_gamma(double alpha, double beta, double gamma) {
+  return in_range(alpha, 0, 1) && in_range(beta, 0, 1) && in_range(gamma, 0, 1);
+}
+
+bool in_range(double val, double low, double high) {
+  return low <= val && high >= val;
+}
+
+double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(b, c, x, y) / f_ij(b, c, a->x, a->y);
+}
+
+double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(a, c, x, y) / f_ij(a, c, b->x, b->y);
+}
+
+double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
+  return f_ij(a, b, x, y) / f_ij(a, b, c->x, c->y);
+}
+
+double f_ij(VertexPtr i, VertexPtr j, double x, double y) {
+  return (i->y - j->y)*x + (j->x - i->x)*y + i->x*j->y - j->x*i->y;
+}
+
+int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return max(0, (int)min(a->x, min(b->x, c->x)));
+}
+
+int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c, int xres) {
+  return min(xres-1, (int)max(a->x, max(b->x, c->x)));
+}
+
+int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
+  return max(0, (int)min(a->y, min(b->y, c->y)));
+}
+
+int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c, int yres) {
+  return min(yres-1, (int)max(a->y, max(b->y, c->y)));
 }
 
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {
@@ -339,4 +306,37 @@ Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat) {
   double z = mat(0, 2);
   double magnitude = sqrt(x*x + y*y + z*z);
   return mat/magnitude;
+}
+
+Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v) {
+  Eigen::MatrixXd res(1, 3);
+  double i_val = vec_u(0, 1)*vec_v(0, 2) - vec_u(0, 2)*vec_v(0, 1);
+  double j_val = vec_u(0, 2)*vec_v(0, 0) - vec_u(0, 0)*vec_v(0, 2);
+  double k_val = vec_u(0, 0)*vec_v(0, 1) - vec_u(0, 1)*vec_v(0, 0);
+  res << i_val, j_val, k_val;
+  return res;
+}
+
+double magnitude(Eigen::MatrixXd diff_mat) {
+  double x = diff_mat(0, 0);
+  double y = diff_mat(0, 1);
+  double z = diff_mat(0, 2);
+  return sqrt(x*x + y*y + z*z);
+}
+
+double **new_buffer(int xres, int yres) {
+  double **buffer = new double *[yres];
+  for (int y = 0; y < yres; y++) {
+    buffer[y] = new double[xres];
+    for (int x = 0; x < xres; x++) {
+      buffer[y][x] = DBL_MAX;
+    }
+  }
+  return buffer;
+}
+
+void delete_buffer(int xres, int yres, double **buffer) {
+  for (int y = 0; y < yres; y++) {
+    delete[] buffer[y];
+  }
 }
