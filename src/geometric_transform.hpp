@@ -46,6 +46,7 @@ MatrixPtr parse_rotation_line(string line);
 MatrixPtr create_translation_mat(double t_x, double t_y, double t_z);
 MatrixPtr create_scaling_mat(double s_x, double s_y, double s_z);
 MatrixPtr create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad);
+// Helper function - inputs should be unit vector
 MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle_in_rad);
 
 // Multiply vertex coordinates by matrix or scalar

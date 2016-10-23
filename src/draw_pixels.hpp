@@ -94,7 +94,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 // Slight modification to first octant algorithm for negative slope
 void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 
-// Indicate that this pixel should be colored
+// Indicate that this pixel should be colored - default white
 void fill(int x, int y, Pixel **grid);
 void fill(int x, int y, Pixel **grid, Pixel color);
 

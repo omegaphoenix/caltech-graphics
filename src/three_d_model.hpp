@@ -26,6 +26,7 @@ using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 
+// Represents the reflectance property of a material
 struct Reflectance {
   double red, green, blue;
 
@@ -36,10 +37,11 @@ struct Reflectance {
   }
 };
 
+// Represents the material properties of an object
 struct Material {
   ReflectPtr ambient, diffuse, specular;
   double shininess;
-  // constructor
+
   Material() {
   }
 };
@@ -51,7 +53,6 @@ class ThreeDModel {
     NormVectorPtr normals;
     shared_ptr<vector<FacePtr>> faces;
     MaterialPtr material;
-    // ReflectPtr ambient, diffuse, specular, shininess;
 
     // empty constructor
     ThreeDModel();
