@@ -1,5 +1,5 @@
-#ifndef OBJ_FILE_PARSER_HPP
-#define OBJ_FILE_PARSER_HPP
+#ifndef PARSER_HPP
+#define PARSER_HPP
 
 #include <fstream> // basic file operations
 #include <map>

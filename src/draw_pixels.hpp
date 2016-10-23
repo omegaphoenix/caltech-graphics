@@ -27,6 +27,7 @@ using LightVecPtr = shared_ptr<vector<LightPtr>>;
 using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
+// Represents the rgb values for one pixel on the screen
 struct Pixel {
   // [0, 1]
   double red, green, blue;

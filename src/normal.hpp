@@ -1,5 +1,5 @@
-#ifndef NORMAL_H
-#define NORMAL_H
+#ifndef NORMAL_HPP
+#define NORMAL_HPP
 
 #include <math.h> // sqrt
 

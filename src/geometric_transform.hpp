@@ -1,5 +1,5 @@
-#ifndef TRANSFORM_INVERSE_PROD_HPP
-#define TRANSFORM_INVERSE_PROD_HPP
+#ifndef GEOMETRIC_TRANSFORM_HPP
+#define GEOMETRIC_TRANSFORM_HPP
 
 #include <memory> // shared_ptr
 #include <vector>
