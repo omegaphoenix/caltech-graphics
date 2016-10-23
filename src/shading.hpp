@@ -46,7 +46,7 @@ void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres,
 // Use phong shading on single model copy
 void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use phong shading on single triangular face
-void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_shading(ThreeDModelPtr model, FacePtr face, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single model copy
 void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single triangular face
@@ -62,6 +62,8 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 // Calculate the lighting of the material at a vertex
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam);
 
+// Check if face faces away from camera
+bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c);
 // Check if vertices are inside the NDC cube
 bool inside_NDC_cube(VertexPtr NDC);
 // Check if alpha, beta, gamma values are within the triangle

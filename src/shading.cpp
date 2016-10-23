@@ -37,7 +37,7 @@ using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
-  double **buffer = new_buffer(xres, yres);
+  double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     phong_faces(*model_it, lights, cam, xres, yres, grid, buffer);
   }
@@ -47,7 +47,7 @@ void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, i
 }
 
 void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
-  double **buffer = new_buffer(xres, yres);
+  double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     gouraud_faces(*model_it, lights, cam, xres, yres, grid, buffer);
   }
@@ -57,34 +57,31 @@ void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres,
 }
 
 void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  VerVectorPtr vertices = model->vertices;
-  NormVectorPtr normals = model->normals;
   for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
     FacePtr face = *face_it;
-
-    VertexPtr v_a = (*vertices)[face->vertex1];
-    VertexPtr v_b = (*vertices)[face->vertex2];
-    VertexPtr v_c = (*vertices)[face->vertex3];
-
-    NormalPtr n_a = (*normals)[face->normal1];
-    NormalPtr n_b = (*normals)[face->normal2];
-    NormalPtr n_c = (*normals)[face->normal3];
-
-    phong_shading(v_a, v_b, v_c, n_a, n_b, n_c, model->material, lights, cam, xres, yres, grid, buffer);
+    phong_shading(model, face, model->material, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void phong_shading(ThreeDModelPtr model, FacePtr face, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VerVectorPtr vertices = model->vertices;
+  NormVectorPtr normals = model->normals;
+
+  VertexPtr v_a = (*vertices)[face->vertex1];
+  VertexPtr v_b = (*vertices)[face->vertex2];
+  VertexPtr v_c = (*vertices)[face->vertex3];
+
+  NormalPtr n_a = (*normals)[face->normal1];
+  NormalPtr n_b = (*normals)[face->normal2];
+  NormalPtr n_c = (*normals)[face->normal3];
+
+  // Transform to NDC coordinates
   VertexPtr NDC_a = cam->cam_transform(v_a);
   VertexPtr NDC_b = cam->cam_transform(v_b);
   VertexPtr NDC_c = cam->cam_transform(v_c);
 
-  Eigen::MatrixXd cross = cross_product_vec(ver_to_mat(NDC_c) - ver_to_mat(NDC_b),
-      ver_to_mat(NDC_a) - ver_to_mat(NDC_b)) ;
-
-  if (cross(0,2) < 0) {
-    return;
-  }
+  // backface culling
+  if (backfacing(NDC_a, NDC_b, NDC_c)) return;
 
   VertexPtr screen_a = NDC_to_pixel(xres, yres, NDC_a);
   VertexPtr screen_b = NDC_to_pixel(xres, yres, NDC_b);
@@ -95,6 +92,7 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
   int min_y = min_y_coord(screen_a, screen_b, screen_c);
   int max_y = max_y_coord(screen_a, screen_b, screen_c, yres);
 
+  // Iterate through rectangular screen coordinates that triangle is in
   for (int x = min_x; x <= max_x; x++) {
     for (int y = min_y; y <= max_y; y++) {
       double alpha = compute_alpha(screen_a, screen_b, screen_c, x, y);
@@ -103,12 +101,15 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
         VertexPtr NDC = combine_vertices(alpha, beta, gamma, NDC_a, NDC_b, NDC_c);
+
         if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
+          // update buffer
           buffer[y][x] = NDC->z;
 
           VertexPtr v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
           NormalPtr n = combine_normals(alpha, beta, gamma, n_a, n_b, n_c);
 
+          // Calculate lighting per pixel
           Pixel color = lighting(v, n, material, lights, cam);
           fill(x, y, grid, color);
         }
@@ -132,10 +133,12 @@ void gouraud_shading(ThreeDModelPtr model, FacePtr face, LightVecPtr lights, Cam
   VertexPtr v_b = (*vertices)[face->vertex2];
   VertexPtr v_c = (*vertices)[face->vertex3];
 
+  // Calculate lighting each each vertex of face
   Pixel color_a = lighting(v_a, (*normals)[face->normal1], model->material, lights, cam);
   Pixel color_b = lighting(v_b, (*normals)[face->normal2], model->material, lights, cam);
   Pixel color_c = lighting(v_c, (*normals)[face->normal3], model->material, lights, cam);
 
+  // Transform to NDC coordinates
   VertexPtr NDC_a = cam->cam_transform(v_a);
   VertexPtr NDC_b = cam->cam_transform(v_b);
   VertexPtr NDC_c = cam->cam_transform(v_c);
@@ -144,6 +147,7 @@ void gouraud_shading(ThreeDModelPtr model, FacePtr face, LightVecPtr lights, Cam
   ColorVertex b = ColorVertex(NDC_b, color_b);
   ColorVertex c = ColorVertex(NDC_c, color_c);
 
+  // Rasterize face triangle
   raster_tri(a, b, c, xres, yres, grid, buffer);
 }
 
@@ -164,12 +168,8 @@ VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_
 }
 
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer) {
-  Eigen::MatrixXd cross = cross_product_vec(ver_to_mat(NDC_c.ver) - ver_to_mat(NDC_b.ver),
-      ver_to_mat(NDC_a.ver) - ver_to_mat(NDC_b.ver)) ;
-
-  if (cross(0,2) < 0) {
-    return;
-  }
+  // backface culling
+  if (backfacing(NDC_a.ver, NDC_b.ver, NDC_c.ver)) return;
 
   VertexPtr a = NDC_to_pixel(xres, yres, NDC_a.ver);
   VertexPtr b = NDC_to_pixel(xres, yres, NDC_b.ver);
@@ -180,6 +180,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   int min_y = min_y_coord(a, b, c);
   int max_y = max_y_coord(a, b, c, yres);
 
+  // Iterate through rectangular screen coordinates that triangle is in
   for (int x = min_x; x <= max_x; x++) {
     for (int y = min_y; y <= max_y; y++) {
       double alpha = compute_alpha(a, b, c, x, y);
@@ -189,8 +190,10 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
         VertexPtr NDC = combine_vertices(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
         if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
+          // update buffer
           buffer[y][x] = NDC->z;
 
+          // Combine colors based on proximity to each vertex of face
           double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_c.col.red;
           double green = alpha * NDC_a.col.green + beta * NDC_b.col.green + gamma * NDC_c.col.green;
           double blue = alpha * NDC_a.col.blue + beta * NDC_b.col.blue + gamma * NDC_c.col.blue;
@@ -204,9 +207,11 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 }
 
 Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
+  // 3D vectors
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
 
+  // Reflectance to 3D vectors
   c_d = ref_to_mat(material->diffuse);
   c_a = ref_to_mat(material->ambient);
   c_s = ref_to_mat(material->specular);
@@ -221,6 +226,8 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
     l_p << (*light_it)->x, (*light_it)->y, (*light_it)->z;
     l_c << (*light_it)->r, (*light_it)->g, (*light_it)->b;
     double dist = magnitude(l_p - ver_to_mat(v));
+
+    // Multiply by attenuation factor
     l_c = l_c / (1 + (*light_it)->attenuation * dist*dist);
     l_dir = normalize_vec(l_p - ver_to_mat(v));
 
@@ -236,6 +243,14 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   double blue = min(1.0, c_a(0, 2) + diffuse_sum(0, 2)*c_d(0, 2) + specular_sum(0, 2)*c_s(0, 2));
 
   return Pixel(red, green, blue);
+}
+
+bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c) {
+  Eigen::MatrixXd cross =
+    cross_product_vec(ver_to_mat(NDC_c) - ver_to_mat(NDC_b),
+      ver_to_mat(NDC_a) - ver_to_mat(NDC_b)) ;
+
+  return cross(0,2) < 0;
 }
 
 bool inside_NDC_cube(VertexPtr NDC) {

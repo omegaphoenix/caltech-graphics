@@ -13,6 +13,7 @@ struct Normal {
     set_normal(x0, y0, z0);
   }
 
+  // Normalize normal on creation
   void set_normal(double x0, double y0, double z0) {
     double magnitude = sqrt(x0*x0 + y0*y0 + z0*z0);
     x = x0/magnitude;
