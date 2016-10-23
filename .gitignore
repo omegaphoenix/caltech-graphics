@@ -5,3 +5,7 @@ lib/*
 
 # Ignore executables
 bin/*
+
+# Ignore test files
+*.expected
+*.new
