@@ -28,9 +28,12 @@ using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 ModelVectorPtr store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   CameraPtr cam = get_camera_data(obj_transform_file);
+  // Parse light data to move ifstream along but discard
   get_light_data(obj_transform_file);
+  // Parse .obj files
   shared_ptr<map<string, ThreeDModelTransformPtr>> models =
     get_objects(obj_transform_file, cam);
+  // Create copies and perform geometric transformations
   ModelVectorPtr transformed = perform_transforms(obj_transform_file, models);
 
   return transformed;
@@ -45,6 +48,7 @@ ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<s
   string line;
   while (getline(obj_transform_file, line)) {
     if (line == "") {
+      // Perform geo transforms to world coord. and store material properties
       trans_models->push_back(perform_transform(lines, models));
       lines.erase(lines.begin(), lines.end());
     } else {
@@ -70,6 +74,7 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
   MatrixPtr trans_mat = multiply_matrices(lines);
   MatrixPtr norm_trans_mat = create_norm_trans_mat(lines);
 
+  // Apply geometric transforms to vertices and normals
   ThreeDModelPtr new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
   new_copy->material = material;
   return new_copy;

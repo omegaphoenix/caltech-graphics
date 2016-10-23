@@ -1,3 +1,20 @@
 To display image, run these commands:
   make
-  ./shaded [data/scene_description_file.txt] [xres] [yres] [mode] | display
+
+OR:
+  make bin/shaded
+  ./bin/shaded [data/scene_description_file.txt] [xres] [yres] [mode] | display
+
+OR:
+  make cube1
+  make cube2
+  make cube3
+  make bunny1
+  make bunny1_attenuated
+  make bunny2
+  make fourCubes
+  make kitten
+  make kitten_attenuated
+  make armadillo
+  make sphere
+  make sphere_attenuated

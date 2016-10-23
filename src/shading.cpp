@@ -245,11 +245,14 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   return Pixel(red, green, blue);
 }
 
+// Backfacing if z-coordinate of cross product of (c-b) x (a-b) is negative
 bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c) {
+  // Cross product of (c-b) x (a-b)
   Eigen::MatrixXd cross =
     cross_product_vec(ver_to_mat(NDC_c) - ver_to_mat(NDC_b),
       ver_to_mat(NDC_a) - ver_to_mat(NDC_b)) ;
 
+  // Return true if z coordinate of cross product is negative
   return cross(0,2) < 0;
 }
 
