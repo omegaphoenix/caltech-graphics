@@ -144,7 +144,6 @@ void store_specular_prop(vector<string> lines, MaterialPtr material) {
 
   istringstream line_stream(line);
   string _;
-  cout << line;
   double r, g, b;
   if (!(line_stream >> _ >> r >> g >> b)) {
     throw "Wrong number of arguments to specular line";

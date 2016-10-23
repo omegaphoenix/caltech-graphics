@@ -38,6 +38,10 @@ bunny1: $(TARGET)
 	./$(TARGET) data/scene_bunny1.txt 800 800 0 | display
 	./$(TARGET) data/scene_bunny1.txt 800 800 1 | display
 
+bunny1_attenuated: $(TARGET)
+	./$(TARGET) data/scene_bunny1_attenuated.txt 800 800 0 | display
+	./$(TARGET) data/scene_bunny1_attenuated.txt 800 800 1 | display
+
 bunny2: $(TARGET)
 	./$(TARGET) data/scene_bunny2.txt 800 800 0 | display
 	./$(TARGET) data/scene_bunny2.txt 800 800 1 | display
@@ -50,6 +54,10 @@ kitten: $(TARGET)
 	./$(TARGET) data/scene_kitten.txt 800 800 0 | display
 	./$(TARGET) data/scene_kitten.txt 800 800 1 | display
 
+kitten_attenuated: $(TARGET)
+	./$(TARGET) data/scene_kitten.txt 800 800 0 | display
+	./$(TARGET) data/scene_kitten.txt 800 800 1 | display
+
 armadillo: $(TARGET)
 	./$(TARGET) data/scene_armadillo.txt 800 800 0 | display
 	./$(TARGET) data/scene_armadillo.txt 800 800 1 | display
@@ -57,6 +65,10 @@ armadillo: $(TARGET)
 sphere: $(TARGET)
 	./$(TARGET) data/scene_sphere.txt 800 800 0 | display
 	./$(TARGET) data/scene_sphere.txt 800 800 1 | display
+
+sphere_attenuated: $(TARGET)
+	./$(TARGET) data/scene_sphere_attenuated.txt 800 800 0 | display
+	./$(TARGET) data/scene_sphere_attenuated.txt 800 800 1 | display
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."

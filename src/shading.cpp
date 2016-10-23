@@ -107,10 +107,10 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
   VertexPtr screen_b = NDC_to_pixel(xres, yres, NDC_b);
   VertexPtr screen_c = NDC_to_pixel(xres, yres, NDC_c);
 
-  int min_x = min_x_coord(screen_a, screen_b, screen_c);
-  int max_x = max_x_coord(screen_a, screen_b, screen_c);
-  int min_y = min_y_coord(screen_a, screen_b, screen_c);
-  int max_y = max_y_coord(screen_a, screen_b, screen_c);
+  int min_x = max(min_x_coord(screen_a, screen_b, screen_c), 0);
+  int max_x = min(max_x_coord(screen_a, screen_b, screen_c), xres - 1);
+  int min_y = max(min_y_coord(screen_a, screen_b, screen_c), 0);
+  int max_y = min(max_y_coord(screen_a, screen_b, screen_c), yres - 1);
 
   for (int x = min_x; x <= max_x; x++) {
     for (int y = min_y; y <= max_y; y++) {
@@ -188,10 +188,10 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   VertexPtr b = NDC_to_pixel(xres, yres, NDC_b.ver);
   VertexPtr c = NDC_to_pixel(xres, yres, NDC_c.ver);
 
-  int min_x = min_x_coord(a, b, c);
-  int max_x = max_x_coord(a, b, c);
-  int min_y = min_y_coord(a, b, c);
-  int max_y = max_y_coord(a, b, c);
+  int min_x = max(min_x_coord(a, b, c), 0);
+  int max_x = min(max_x_coord(a, b, c), xres - 1);
+  int min_y = max(min_y_coord(a, b, c), 0);
+  int max_y = min(max_y_coord(a, b, c), yres - 1);
 
   for (int x = min_x; x <= max_x; x++) {
     for (int y = min_y; y <= max_y; y++) {
