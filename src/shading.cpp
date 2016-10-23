@@ -120,7 +120,7 @@ void phong_shading(VertexPtr v_a, VertexPtr v_b, VertexPtr v_c, NormalPtr n_a, N
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
         VertexPtr NDC = create_NDC_point(alpha, beta, gamma, NDC_a, NDC_b, NDC_c);
-        if (inside_NDC_cube(alpha, beta, gamma, NDC_a, NDC_b, NDC_c) && (NDC->z <= buffer[y][x])) {
+        if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
           buffer[y][x] = NDC->z;
 
           VertexPtr v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
@@ -201,7 +201,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
         VertexPtr NDC = create_NDC_point(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
-        if (inside_NDC_cube(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver) && (NDC->z <= buffer[y][x])) {
+        if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
           buffer[y][x] = NDC->z;
 
           double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_c.col.red;
@@ -232,9 +232,8 @@ VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a,
   return VertexPtr(new Vertex(x, y, z));
 }
 
-bool inside_NDC_cube(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c) {
-  return in_range(alpha*a->x, -1, 1) && in_range(beta*b->x, -1, 1) && in_range(gamma*c->x, -1, 1)
-    && in_range(alpha*a->y, -1, 1) && in_range(beta*b->y, -1, 1) && in_range(gamma*c->y, -1, 1);
+bool inside_NDC_cube(VertexPtr NDC) {
+  return in_range(NDC->x, -1, 1) && in_range(NDC->y, -1, 1) && in_range(NDC->z, -1, 1);
 }
 
 bool valid_alpha_beta_gamma(double alpha, double beta, double gamma) {

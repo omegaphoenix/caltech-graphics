@@ -52,7 +52,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
 Eigen::MatrixXd cross_product_vec(Eigen::MatrixXd vec_u, Eigen::MatrixXd vec_v);
 VertexPtr create_NDC_point(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c);
 
-bool inside_NDC_cube(double alpha, double beta, double gamma, VertexPtr a, VertexPtr b, VertexPtr c);
+bool inside_NDC_cube(VertexPtr NDC);
 bool valid_alpha_beta_gamma(double alpha, double beta, double gamma);
 bool in_range(double val, double low, double high);
 
