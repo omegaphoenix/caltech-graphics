@@ -1,22 +1,45 @@
 #include "draw_pixels.hpp"
 
+#include <algorithm>
 #include <cstddef>
+#include <float.h>
 #include <iostream>
 #include <math.h> // round
 #include <memory> // shared_ptr
 #include <vector>
 
+#include "camera.hpp"
+#include "face.hpp"
+#include "light.hpp"
+#include "normal.hpp"
+#include "three_d_model.hpp"
 #include "vertex.hpp"
 
+#include "Eigen/Dense"
+
+const int MAX_INTENSITY = 255;
+
 using namespace std;
+
+using CameraPtr = shared_ptr<Camera>;
+using FacePtr = shared_ptr<Face>;
+using LightPtr = shared_ptr<Light>;
+using MaterialPtr = shared_ptr<Material>;
+using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
+using NormalPtr = shared_ptr<Normal>;
+using ReflectPtr = shared_ptr<struct Reflectance>;
+using ThreeDModelPtr = shared_ptr<ThreeDModel>;
 using VertexPtr = shared_ptr<Vertex>;
+
+using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 void output_ppm(int xres, int yres, Pixel **grid) {
   start_ppm_output(xres, yres);
   for (int y = 0; y < yres; y++) {
     for (int x = 0; x < xres; x++) {
-      output_pixel(x, y, grid);
+      output_pixel(y, x, grid);
     }
   }
 }
@@ -24,23 +47,15 @@ void output_ppm(int xres, int yres, Pixel **grid) {
 void start_ppm_output(int xres, int yres) {
   cout << "P3" << endl;
   cout << xres << " " << yres << endl;
-  cout << "255" << endl;
+  cout << MAX_INTENSITY << endl;
 }
 
 void output_pixel(int row, int col, Pixel **grid) {
-  if (grid[col][row].colored) {
-    purple();
-  } else {
-    gold();
-  }
-}
-
-void purple() {
-  cout << "85 37 130" << endl;
-}
-
-void gold() {
-  cout << "253 185 39" << endl;
+  Pixel pix = grid[row][col];
+  int red = (int)(round(pix.red * MAX_INTENSITY));
+  int green = (int)(round(pix.green * MAX_INTENSITY));
+  int blue = (int)(round(pix.blue * MAX_INTENSITY));
+  cout << red << " " << green << " " << blue << endl;
 }
 
 VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices) {
@@ -74,36 +89,24 @@ bool is_on_screen(VertexPtr v, int xres, int yres) {
 }
 
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  if (x_0 == x_1) {
-    vertical_line(x_0, y_0, x_1, y_1, grid);
-    return;
-  }
-
-  double m = (y_1 - y_0)*1.0/(x_1 - x_0)*1.0;
+  int dx = x_1 - x_0;
+  int dy = y_1 - y_0;
 
   if (x_0 > x_1) {
     // Swap points so we only have to consider 4 octants
     bresenham(x_1, y_1, x_0, y_0, grid);
   } else {
-    if ((0 <= m) && (m <= 1)) {
+    if (dy >= 0 && dx >= dy) {
       first_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if (1 < m) {
+    } else if (dy >= dx) {
       second_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if (-1 > m) {
+    } else if (-1*dy >= dx) {
       seventh_octant_bresenham(x_0, y_0, x_1, y_1, grid);
-    } else if ((0 > m) && (m >= -1)) {
+    } else if (dy < 0 && dx >= -1*dy) {
       eighth_octant_bresenham(x_0, y_0, x_1, y_1, grid);
     } else {
       throw "No octant found";
     }
-  }
-}
-
-void vertical_line(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
-  int y_small = y_0 > y_1 ? y_1 : y_0;
-  int y_big = y_0 > y_1 ? y_0 : y_1;
-  for (int y = y_small; y <= y_big; y++) {
-    fill(x_0, y, grid);
   }
 }
 
@@ -113,7 +116,7 @@ void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int x = x_0; x < x_1; x++) {
+  for (int x = x_0; x <= x_1; x++) {
     fill(x, y, grid);
     if (((epsilon + dy) << 1) < dx) {
       epsilon = epsilon + dy;
@@ -130,7 +133,7 @@ void second_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int y = y_0; y < y_1; y++) {
+  for (int y = y_0; y <= y_1; y++) {
     fill(x, y, grid);
     if (((epsilon + dx) << 1) < dy) {
       epsilon = epsilon + dx;
@@ -147,7 +150,7 @@ void seventh_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) 
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int y = y_0; y > y_1; y--) {
+  for (int y = y_0; y >= y_1; y--) {
     fill(x, y, grid);
     if (((epsilon + dx) << 1) < -1*dy) {
       epsilon = epsilon + dx;
@@ -164,7 +167,7 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
   int dx = x_1 - x_0;
   int dy = y_1 - y_0;
 
-  for (int x = x_0; x < x_1; x++) {
+  for (int x = x_0; x <= x_1; x++) {
     fill(x, y, grid);
     if (((epsilon + dy) << 1) > -1*dx) {
       epsilon = epsilon + dy;
@@ -176,5 +179,9 @@ void eighth_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {
 }
 
 void fill(int x, int y, Pixel **grid) {
-  grid[y][x].colored = true;
+  grid[y][x] = Pixel(MAX_INTENSITY, MAX_INTENSITY, MAX_INTENSITY);
+}
+
+void fill(int x, int y, Pixel **grid, Pixel color) {
+  grid[y][x] = color;
 }
