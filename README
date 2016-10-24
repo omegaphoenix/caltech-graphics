@@ -18,3 +18,5 @@ OR:
   make armadillo
   make sphere
   make sphere_attenuated
+
+Note: Tests don't work yet
