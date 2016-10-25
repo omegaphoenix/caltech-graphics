@@ -9,6 +9,9 @@ struct Normal {
   double y;
   double z;
 
+  Normal() {
+  }
+
   Normal(double x0, double y0, double z0) {
     set_normal(x0, y0, z0);
   }
