@@ -60,6 +60,10 @@
 #include <iostream>
 #include <vector>
 
+#include "light.hpp"
+#include "normal.hpp"
+#include "vertex.hpp"
+
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,51 +95,6 @@ void key_pressed(unsigned char key, int x, int y);
  * After Assignment 2, the 3D shaded surface renderer assignment, you should
  * have a fairly intuitive understanding of what these structs represent.
  */
-
-
-/* The following struct is used for representing a point light.
- *
- * Note that the position is represented in homogeneous coordinates rather than
- * the simple Cartesian coordinates that we would normally use. This is because
- * OpenGL requires us to specify a w-coordinate when we specify the positions
- * of our point lights. We specify the positions in the 'set_lights' function.
- */
-struct Point_Light
-{
-    /* Index 0 has the x-coordinate
-     * Index 1 has the y-coordinate
-     * Index 2 has the z-coordinate
-     * Index 3 has the w-coordinate
-     */
-    float position[4];
-
-    /* Index 0 has the r-component
-     * Index 1 has the g-component
-     * Index 2 has the b-component
-     */
-    float color[3];
-
-    /* This is our 'k' factor for attenuation as discussed in the lecture notes
-     * and extra credit of Assignment 2.
-     */
-    float attenuation_k;
-};
-
-/* The following struct is used for representing points and normals in world
- * coordinates.
- *
- * Notice how we are using this struct to represent points, but the struct
- * lacks a w-coordinate. Fortunately, OpenGL will handle all the complications
- * with the homogeneous component for us when we have it process the points.
- * We do not actually need to keep track of the w-coordinates of our points
- * when working in OpenGL.
- */
-struct Triple
-{
-    float x;
-    float y;
-    float z;
-};
 
 /* The following struct is used for storing a set of transformations.
  * Please note that this structure assumes that our scenes will give
@@ -203,8 +162,8 @@ struct Object
     /* See the note above and the comments in the 'draw_objects' and
      * 'create_cubes' functions for details about these buffer vectors.
      */
-    vector<Triple> vertex_buffer;
-    vector<Triple> normal_buffer;
+    vector<Vertex> vertex_buffer;
+    vector<Normal> normal_buffer;
 
     vector<Transforms> transform_sets;
 
@@ -249,7 +208,7 @@ float near_param = 1, far_param = 20,
 /* Self-explanatory lists of lights and objects.
  */
 
-vector<Point_Light> lights;
+vector<Light> lights;
 vector<Object> objects;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1215,7 +1174,7 @@ void create_lights()
     // Light 1 Below
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    Point_Light light1;
+    Light light1;
 
     light1.position[0] = -0.8;
     light1.position[1] = 0;
@@ -1233,7 +1192,7 @@ void create_lights()
     // Light 2 Below
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    Point_Light light2;
+    Light light2;
 
     light2.position[0] = 0.15;
     light2.position[1] = 0.85;
@@ -1252,7 +1211,7 @@ void create_lights()
     // Light 3 Below
     ///////////////////////////////////////////////////////////////////////////////////////////////    
 
-    Point_Light light3;
+    Light light3;
 
     light3.position[0] = 0.5;
     light3.position[1] = -0.5;
@@ -1307,42 +1266,42 @@ void create_cubes()
     // Points
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    Triple point1;
+    Vertex point1;
     point1.x = -1;
     point1.y = -1;
     point1.z = 1;
 
-    Triple point2;
+    Vertex point2;
     point2.x = 1;
     point2.y = -1;
     point2.z = 1;
 
-    Triple point3;
+    Vertex point3;
     point3.x = 1;
     point3.y = 1;
     point3.z = 1;
 
-    Triple point4;
+    Vertex point4;
     point4.x = -1;
     point4.y = 1;
     point4.z = 1;
 
-    Triple point5;
+    Vertex point5;
     point5.x = -1;
     point5.y = -1;
     point5.z = -1;
 
-    Triple point6;
+    Vertex point6;
     point6.x = 1;
     point6.y = -1;
     point6.z = -1;
 
-    Triple point7;
+    Vertex point7;
     point7.x = 1;
     point7.y = 1;
     point7.z = -1;
 
-    Triple point8;
+    Vertex point8;
     point8.x = -1;
     point8.y = 1;
     point8.z = -1;
@@ -1351,32 +1310,32 @@ void create_cubes()
     // Normals
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    Triple normal1;
+    Normal normal1;
     normal1.x = 0;
     normal1.y = 0;
     normal1.z = 1;
 
-    Triple normal2;
+    Normal normal2;
     normal2.x = 0;
     normal2.y = 0;
     normal2.z = -1;
 
-    Triple normal3;
+    Normal normal3;
     normal3.x = 0;
     normal3.y = 1;
     normal3.z = 0;
 
-    Triple normal4;
+    Normal normal4;
     normal4.x = 0;
     normal4.y = -1;
     normal4.z = 0;
 
-    Triple normal5;
+    Normal normal5;
     normal5.x = 1;
     normal5.y = 0;
     normal5.z = 0;
 
-    Triple normal6;
+    Normal normal6;
     normal6.x = -1;
     normal6.y = 0;
     normal6.z = 0;

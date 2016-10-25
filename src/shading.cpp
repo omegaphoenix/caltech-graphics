@@ -223,12 +223,22 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
   e_dir = normalize_vec(ver_to_mat(cam->pos) - ver_to_mat(v));
 
   for (vector<LightPtr>::iterator light_it = lights->begin(); light_it != lights->end(); ++light_it) {
-    l_p << (*light_it)->x, (*light_it)->y, (*light_it)->z;
-    l_c << (*light_it)->r, (*light_it)->g, (*light_it)->b;
+    LightPtr light = *light_it;
+
+    float x = light->position[0]/light->position[3];
+    float y = light->position[1]/light->position[3];
+    float z = light->position[2]/light->position[3];
+
+    float r = light->color[0];
+    float g = light->color[1];
+    float b = light->color[2];
+
+    l_p << x, y, z;
+    l_c << r, g, b;
     double dist = magnitude(l_p - ver_to_mat(v));
 
     // Multiply by attenuation factor
-    l_c = l_c / (1 + (*light_it)->attenuation * dist*dist);
+    l_c = l_c / (1 + (*light_it)->attenuation_k * dist*dist);
     l_dir = normalize_vec(l_p - ver_to_mat(v));
 
     l_diffuse = l_c * (max(0.0, (norm_to_mat(n) * l_dir.transpose()).sum()));

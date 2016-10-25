@@ -54,6 +54,19 @@ class ThreeDModel {
     shared_ptr<vector<FacePtr>> faces;
     MaterialPtr material;
 
+    vector<Vertex> vertex_buffer;
+    vector<Normal> normal_buffer;
+
+    /* Index 0 has the r-component
+     * Index 1 has the g-component
+     * Index 2 has the b-component
+     */
+    float ambient_reflect[3];
+    float diffuse_reflect[3];
+    float specular_reflect[3];
+
+    float shininess;
+
     // empty constructor
     ThreeDModel();
     // constructor using file

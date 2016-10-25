@@ -3,9 +3,9 @@
 
 // Represents a vertex of a model
 struct Vertex {
-  double x;
-  double y;
-  double z;
+  float x;
+  float y;
+  float z;
 
   Vertex() {
     set_vertex(0, 0, 0);

@@ -5,9 +5,9 @@
 
 // Represents a// Represents a normal of a surface
 struct Normal {
-  double x;
-  double y;
-  double z;
+  float x;
+  float y;
+  float z;
 
   Normal() {
   }

@@ -3,18 +3,22 @@
 
 // Represents a point light
 struct Light {
-  double x, y, z;
-  double r, g, b;
-  double attenuation;
+  float position[4];
+  float color[3];
+  float attenuation_k;
 
-  Light (double _x, double _y, double _z, double _r, double _g, double _b, double att) {
-    x = _x;
-    y = _y;
-    z = _z;
-    r = _r;
-    g = _g;
-    b = _b;
-    attenuation = att;
+  Light() {
+  }
+
+  Light(float x, float y, float z, float r, float g, float b, float att) {
+    position[0] = x;
+    position[1] = y;
+    position[2] = z;
+    position[3] = 1;
+    color[0] = r;
+    color[1] = g;
+    color[2] = b;
+    attenuation_k = att;
   }
 };
 
