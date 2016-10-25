@@ -1,5 +1,5 @@
-#ifndef THREE_D_MODEL_TRANSFORM_HPP
-#define THREE_D_MODEL_TRANSFORM_HPP
+#ifndef MODEL_TRANSFORM_HPP
+#define MODEL_TRANSFORM_HPP
 
 #include <memory> // shared_ptr
 #include <sstream>
@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "three_d_model.hpp"
+#include "model.hpp"
 #include "vertex.hpp"
 
 #include "Eigen/Dense"

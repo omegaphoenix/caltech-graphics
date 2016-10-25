@@ -9,8 +9,8 @@
 
 #include "camera.hpp"
 #include "light.hpp"
-#include "three_d_model.hpp" // .obj file data stored in model
-#include "three_d_model_transform.hpp"
+#include "model.hpp" // .obj file data stored in model
+#include "model_transform.hpp"
 
 using namespace std;
 

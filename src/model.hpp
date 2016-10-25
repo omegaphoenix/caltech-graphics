@@ -1,5 +1,5 @@
-#ifndef THREE_D_MODEL_HPP
-#define THREE_D_MODEL_HPP
+#ifndef MODEL_HPP
+#define MODEL_HPP
 
 #include <cstddef>
 #include <iostream>

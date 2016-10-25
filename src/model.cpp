@@ -1,4 +1,4 @@
-#include "three_d_model.hpp"
+#include "model.hpp"
 
 #include <cstddef>
 #include <iostream>

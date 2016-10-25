@@ -12,7 +12,7 @@
 #include "face.hpp"
 #include "light.hpp"
 #include "normal.hpp"
-#include "three_d_model.hpp"
+#include "model.hpp"
 #include "vertex.hpp"
 
 #include "Eigen/Dense"

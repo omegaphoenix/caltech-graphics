@@ -9,8 +9,8 @@
 
 #include "camera.hpp"
 #include "draw_pixels.hpp"
-#include "three_d_model.hpp"
-#include "three_d_model_transform.hpp"
+#include "model.hpp"
+#include "model_transform.hpp"
 
 using namespace std;
 

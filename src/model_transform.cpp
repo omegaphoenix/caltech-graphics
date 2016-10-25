@@ -1,4 +1,4 @@
-#include "three_d_model_transform.hpp"
+#include "model_transform.hpp"
 
 #include <memory> // shared_ptr
 #include <sstream>
@@ -7,7 +7,7 @@
 
 #include "camera.hpp"
 #include "normal.hpp"
-#include "three_d_model.hpp"
+#include "model.hpp"
 #include "vertex.hpp"
 
 #include "Eigen/Dense"

@@ -12,8 +12,8 @@
 #include "face.hpp" // represents triangular face
 #include "light.hpp"
 #include "normal.hpp"
-#include "three_d_model.hpp" // .obj file data stored in model
-#include "three_d_model_transform.hpp"
+#include "model.hpp" // .obj file data stored in model
+#include "model_transform.hpp"
 #include "vertex.hpp" // represents 3d coordinate
 
 using namespace std;
