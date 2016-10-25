@@ -13,18 +13,18 @@
 using namespace std;
 
 struct Material;
-struct ThreeDModel;
+struct Model;
 
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ModelPtr = shared_ptr<Model>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
-using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Represents the rgb values for one pixel on the screen

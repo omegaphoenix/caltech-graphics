@@ -16,13 +16,13 @@ using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
-using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+using ModelPtr = shared_ptr<Model>;
+using ModelTransformPtr = shared_ptr<ModelTransform>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
-using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 ModelVectorPtr store_obj_transform_file(char *file_name) {
@@ -31,7 +31,7 @@ ModelVectorPtr store_obj_transform_file(char *file_name) {
   // Parse light data to move ifstream along but discard
   get_light_data(obj_transform_file);
   // Parse .obj files
-  shared_ptr<map<string, ThreeDModelTransformPtr>> models =
+  shared_ptr<map<string, ModelTransformPtr>> models =
     get_objects(obj_transform_file, cam);
   // Create copies and perform geometric transformations
   ModelVectorPtr transformed = perform_transforms(obj_transform_file, models);
@@ -40,8 +40,8 @@ ModelVectorPtr store_obj_transform_file(char *file_name) {
 }
 
 // filename lines have been removed from the ifstream
-ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ThreeDModelTransformPtr>> models) {
-  ModelVectorPtr trans_models = ModelVectorPtr(new vector<ThreeDModelPtr>());
+ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models) {
+  ModelVectorPtr trans_models = ModelVectorPtr(new vector<ModelPtr>());
 
   vector<string> lines;
 
@@ -63,7 +63,7 @@ ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<s
   return trans_models;
 }
 
-ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ThreeDModelTransformPtr>> models) {
+ModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models) {
   // Remove name from vector of lines
   string name = lines.front();
   lines.erase(lines.begin());
@@ -75,7 +75,7 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
   MatrixPtr norm_trans_mat = create_norm_trans_mat(lines);
 
   // Apply geometric transforms to vertices and normals
-  ThreeDModelPtr new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
+  ModelPtr new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
   new_copy->material = material;
   return new_copy;
 }
@@ -83,7 +83,7 @@ ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, Th
 void print_ppm(int xres, int yres, ModelVectorPtr models) {
   Pixel **grid = new_grid(xres, yres);
 
-  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     (*model_it)->draw_model(xres, yres, grid);
   }
 
@@ -113,30 +113,30 @@ void delete_grid(int xres, int yres, Pixel **grid) {
 }
 
 void print_transformed_vertices(ModelVectorPtr models) {
-  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print_model_vertices(*model_it);
   }
 }
 
 void print_transformed_normals(ModelVectorPtr models) {
-  for (vector<ThreeDModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     print_model_normals(*model_it);
   }
 }
 
-void print_model_vertices(ThreeDModelPtr model) {
+void print_model_vertices(ModelPtr model) {
   cout << model->name << endl;
   print_vertices(model);
   cout << endl;
 }
 
-void print_model_normals(ThreeDModelPtr model) {
+void print_model_normals(ModelPtr model) {
   cout << model->name << endl;
   print_normals(model);
   cout << endl;
 }
 
-void print_vertices(ThreeDModelPtr model) {
+void print_vertices(ModelPtr model) {
   VerVectorPtr vertices = model->vertices;
 
   // 0-indexed vertex is NULL
@@ -147,7 +147,7 @@ void print_vertices(ThreeDModelPtr model) {
   }
 }
 
-void print_normals(ThreeDModelPtr model) {
+void print_normals(ModelPtr model) {
   NormVectorPtr normals = model->normals;
 
   // 0-indexed vertex is NULL

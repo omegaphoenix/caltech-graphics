@@ -14,17 +14,17 @@
 
 using namespace std;
 
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
-using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
-using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using ModelPtr = shared_ptr<Model>;
+using ModelTransformPtr = shared_ptr<ModelTransform>;
+using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 
 // store original objects from .obj files
 ModelVectorPtr store_obj_transform_file(char *file_name);
 
 // transforms helper function for all transforms
-ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ThreeDModelTransformPtr>> models);
+ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models);
 // transforms helper function for one copy
-ThreeDModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ThreeDModelTransformPtr>> models);
+ModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models);
 
 // create copies, transform vectors, and print name and vectors
 void print_ppm(int xres, int yres, ModelVectorPtr models);
@@ -39,10 +39,10 @@ void print_transformed_vertices(ModelVectorPtr models);
 void print_transformed_normals(ModelVectorPtr models);
 
 // helper functions to print model name and vertices and normals
-void print_model_vertices(ThreeDModelPtr model);
-void print_model_normals(ThreeDModelPtr model);
+void print_model_vertices(ModelPtr model);
+void print_model_normals(ModelPtr model);
 // Prints vertices and normals
-void print_vertices(ThreeDModelPtr model);
-void print_normals(ThreeDModelPtr model);
+void print_vertices(ModelPtr model);
+void print_normals(ModelPtr model);
 
 #endif

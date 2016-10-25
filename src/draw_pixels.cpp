@@ -28,11 +28,11 @@ using MaterialPtr = shared_ptr<Material>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ModelPtr = shared_ptr<Model>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
-using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 void output_ppm(int xres, int yres, Pixel **grid) {

@@ -23,7 +23,7 @@ using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // empty constructor
-ThreeDModel :: ThreeDModel() {
+Model :: Model() {
   name = "";
   setup_vertices();
   setup_normals();
@@ -32,7 +32,7 @@ ThreeDModel :: ThreeDModel() {
 }
 
 // constructor using file
-ThreeDModel :: ThreeDModel(string raw_file_name) {
+Model :: Model(string raw_file_name) {
   name = get_name(raw_file_name);
   setup_vertices();
   setup_normals();
@@ -41,34 +41,34 @@ ThreeDModel :: ThreeDModel(string raw_file_name) {
 }
 
 // helper function for constructor to get object name
-string ThreeDModel :: get_name(string raw_file_name) {
+string Model :: get_name(string raw_file_name) {
   // Remove .obj from name
   return raw_file_name.substr(0, raw_file_name.size() - 4);
 }
 
 // helper function for constructor to get vertices
-void ThreeDModel :: setup_vertices() {
+void Model :: setup_vertices() {
   vertices = VerVectorPtr(new vector<VertexPtr>());
   // Index 0 is NULL because vertices are 1-indexed
   vertices->push_back(NULL);
 }
 
 // helper function for constructor to get normals
-void ThreeDModel :: setup_normals() {
+void Model :: setup_normals() {
   normals = NormVectorPtr(new vector<NormalPtr>());
   // Index 0 is NULL because vertices are 1-indexed
   normals->push_back(NULL);
 }
 
 // Draw model on the grid representing the screen
-void ThreeDModel :: draw_model(int xres, int yres, Pixel **grid) {
+void Model :: draw_model(int xres, int yres, Pixel **grid) {
   for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
     draw_face(xres, yres, *face_it, grid);
   }
 }
 
 // Draw a single face on the grid representing the screen
-void ThreeDModel :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
+void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
   VertexPtr v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
   VertexPtr v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
   VertexPtr v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);

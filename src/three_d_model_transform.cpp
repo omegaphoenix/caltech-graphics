@@ -15,7 +15,7 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ModelPtr = shared_ptr<Model>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
 using NormalPtr = shared_ptr<Normal>;
@@ -24,7 +24,7 @@ using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Perform geometric transforms on vertices
-VerVectorPtr ThreeDModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
+VerVectorPtr ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
   VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
   // Index 0 is NULL because vertices are 1-indexed
   vertices->push_back(NULL);
@@ -39,7 +39,7 @@ VerVectorPtr ThreeDModelTransform :: transform_model_vertices(MatrixPtr trans_ma
 }
 
 // Perform geometric transforms on normals
-NormVectorPtr ThreeDModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
+NormVectorPtr ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
   NormVectorPtr normals = NormVectorPtr(new vector<NormalPtr>());
   // Index 0 is NULL because normals are 1-indexed
   normals->push_back(NULL);
@@ -54,7 +54,7 @@ NormVectorPtr ThreeDModelTransform :: transform_model_normals(MatrixPtr trans_ma
 }
 
 // Perform geometric and camera perspective transforms on vertices
-VerVectorPtr ThreeDModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
+VerVectorPtr ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
   VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
   VerVectorPtr geo_transform_vertices = transform_model_vertices(trans_mat);
 
@@ -71,8 +71,8 @@ VerVectorPtr ThreeDModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
 }
 
 // Apply all transformations to the vertices to cartesian NDC
-ThreeDModelPtr ThreeDModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
-  ThreeDModelPtr copy = ThreeDModelPtr(new ThreeDModel());
+ModelPtr ModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
+  ModelPtr copy = ModelPtr(new Model());
   copy->vertices = transform_model_vertices(trans_mat);
   copy->normals = transform_model_normals(norm_trans_mat);
   // copy->vertices = cartesian_NDC(trans_mat);

@@ -13,18 +13,18 @@
 using namespace std;
 
 struct Material;
-struct ThreeDModel;
+struct Model;
 
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ModelPtr = shared_ptr<Model>;
 using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
-using ModelVectorPtr = shared_ptr<vector<ThreeDModelPtr>>;
+using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Struct which has a vertex and color
@@ -44,13 +44,13 @@ void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, i
 void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 
 // Use phong shading on single model copy
-void phong_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_faces(ModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use phong shading on single triangular face
-void phong_shading(ThreeDModelPtr model, FacePtr face, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single model copy
-void gouraud_faces(ThreeDModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_faces(ModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single triangular face
-void gouraud_shading(ThreeDModelPtr model, FacePtr face, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_shading(ModelPtr model, FacePtr face, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 
 // Combine 3 normals by weight
 NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c);

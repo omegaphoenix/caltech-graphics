@@ -16,8 +16,8 @@ using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
-using ThreeDModelTransformPtr = shared_ptr<ThreeDModelTransform>;
+using ModelPtr = shared_ptr<Model>;
+using ModelTransformPtr = shared_ptr<ModelTransform>;
 
 using LightVecPtr = shared_ptr<vector<LightPtr>>;
 
@@ -33,7 +33,7 @@ LightVecPtr get_light_data(ifstream& obj_transform_file);
 void store_light_line(string line, LightVecPtr lights);
 
 // parses multiple .obj files
-shared_ptr<vector<ThreeDModelPtr>> store_file_objects(int argc, char **argv);
+shared_ptr<vector<ModelPtr>> store_file_objects(int argc, char **argv);
 
 // store material properties of object copy
 MaterialPtr store_material_properties(vector<string> lines);
@@ -43,10 +43,10 @@ void store_specular_prop(vector<string> lines, MaterialPtr material);
 void store_shininess_prop(vector<string> lines, MaterialPtr material);
 
 // helper function for parsing one file
-ThreeDModelPtr parse_file_to_model(string file_name);
+ModelPtr parse_file_to_model(string file_name);
 
 // store one line of file as face or vertex
-void store_obj_line(string line, ThreeDModelPtr model);
+void store_obj_line(string line, ModelPtr model);
 
 // helper functions for identifying lines of file
 bool is_vertex_line(string line);
@@ -54,16 +54,16 @@ bool is_normal_line(string line);
 bool is_face_line(string line);
 
 // helper functions for storing lines of file
-void store_vertex_line(string line, ThreeDModelPtr model);
-void store_normal_line(string line, ThreeDModelPtr model);
-void store_face_line(string line, ThreeDModelPtr model);
+void store_vertex_line(string line, ModelPtr model);
+void store_normal_line(string line, ModelPtr model);
+void store_face_line(string line, ModelPtr model);
 
 // helper function to get objects from .obj files
-shared_ptr<map<string, ThreeDModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam);
+shared_ptr<map<string, ModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam);
 // helper function to create objects from line and place it in the map
-void create_obj(string line, shared_ptr<map<string, ThreeDModelTransformPtr>> models, CameraPtr cam);
+void create_obj(string line, shared_ptr<map<string, ModelTransformPtr>> models, CameraPtr cam);
 // helper function to create new object
-ThreeDModelTransformPtr create_model(string obj_name, string obj_filename);
+ModelTransformPtr create_model(string obj_name, string obj_filename);
 // convert from string to char *
 char *convert_to_char_arr(string input_string);
 

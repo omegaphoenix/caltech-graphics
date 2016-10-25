@@ -106,7 +106,7 @@ struct Material {
  * in the 'vertex_buffer'. With the cube example, since the "vertex array"
  * has "36" vertices, the "normal array" also has "36" normals.
  */
-class ThreeDModel {
+class Model {
   public:
     string name;
     VerVectorPtr vertices;
@@ -131,9 +131,9 @@ class ThreeDModel {
     float shininess;
 
     // empty constructor
-    ThreeDModel();
+    Model();
     // constructor using file
-    ThreeDModel(string raw_file_name);
+    Model(string raw_file_name);
 
     // helper function for constructor to get object name
     string get_name(string raw_file_name);

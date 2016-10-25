@@ -15,14 +15,14 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using ThreeDModelPtr = shared_ptr<ThreeDModel>;
+using ModelPtr = shared_ptr<Model>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
-class ThreeDModelTransform {
+class ModelTransform {
   public:
-    ThreeDModelPtr model;
+    ModelPtr model;
     int copy_num;
     string name;
 
@@ -37,7 +37,7 @@ class ThreeDModelTransform {
     VerVectorPtr cartesian_NDC(MatrixPtr trans_mat);
 
     // Apply all transformations to the vertices to cartesian NDC
-    ThreeDModelPtr apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat);
+    ModelPtr apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat);
 };
 
 #endif

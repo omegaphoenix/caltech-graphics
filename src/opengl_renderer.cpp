@@ -128,7 +128,7 @@ float near_param = 1, far_param = 20,
  */
 
 vector<Light> lights;
-vector<ThreeDModel> objects;
+vector<Model> objects;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -243,7 +243,7 @@ void init(void)
 
     /* The following two lines tell OpenGL to enable its "vertex array" and
      * "normal array" functionality. More details on these arrays are given
-     * in the comments on the 'ThreeDModel' class and the 'draw_objects' and
+     * in the comments on the 'Model' class and the 'draw_objects' and
      * 'create_objects' functions.
      */
     glEnableClientState(GL_VERTEX_ARRAY);
@@ -1161,7 +1161,7 @@ void create_lights()
  */
 void create_cubes()
 {
-    ThreeDModel cube1;
+    Model cube1;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Reflectances
@@ -1405,7 +1405,7 @@ void create_cubes()
     ///////////////////////////////////////////////////////////////////////////////////////////////
 
     /* We are just going to make them identical out of laziness... */
-    ThreeDModel cube2 = cube1;
+    Model cube2 = cube1;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     // Transformations for Cube 1
