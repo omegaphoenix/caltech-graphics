@@ -31,7 +31,7 @@ using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
 using VertexPtr = shared_ptr<Vertex>;
 
-using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 

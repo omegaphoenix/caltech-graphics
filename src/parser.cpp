@@ -26,7 +26,7 @@ using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
 using VertexPtr = shared_ptr<Vertex>;
 
-using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using LightVecPtr = shared_ptr<vector<Light>>;
 
 CameraPtr parse_camera_data(char *file_name) {
   ifstream obj_transform_file(file_name);

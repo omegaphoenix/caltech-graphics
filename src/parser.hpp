@@ -19,7 +19,7 @@ using LightPtr = shared_ptr<Light>;
 using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
 
-using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using LightVecPtr = shared_ptr<vector<Light>>;
 
 // parse camera and light lines
 CameraPtr parse_camera_data(char *file_name);

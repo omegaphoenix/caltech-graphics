@@ -32,11 +32,11 @@ using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
 using VertexPtr = shared_ptr<Vertex>;
 
-using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
-void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void phong(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     phong_faces(*model_it, lights, cam, xres, yres, grid, buffer);
@@ -46,7 +46,7 @@ void phong(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, i
   delete[] buffer;
 }
 
-void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void gouraud(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
     gouraud_faces(*model_it, lights, cam, xres, yres, grid, buffer);
@@ -56,14 +56,14 @@ void gouraud(ModelVectorPtr models, LightVecPtr lights, CameraPtr cam, int xres,
   delete[] buffer;
 }
 
-void phong_faces(ModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void phong_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
     FacePtr face = *face_it;
     phong_shading(model, face, model->material, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   VerVectorPtr vertices = model->vertices;
   NormVectorPtr normals = model->normals;
 
@@ -118,14 +118,14 @@ void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, LightVecP
   }
 }
 
-void gouraud_faces(ModelPtr model, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void gouraud_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
     FacePtr face = *face_it;
     gouraud_shading(model, face, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void gouraud_shading(ModelPtr model, FacePtr face, LightVecPtr lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void gouraud_shading(ModelPtr model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   VerVectorPtr vertices = model->vertices;
   NormVectorPtr normals = model->normals;
 
@@ -206,7 +206,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   }
 }
 
-Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr lights, CameraPtr cam) {
+Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
   // 3D vectors
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
@@ -222,23 +222,23 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, LightVecPtr light
 
   e_dir = normalize_vec(ver_to_mat(cam->pos) - ver_to_mat(v));
 
-  for (vector<LightPtr>::iterator light_it = lights->begin(); light_it != lights->end(); ++light_it) {
-    LightPtr light = *light_it;
+  for (vector<Light>::iterator light_it = lights.begin(); light_it != lights.end(); ++light_it) {
+    Light light = *light_it;
 
-    float x = light->position[0]/light->position[3];
-    float y = light->position[1]/light->position[3];
-    float z = light->position[2]/light->position[3];
+    float x = light.position[0]/light.position[3];
+    float y = light.position[1]/light.position[3];
+    float z = light.position[2]/light.position[3];
 
-    float r = light->color[0];
-    float g = light->color[1];
-    float b = light->color[2];
+    float r = light.color[0];
+    float g = light.color[1];
+    float b = light.color[2];
 
     l_p << x, y, z;
     l_c << r, g, b;
     double dist = magnitude(l_p - ver_to_mat(v));
 
     // Multiply by attenuation factor
-    l_c = l_c / (1 + (*light_it)->attenuation_k * dist*dist);
+    l_c = l_c / (1 + (*light_it).attenuation_k * dist*dist);
     l_dir = normalize_vec(l_p - ver_to_mat(v));
 
     l_diffuse = l_c * (max(0.0, (norm_to_mat(n) * l_dir.transpose()).sum()));

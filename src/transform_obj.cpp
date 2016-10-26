@@ -21,9 +21,21 @@ using ModelTransformPtr = shared_ptr<ModelTransform>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using VertexPtr = shared_ptr<Vertex>;
 
-using LightVecPtr = shared_ptr<vector<LightPtr>>;
+using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
+
+vector<Model> parse_obj_data(char *file_name) {
+  vector<Model> objects = vector<Model>();
+
+  ModelVectorPtr models = store_obj_transform_file(file_name);
+  // Convert to vector<Model> from ModelVectorPtr
+  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+    objects.push_back(**model_it);
+  }
+
+  return objects;
+}
 
 ModelVectorPtr store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
