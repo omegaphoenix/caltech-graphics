@@ -11,7 +11,6 @@
 
 using namespace std;
 
-using NormalPtr = shared_ptr<Normal>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 
 // Return the inverse transform from the vector of lines transformed to matrices
@@ -50,7 +49,7 @@ MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle
 
 // Multiply vertex coordinates by matrix or scalar
 Vertex transform_vertex(MatrixPtr trans_mat, Vertex vertex);
-NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr vertex);
+Normal transform_normal(MatrixPtr trans_mat, Normal vertex);
 Vertex scale_vertex(double factor, Vertex vertex);
 
 #endif

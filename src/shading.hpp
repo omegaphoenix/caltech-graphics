@@ -49,14 +49,14 @@ void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, i
 void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 
 // Combine 3 normals by weight
-NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c);
+Normal combine_normals(double alpha, double beta, double gamma, Normal n_a, Normal n_b, Normal n_c);
 // Combine 3 vertices by weight
 Vertex combine_vertices(double alpha, double beta, double gamma, Vertex v_a, Vertex v_b, Vertex v_c);
 
 // Rasterize triangle in Pixel grid
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer);
 // Calculate the lighting of the material at a vertex
-Pixel lighting(Vertex v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam);
+Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> lights, CameraPtr cam);
 
 // Check if face faces away from camera
 bool backfacing(Vertex NDC_a, Vertex NDC_b, Vertex NDC_c);
@@ -83,7 +83,7 @@ int max_y_coord(Vertex a, Vertex b, Vertex c, int yres);
 // Convert to matrix (3d vector)
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect);
 Eigen::MatrixXd ver_to_mat(Vertex ver);
-Eigen::MatrixXd norm_to_mat(NormalPtr norm);
+Eigen::MatrixXd norm_to_mat(Normal norm);
 
 // Normalize 3D vector
 Eigen::MatrixXd normalize_vec(Eigen::MatrixXd mat);

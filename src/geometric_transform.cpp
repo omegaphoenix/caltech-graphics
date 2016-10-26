@@ -192,11 +192,11 @@ Vertex transform_vertex(MatrixPtr trans_mat, Vertex vertex) {
   return Vertex(new_x, new_y, new_z);
 }
 
-NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr normal) {
+Normal transform_normal(MatrixPtr trans_mat, Normal normal) {
   MatrixPtr normal_mat = MatrixPtr(new Eigen::MatrixXd(4, 1));
-  *normal_mat << normal->x, // row1
-                 normal->y, // row2
-                 normal->z, // row3
+  *normal_mat << normal.x, // row1
+                 normal.y, // row2
+                 normal.z, // row3
                  1;         // row4
 
   Eigen::MatrixXd transformed = *trans_mat * *normal_mat;
@@ -205,7 +205,7 @@ NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr normal) {
   double new_y = transformed(1) / transformed(3);
   double new_z = transformed(2) / transformed(3);
 
-  return NormalPtr(new Normal(new_x, new_y, new_z));
+  return Normal(new_x, new_y, new_z);
 }
 
 Vertex scale_vertex(double factor, Vertex vertex) {

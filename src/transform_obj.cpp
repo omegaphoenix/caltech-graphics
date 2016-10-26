@@ -150,12 +150,12 @@ void print_vertices(Model model) {
 }
 
 void print_normals(Model model) {
-  NormVectorPtr normals = model.normals;
+  vector<Normal> normals = model.normals;
 
   // 0-indexed vertex is NULL
-  vector<NormalPtr>::iterator normal_it = ++(normals->begin());
-  while (normal_it != normals->end()) {
-    cout << (*normal_it)->x << " " << (*normal_it)->y << " " << (*normal_it)->z << endl;
+  vector<Normal>::iterator normal_it = ++(normals.begin());
+  while (normal_it != normals.end()) {
+    cout << (*normal_it).x << " " << (*normal_it).y << " " << (*normal_it).z << endl;
     ++normal_it;
   }
 }

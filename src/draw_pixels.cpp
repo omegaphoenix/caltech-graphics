@@ -26,7 +26,6 @@ using FacePtr = shared_ptr<Face>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
 

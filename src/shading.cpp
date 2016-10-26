@@ -27,9 +27,7 @@ using FacePtr = shared_ptr<Face>;
 using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using ModelPtr = shared_ptr<Model>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
@@ -63,15 +61,15 @@ void phong_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int
 
 void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   vector<Vertex> vertices = model.vertex_buffer;
-  NormVectorPtr normals = model.normals;
+  vector<Normal> normals = model.normals;
 
   Vertex v_a = vertices[face->vertex1];
   Vertex v_b = vertices[face->vertex2];
   Vertex v_c = vertices[face->vertex3];
 
-  NormalPtr n_a = (*normals)[face->normal1];
-  NormalPtr n_b = (*normals)[face->normal2];
-  NormalPtr n_c = (*normals)[face->normal3];
+  Normal n_a = normals[face->normal1];
+  Normal n_b = normals[face->normal2];
+  Normal n_c = normals[face->normal3];
 
   // Transform to NDC coordinates
   Vertex NDC_a = cam->cam_transform(v_a);
@@ -105,7 +103,7 @@ void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light
           buffer[y][x] = NDC.z;
 
           Vertex v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
-          NormalPtr n = combine_normals(alpha, beta, gamma, n_a, n_b, n_c);
+          Normal n = combine_normals(alpha, beta, gamma, n_a, n_b, n_c);
 
           // Calculate lighting per pixel
           Pixel color = lighting(v, n, material, lights, cam);
@@ -125,16 +123,16 @@ void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, i
 
 void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   vector<Vertex> vertices = model.vertex_buffer;
-  NormVectorPtr normals = model.normals;
+  vector<Normal> normals = model.normals;
 
   Vertex v_a = vertices[face->vertex1];
   Vertex v_b = vertices[face->vertex2];
   Vertex v_c = vertices[face->vertex3];
 
   // Calculate lighting each each vertex of face
-  Pixel color_a = lighting(v_a, (*normals)[face->normal1], model.material, lights, cam);
-  Pixel color_b = lighting(v_b, (*normals)[face->normal2], model.material, lights, cam);
-  Pixel color_c = lighting(v_c, (*normals)[face->normal3], model.material, lights, cam);
+  Pixel color_a = lighting(v_a, normals[face->normal1], model.material, lights, cam);
+  Pixel color_b = lighting(v_b, normals[face->normal2], model.material, lights, cam);
+  Pixel color_c = lighting(v_c, normals[face->normal3], model.material, lights, cam);
 
   // Transform to NDC coordinates
   Vertex NDC_a = cam->cam_transform(v_a);
@@ -149,12 +147,12 @@ void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr 
   raster_tri(a, b, c, xres, yres, grid, buffer);
 }
 
-NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c) {
-  double x = alpha*n_a->x + beta*n_b->x + gamma*n_c->x;
-  double y = alpha*n_a->y + beta*n_b->y + gamma*n_c->y;
-  double z = alpha*n_a->z + beta*n_b->z + gamma*n_c->z;
+Normal combine_normals(double alpha, double beta, double gamma, Normal n_a, Normal n_b, Normal n_c) {
+  double x = alpha*n_a.x + beta*n_b.x + gamma*n_c.x;
+  double y = alpha*n_a.y + beta*n_b.y + gamma*n_c.y;
+  double z = alpha*n_a.z + beta*n_b.z + gamma*n_c.z;
 
-  return NormalPtr(new Normal(x, y, z));
+  return Normal(x, y, z);
 }
 
 Vertex combine_vertices(double alpha, double beta, double gamma, Vertex v_a, Vertex v_b, Vertex v_c) {
@@ -204,7 +202,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   }
 }
 
-Pixel lighting(Vertex v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
+Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
   // 3D vectors
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
@@ -320,9 +318,9 @@ Eigen::MatrixXd ver_to_mat(Vertex ver) {
   return res;
 }
 
-Eigen::MatrixXd norm_to_mat(NormalPtr norm) {
+Eigen::MatrixXd norm_to_mat(Normal norm) {
   Eigen::MatrixXd res(1, 3);
-  res << norm->x, norm->y, norm->z;
+  res << norm.x, norm.y, norm.z;
   return res;
 }
 

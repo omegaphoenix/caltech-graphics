@@ -205,7 +205,7 @@ void store_normal_line(string line, Model &model) {
     throw "Wrong number of arguments to normal line";
   }
 
-  model.normals->push_back(NormalPtr(new Normal(x, y, z)));
+  model.normals.push_back(Normal(x, y, z));
 }
 
 void store_face_line(string line, Model &model) {

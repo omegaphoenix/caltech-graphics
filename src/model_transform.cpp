@@ -17,9 +17,6 @@ using namespace std;
 using CameraPtr = shared_ptr<Camera>;
 using ModelPtr = shared_ptr<Model>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using NormalPtr = shared_ptr<Normal>;
-
-using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 // Perform geometric transforms on vertices
 vector<Vertex> ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
@@ -37,14 +34,14 @@ vector<Vertex> ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
 }
 
 // Perform geometric transforms on normals
-NormVectorPtr ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
-  NormVectorPtr normals = NormVectorPtr(new vector<NormalPtr>());
+vector<Normal> ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
+  vector<Normal> normals = vector<Normal>();
   // Index 0 is NULL because normals are 1-indexed
-  normals->push_back(NULL);
+  normals.push_back(Normal());
 
-  vector<NormalPtr>::iterator normal_it = ++(model.normals->begin());
-  while (normal_it != model.normals->end()) {
-    normals->push_back(transform_normal(trans_mat, *normal_it));
+  vector<Normal>::iterator normal_it = ++(model.normals.begin());
+  while (normal_it != model.normals.end()) {
+    normals.push_back(transform_normal(trans_mat, *normal_it));
     ++normal_it;
   }
 

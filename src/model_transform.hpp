@@ -29,7 +29,7 @@ class ModelTransform {
     // Perform geometric transforms on vertices
     vector<Vertex> transform_model_vertices(MatrixPtr trans_mat);
     // Perform geometric transforms on normals
-    NormVectorPtr transform_model_normals(MatrixPtr trans_mat);
+    vector<Normal> transform_model_normals(MatrixPtr trans_mat);
 
     // Perform geometric and camera perspective transforms on vertices
     vector<Vertex> cartesian_NDC(MatrixPtr trans_mat);

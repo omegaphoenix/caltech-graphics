@@ -15,10 +15,8 @@ using namespace std;
 
 using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<Material>;
-using NormalPtr = shared_ptr<Normal>;
 
 using FaceVectorPtr = shared_ptr<vector<FacePtr>>;
-using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 // empty constructor
 Model :: Model() {
@@ -53,9 +51,9 @@ void Model :: setup_vertices() {
 
 // helper function for constructor to get normals
 void Model :: setup_normals() {
-  normals = NormVectorPtr(new vector<NormalPtr>());
+  normals = vector<Normal>();
   // Index 0 is filler because vertices are 1-indexed
-  normals->push_back(NULL);
+  normals.push_back(Normal());
 }
 
 // Draw model on the grid representing the screen

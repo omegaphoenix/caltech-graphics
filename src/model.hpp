@@ -107,8 +107,7 @@ struct Material {
 class Model {
   public:
     string name;
-    vector<Vertex> vertices;
-    NormVectorPtr normals;
+    vector<Normal> normals;
     shared_ptr<vector<FacePtr>> faces;
     MaterialPtr material;
 
