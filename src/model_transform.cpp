@@ -27,8 +27,8 @@ vector<Vertex> ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
   // Index 0 is filler because vertices are 1-indexed
   vertices.push_back(Vertex());
 
-  vector<Vertex>::iterator vertex_it = ++(model.vertices.begin());
-  while (vertex_it != model.vertices.end()) {
+  vector<Vertex>::iterator vertex_it = ++(model.vertex_buffer.begin());
+  while (vertex_it != model.vertex_buffer.end()) {
     vertices.push_back(transform_vertex(trans_mat, *vertex_it));
     ++vertex_it;
   }
@@ -71,7 +71,7 @@ vector<Vertex> ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
 // Apply all transformations to the vertices to cartesian NDC
 Model ModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
   Model copy = Model();
-  copy.vertices = transform_model_vertices(trans_mat);
+  copy.vertex_buffer = transform_model_vertices(trans_mat);
   copy.normals = transform_model_normals(norm_trans_mat);
   // copy->vertices = cartesian_NDC(trans_mat);
   copy.faces = model.faces;
