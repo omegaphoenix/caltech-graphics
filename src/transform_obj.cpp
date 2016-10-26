@@ -79,6 +79,7 @@ Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransf
   // Apply geometric transforms to vertices and normals
   Model new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
   new_copy.material = material;
+  new_copy.set_variables();
   return new_copy;
 }
 

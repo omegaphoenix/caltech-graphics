@@ -110,7 +110,6 @@ class Model {
     shared_ptr<vector<FacePtr>> faces;
     MaterialPtr material;
 
-    // Redundant variables
     vector<Vertex> vertex_buffer;
     vector<Normal> normal_buffer;
 
@@ -141,6 +140,9 @@ class Model {
     void draw_model(int xres, int yres, Pixel **grid);
     // Draw a single face on the grid representing the screen
     void draw_face(int xres, int yres, FacePtr face, Pixel **grid);
+
+    // Set redundant varibles to be used in OpenGL framework
+    void set_variables();
 };
 
 #endif

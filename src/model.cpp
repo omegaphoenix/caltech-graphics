@@ -73,3 +73,19 @@ void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
   rasterize(v2, v3, grid, xres, yres);
   rasterize(v3, v1, grid, xres, yres);
 }
+
+void Model :: set_variables() {
+  ambient_reflect[0] = material->ambient->red;
+  ambient_reflect[1] = material->ambient->green;
+  ambient_reflect[2] = material->ambient->blue;
+
+  diffuse_reflect[0] = material->diffuse->red;
+  diffuse_reflect[1] = material->diffuse->green;
+  diffuse_reflect[2] = material->diffuse->blue;
+
+  specular_reflect[0] = material->specular->red;
+  specular_reflect[1] = material->specular->green;
+  specular_reflect[2] = material->specular->blue;
+
+  shininess = material->shininess;
+}
