@@ -22,7 +22,7 @@ LIBS = -lGLEW -lGL -lGLU -lglut -lm
 LIBDIR = -L/usr/X11R6/lib -L/usr/local/lib
 
 all: $(TARGET)
-	./$(TARGET) data/scene_cube1.txt 800 800 | display
+	./$(TARGET) data/scene_cube1.txt 800 800
 
 cube1: $(TARGET)
 	./$(TARGET) data/scene_cube1.txt 800 800

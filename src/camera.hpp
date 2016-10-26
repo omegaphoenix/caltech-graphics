@@ -18,7 +18,7 @@ using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 // Represents the camera position, orientation, and perspective
 struct Camera {
   Vertex pos, orient;
-  double orient_angle;
+  float orient_angle;
 
   double near, far, left, right, top, bottom;
 

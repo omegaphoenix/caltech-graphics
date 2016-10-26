@@ -1061,332 +1061,6 @@ void key_pressed(unsigned char key, int x, int y) {
   }
 }
 
-/* 'create_cubes' function:
- *
- * We hardcode all the properties of our cubes in this function. The only
- * relatively interesting part of this function is seeing how we form our
- * vertex and normal arrays. You will be able to form your vertex and normal
- * arrays more elegantly than this because the parser will have all the vertices,
- * normals, and facesets all stored in nice vectors. You will also not have to
- * hardcode any reflectances, transformations, etc, since the parser will also
- * have those all initialized for you.
- *
- * We are rendering our cubes with triangles, so each cube has 12 (triangle) faces
- * in all.
- */
-void create_cubes() {
-  Model cube1;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Reflectances
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  cube1.ambient_reflect[0] = 0.2;
-  cube1.ambient_reflect[1] = 0.2;
-  cube1.ambient_reflect[2] = 0.2;
-
-  cube1.diffuse_reflect[0] = 0.6;
-  cube1.diffuse_reflect[1] = 0.6;
-  cube1.diffuse_reflect[2] = 0.6;
-
-  cube1.specular_reflect[0] = 1;
-  cube1.specular_reflect[1] = 1;
-  cube1.specular_reflect[2] = 1;
-
-  cube1.shininess = 5.0;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Points
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Vertex point1;
-  point1.x = -1;
-  point1.y = -1;
-  point1.z = 1;
-
-  Vertex point2;
-  point2.x = 1;
-  point2.y = -1;
-  point2.z = 1;
-
-  Vertex point3;
-  point3.x = 1;
-  point3.y = 1;
-  point3.z = 1;
-
-  Vertex point4;
-  point4.x = -1;
-  point4.y = 1;
-  point4.z = 1;
-
-  Vertex point5;
-  point5.x = -1;
-  point5.y = -1;
-  point5.z = -1;
-
-  Vertex point6;
-  point6.x = 1;
-  point6.y = -1;
-  point6.z = -1;
-
-  Vertex point7;
-  point7.x = 1;
-  point7.y = 1;
-  point7.z = -1;
-
-  Vertex point8;
-  point8.x = -1;
-  point8.y = 1;
-  point8.z = -1;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Normals
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Normal normal1;
-  normal1.x = 0;
-  normal1.y = 0;
-  normal1.z = 1;
-
-  Normal normal2;
-  normal2.x = 0;
-  normal2.y = 0;
-  normal2.z = -1;
-
-  Normal normal3;
-  normal3.x = 0;
-  normal3.y = 1;
-  normal3.z = 0;
-
-  Normal normal4;
-  normal4.x = 0;
-  normal4.y = -1;
-  normal4.z = 0;
-
-  Normal normal5;
-  normal5.x = 1;
-  normal5.y = 0;
-  normal5.z = 0;
-
-  Normal normal6;
-  normal6.x = -1;
-  normal6.y = 0;
-  normal6.z = 0;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Vertex and Normal Arrays
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  /* We are rendering our cubes with triangles, so each cube has 12 (triangle) faces
-   * in all.
-   */
-
-  /* Face 1: */
-
-  cube1.vertex_buffer.push_back(point1);
-  cube1.normal_buffer.push_back(normal1);
-
-  cube1.vertex_buffer.push_back(point2);
-  cube1.normal_buffer.push_back(normal1);
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal1);
-
-  /* Face 2: */
-
-  cube1.vertex_buffer.push_back(point1);
-  cube1.normal_buffer.push_back(normal1);
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal1);
-
-  cube1.vertex_buffer.push_back(point4);
-  cube1.normal_buffer.push_back(normal1);
-
-  /* Face 3: */
-
-  cube1.vertex_buffer.push_back(point6);
-  cube1.normal_buffer.push_back(normal2);
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal2);
-
-  cube1.vertex_buffer.push_back(point7);
-  cube1.normal_buffer.push_back(normal2);
-
-  /* Face 4: */
-
-  cube1.vertex_buffer.push_back(point7);
-  cube1.normal_buffer.push_back(normal2);
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal2);
-
-  cube1.vertex_buffer.push_back(point8);
-  cube1.normal_buffer.push_back(normal2);
-
-  /* Face 5: */
-
-  cube1.vertex_buffer.push_back(point2);
-  cube1.normal_buffer.push_back(normal5);
-
-  cube1.vertex_buffer.push_back(point6);
-  cube1.normal_buffer.push_back(normal5);
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal5);
-
-  /* Face 6: */
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal5);
-
-  cube1.vertex_buffer.push_back(point6);
-  cube1.normal_buffer.push_back(normal5);
-
-  cube1.vertex_buffer.push_back(point7);
-  cube1.normal_buffer.push_back(normal5);
-
-  /* Face 7: */
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal6);
-
-  cube1.vertex_buffer.push_back(point4);
-  cube1.normal_buffer.push_back(normal6);
-
-  cube1.vertex_buffer.push_back(point8);
-  cube1.normal_buffer.push_back(normal6);
-
-  /* Face 8: */
-
-  cube1.vertex_buffer.push_back(point4);
-  cube1.normal_buffer.push_back(normal6);
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal6);
-
-  cube1.vertex_buffer.push_back(point1);
-  cube1.normal_buffer.push_back(normal6);
-
-  /* Face 9: */
-
-  cube1.vertex_buffer.push_back(point4);
-  cube1.normal_buffer.push_back(normal3);
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal3);
-
-  cube1.vertex_buffer.push_back(point8);
-  cube1.normal_buffer.push_back(normal3);
-
-  /* Face 10: */
-
-  cube1.vertex_buffer.push_back(point7);
-  cube1.normal_buffer.push_back(normal3);
-
-  cube1.vertex_buffer.push_back(point8);
-  cube1.normal_buffer.push_back(normal3);
-
-  cube1.vertex_buffer.push_back(point3);
-  cube1.normal_buffer.push_back(normal3);
-
-  /* Face 11: */
-
-  cube1.vertex_buffer.push_back(point1);
-  cube1.normal_buffer.push_back(normal4);
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal4);
-
-  cube1.vertex_buffer.push_back(point2);
-  cube1.normal_buffer.push_back(normal4);
-
-  /* Face 12: */
-
-  cube1.vertex_buffer.push_back(point2);
-  cube1.normal_buffer.push_back(normal4);
-
-  cube1.vertex_buffer.push_back(point5);
-  cube1.normal_buffer.push_back(normal4);
-
-  cube1.vertex_buffer.push_back(point6);
-  cube1.normal_buffer.push_back(normal4);
-
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Cube 2
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  /* We are just going to make them identical out of laziness... */
-  Model cube2 = cube1;
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Transformations for Cube 1
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Transforms transforms1;
-
-  transforms1.translation[0] = -0.6;
-  transforms1.translation[1] = 0;
-  transforms1.translation[2] = 0;
-
-  transforms1.rotation[0] = 1;
-  transforms1.rotation[1] = 1;
-  transforms1.rotation[2] = 0;
-  transforms1.rotation_angle = 60;
-
-  transforms1.scaling[0] = 0.5;
-  transforms1.scaling[1] = 0.5;
-  transforms1.scaling[2] = 0.5;
-
-  cube1.transform_sets.push_back(transforms1);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Transformations for Cube 2
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Transforms transforms2;
-
-  transforms2.translation[0] = 2.0;
-  transforms2.translation[1] = 0;
-  transforms2.translation[2] = 0;
-
-  transforms2.rotation[0] = 0;
-  transforms2.rotation[1] = 1;
-  transforms2.rotation[2] = 0;
-  transforms2.rotation_angle = 135;
-
-  transforms2.scaling[0] = 1.5;
-  transforms2.scaling[1] = 1.5;
-  transforms2.scaling[2] = 1.5;
-
-  Transforms transforms3;
-
-  transforms3.translation[0] = 0;
-  transforms3.translation[1] = 0;
-  transforms3.translation[2] = 0;
-
-  transforms3.rotation[0] = 1;
-  transforms3.rotation[1] = 0;
-  transforms3.rotation[2] = 0;
-  transforms3.rotation_angle = -45;
-
-  transforms3.scaling[0] = 0.5;
-  transforms3.scaling[1] = 0.5;
-  transforms3.scaling[2] = 0.5;
-
-  cube2.transform_sets.push_back(transforms2);
-  cube2.transform_sets.push_back(transforms3);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Push to Objects
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  objects.push_back(cube1);
-  objects.push_back(cube2);
-}
-
 /* The 'main' function:
  *
  * This function is short, but is basically where everything comes together.
@@ -1402,9 +1076,18 @@ int main(int argc, char* argv[]) {
   int yres = atoi(argv[3]);
 
   CameraPtr cam = parse_camera_data(file_name);
+  cam_position[0] = cam->pos.x;
+  cam_position[1] = cam->pos.y;
+  cam_position[2] = cam->pos.z;
+  cam_orientation_axis[0] = cam->orient.x;
+  cam_orientation_axis[1] = cam->orient.y;
+  cam_orientation_axis[2] = cam->orient.z;
+  cam_orientation_angle = cam->orient_angle;
   lights = parse_light_data(file_name);
   // Parse model data and create geometrically transformed copies with material properties
   objects = store_obj_transform_file(file_name);
+  cout << lights.size() << endl;
+  /*
   Pixel **grid = new_grid(xres, yres);
   gouraud(objects, lights, cam, xres, yres, grid);
   output_ppm(xres, yres, grid);
@@ -1412,6 +1095,7 @@ int main(int argc, char* argv[]) {
   delete[] grid;
 
   return 0;
+  */
 
   /* 'glutInit' intializes the GLUT (Graphics Library Utility Toolkit) library.
    * This is necessary, since a lot of the functions we used above and below
@@ -1421,44 +1105,44 @@ int main(int argc, char* argv[]) {
    * too important for us, but it is possible to give command line specifications
    * to 'glutInit' by putting them with the 'main' function arguments.
    */
-  // glutInit(&argc, argv);
+  glutInit(&argc, argv);
   /* The following line of code tells OpenGL that we need a double buffer,
    * a RGB pixel buffer, and a depth buffer.
    */
-  // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   /* The following line tells OpenGL to create a program window of size
    * 'xres' by 'yres'.
    */
-  // glutInitWindowSize(xres, yres);
+  glutInitWindowSize(xres, yres);
   /* The following line tells OpenGL to set the program window in the top-left
    * corner of the computer screen (0, 0).
    */
-  // glutInitWindowPosition(0, 0);
+  glutInitWindowPosition(0, 0);
   /* The following line tells OpenGL to name the program window "Test".
   */
-  // glutCreateWindow("Test");
+  glutCreateWindow("Test");
 
   /* Call our 'init' function...
   */
-  // init();
+  init();
   /* Specify to OpenGL our display function.
   */
-  // glutDisplayFunc(display);
+  glutDisplayFunc(display);
   /* Specify to OpenGL our reshape function.
   */
-  // glutReshapeFunc(reshape);
+  glutReshapeFunc(reshape);
   /* Specify to OpenGL our function for handling mouse presses.
   */
-  // glutMouseFunc(mouse_pressed);
+  glutMouseFunc(mouse_pressed);
   /* Specify to OpenGL our function for handling mouse movement.
   */
-  // glutMotionFunc(mouse_moved);
+  glutMotionFunc(mouse_moved);
   /* Specify to OpenGL our function for handling key presses.
   */
-  // glutKeyboardFunc(key_pressed);
+  glutKeyboardFunc(key_pressed);
   /* The following line tells OpenGL to start the "event processing loop". This
    * is an infinite loop where OpenGL will continuously use our display, reshape,
    * mouse, and keyboard functions to essentially run our program.
    */
-  // glutMainLoop();
+  glutMainLoop();
 }

@@ -37,7 +37,7 @@ void Camera :: set_position(string line) {
   istringstream line_stream(line);
 
   string _;
-  double x, y, z;
+  float x, y, z;
   if (!(line_stream >> _ >> x >> y >> z)) {
     throw "Wrong number of arguments to camera position line";
   }
@@ -50,7 +50,7 @@ void Camera :: set_orient(string line) {
   istringstream line_stream(line);
 
   string orientation;
-  double x, y, z;
+  float x, y, z;
   if (!(line_stream >> orientation >> x >> y >> z >> orient_angle)) {
     throw "Wrong number of arguments to camera orientation line";
   }

@@ -75,6 +75,16 @@ void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
 }
 
 void Model :: set_variables() {
+  for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
+    FacePtr face = *face_it;
+    vertex_buffer.push_back(vertices[face->vertex1]);
+    vertex_buffer.push_back(vertices[face->vertex2]);
+    vertex_buffer.push_back(vertices[face->vertex3]);
+    normal_buffer.push_back(normals[face->normal1]);
+    normal_buffer.push_back(normals[face->normal2]);
+    normal_buffer.push_back(normals[face->normal3]);
+  }
+
   ambient_reflect[0] = material->ambient->red;
   ambient_reflect[1] = material->ambient->green;
   ambient_reflect[2] = material->ambient->blue;
