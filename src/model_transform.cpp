@@ -39,8 +39,8 @@ vector<Normal> ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
   // Index 0 is NULL because normals are 1-indexed
   normals.push_back(Normal());
 
-  vector<Normal>::iterator normal_it = ++(model.normals.begin());
-  while (normal_it != model.normals.end()) {
+  vector<Normal>::iterator normal_it = ++(model.normal_buffer.begin());
+  while (normal_it != model.normal_buffer.end()) {
     normals.push_back(transform_normal(trans_mat, *normal_it));
     ++normal_it;
   }
@@ -69,7 +69,7 @@ vector<Vertex> ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
 Model ModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
   Model copy = Model();
   copy.vertex_buffer = transform_model_vertices(trans_mat);
-  copy.normals = transform_model_normals(norm_trans_mat);
+  copy.normal_buffer = transform_model_normals(norm_trans_mat);
   // copy->vertices = cartesian_NDC(trans_mat);
   copy.faces = model.faces;
 
