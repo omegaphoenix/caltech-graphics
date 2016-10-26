@@ -19,11 +19,9 @@ using LightPtr = shared_ptr<Light>;
 using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 vector<Model> parse_obj_data(char *file_name) {
   return store_obj_transform_file(file_name);
@@ -141,12 +139,12 @@ void print_model_normals(Model model) {
 }
 
 void print_vertices(Model model) {
-  VerVectorPtr vertices = model.vertices;
+  vector<Vertex> vertices = model.vertices;
 
   // 0-indexed vertex is NULL
-  vector<VertexPtr>::iterator vertex_it = ++(vertices->begin());
-  while (vertex_it != vertices->end()) {
-    cout << (*vertex_it)->x << " " << (*vertex_it)->y << " " << (*vertex_it)->z << endl;
+  vector<Vertex>::iterator vertex_it = ++(vertices.begin());
+  while (vertex_it != vertices.end()) {
+    cout << (*vertex_it).x << " " << (*vertex_it).y << " " << (*vertex_it).z << endl;
     ++vertex_it;
   }
 }

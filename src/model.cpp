@@ -16,11 +16,9 @@ using namespace std;
 using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using FaceVectorPtr = shared_ptr<vector<FacePtr>>;
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // empty constructor
 Model :: Model() {
@@ -48,15 +46,15 @@ string Model :: get_name(string raw_file_name) {
 
 // helper function for constructor to get vertices
 void Model :: setup_vertices() {
-  vertices = VerVectorPtr(new vector<VertexPtr>());
-  // Index 0 is NULL because vertices are 1-indexed
-  vertices->push_back(NULL);
+  vertices = vector<Vertex>();
+  // Index 0 is filler because vertices are 1-indexed
+  vertices.push_back(Vertex());
 }
 
 // helper function for constructor to get normals
 void Model :: setup_normals() {
   normals = NormVectorPtr(new vector<NormalPtr>());
-  // Index 0 is NULL because vertices are 1-indexed
+  // Index 0 is filler because vertices are 1-indexed
   normals->push_back(NULL);
 }
 
@@ -69,9 +67,9 @@ void Model :: draw_model(int xres, int yres, Pixel **grid) {
 
 // Draw a single face on the grid representing the screen
 void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
-  VertexPtr v1 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex1]);
-  VertexPtr v2 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex2]);
-  VertexPtr v3 = NDC_to_pixel(xres, yres, (*vertices)[face->vertex3]);
+  Vertex v1 = NDC_to_pixel(xres, yres, vertices[face->vertex1]);
+  Vertex v2 = NDC_to_pixel(xres, yres, vertices[face->vertex2]);
+  Vertex v3 = NDC_to_pixel(xres, yres, vertices[face->vertex3]);
 
   rasterize(v1, v2, grid, xres, yres);
   rasterize(v2, v3, grid, xres, yres);

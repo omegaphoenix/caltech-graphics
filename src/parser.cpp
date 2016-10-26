@@ -22,9 +22,7 @@ using CameraPtr = shared_ptr<Camera>;
 using LightPtr = shared_ptr<Light>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<Reflectance>;
-using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 
@@ -164,7 +162,7 @@ void store_shininess_prop(vector<string> lines, MaterialPtr material) {
   material->shininess = shiny;
 }
 
-void store_obj_line(string line, Model model) {
+void store_obj_line(string line, Model &model) {
   if (is_vertex_line(line)) {
     store_vertex_line(line, model);
 
@@ -188,7 +186,7 @@ bool is_face_line(string line) {
   return line.at(0) == 'f';
 }
 
-void store_vertex_line(string line, Model model) {
+void store_vertex_line(string line, Model &model) {
   istringstream line_stream(line);
   char _;
   double x, y, z;
@@ -196,10 +194,10 @@ void store_vertex_line(string line, Model model) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  model.vertices->push_back(VertexPtr(new Vertex(x, y, z)));
+  model.vertices.push_back(Vertex(x, y, z));
 }
 
-void store_normal_line(string line, Model model) {
+void store_normal_line(string line, Model &model) {
   istringstream line_stream(line);
   string _;
   double x, y, z;
@@ -210,7 +208,7 @@ void store_normal_line(string line, Model model) {
   model.normals->push_back(NormalPtr(new Normal(x, y, z)));
 }
 
-void store_face_line(string line, Model model) {
+void store_face_line(string line, Model &model) {
   istringstream line_stream(line);
 
   char _;

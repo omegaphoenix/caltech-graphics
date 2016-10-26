@@ -29,11 +29,9 @@ using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 void output_ppm(int xres, int yres, Pixel **grid) {
   start_ppm_output(xres, yres);
@@ -58,34 +56,34 @@ void output_pixel(int row, int col, Pixel **grid) {
   cout << red << " " << green << " " << blue << endl;
 }
 
-VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices) {
-    VerVectorPtr vertices =
-      VerVectorPtr(new vector<VertexPtr>());
-    vertices->push_back(NULL);
+vector<Vertex> NDCs_to_pixels(int xres, int yres, vector<Vertex> ndc_vertices) {
+    vector<Vertex> vertices = vector<Vertex>();
+    // Initial vertex should be filler
+    vertices.push_back(Vertex());
 
-    vector<VertexPtr>::iterator vertex_it = ++(ndc_vertices->begin());
-    while (vertex_it != ndc_vertices->end()) {
-      vertices->push_back(NDC_to_pixel(xres, yres, *vertex_it));
+    vector<Vertex>::iterator vertex_it = ++(ndc_vertices.begin());
+    while (vertex_it != ndc_vertices.end()) {
+      vertices.push_back(NDC_to_pixel(xres, yres, *vertex_it));
       ++vertex_it;
     }
 
     return vertices;
 }
 
-VertexPtr NDC_to_pixel(int xres, int yres, VertexPtr ndc_vertex) {
-  int new_x = round((ndc_vertex->x + 1)*xres/2);
-  int new_y = round((ndc_vertex->y - 1)*yres/-2);
-  return VertexPtr(new Vertex(new_x, new_y, ndc_vertex->z));
+Vertex NDC_to_pixel(int xres, int yres, Vertex ndc_vertex) {
+  int new_x = round((ndc_vertex.x + 1)*xres/2);
+  int new_y = round((ndc_vertex.y - 1)*yres/-2);
+  return Vertex(new_x, new_y, ndc_vertex.z);
 }
 
-void rasterize(VertexPtr v1, VertexPtr v2, Pixel **grid, int xres, int yres) {
+void rasterize(Vertex v1, Vertex v2, Pixel **grid, int xres, int yres) {
   if (is_on_screen(v1, xres, yres) && is_on_screen(v2, xres, yres)) {
-    bresenham(v1->x, v1->y, v2->x, v2->y, grid);
+    bresenham(v1.x, v1.y, v2.x, v2.y, grid);
   }
 }
 
-bool is_on_screen(VertexPtr v, int xres, int yres) {
-  return (v->x > 0) && (v->x < xres) && (v->y > 0) && (v->y < yres);
+bool is_on_screen(Vertex v, int xres, int yres) {
+  return (v.x > 0) && (v.x < xres) && (v.y > 0) && (v.y < yres);
 }
 
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid) {

@@ -20,19 +20,15 @@ using LightPtr = shared_ptr<Light>;
 using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using ModelPtr = shared_ptr<Model>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
-using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Struct which has a vertex and color
 struct ColorVertex {
-  VertexPtr ver;
+  Vertex ver;
   Pixel col;
 
-  ColorVertex(VertexPtr vertex, Pixel color) {
+  ColorVertex(Vertex vertex, Pixel color) {
     ver = vertex;
     col = color;
   }
@@ -55,38 +51,38 @@ void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr 
 // Combine 3 normals by weight
 NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c);
 // Combine 3 vertices by weight
-VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c);
+Vertex combine_vertices(double alpha, double beta, double gamma, Vertex v_a, Vertex v_b, Vertex v_c);
 
 // Rasterize triangle in Pixel grid
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer);
 // Calculate the lighting of the material at a vertex
-Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam);
+Pixel lighting(Vertex v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam);
 
 // Check if face faces away from camera
-bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c);
+bool backfacing(Vertex NDC_a, Vertex NDC_b, Vertex NDC_c);
 // Check if vertices are inside the NDC cube
-bool inside_NDC_cube(VertexPtr NDC);
+bool inside_NDC_cube(Vertex NDC);
 // Check if alpha, beta, gamma values are within the triangle
 bool valid_alpha_beta_gamma(double alpha, double beta, double gamma);
 // Check if val between low and high
 bool in_range(double val, double low, double high);
 
 // Compute alpha, beta, gamma of coordinates within set of vertices
-double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
-double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
-double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y);
+double compute_alpha(Vertex a, Vertex b, Vertex c, int x, int y);
+double compute_beta(Vertex a, Vertex b, Vertex c, int x, int y);
+double compute_gamma(Vertex a, Vertex b, Vertex c, int x, int y);
 // Helper function for computing alpha, beta, gamma
-double f_ij(VertexPtr i, VertexPtr j, double x, double y);
+double f_ij(Vertex i, Vertex j, double x, double y);
 
 // Calculate the min and max coordinates of the three vertices within the grid
-int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c);
-int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c, int xres);
-int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c);
-int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c, int yres);
+int min_x_coord(Vertex a, Vertex b, Vertex c);
+int max_x_coord(Vertex a, Vertex b, Vertex c, int xres);
+int min_y_coord(Vertex a, Vertex b, Vertex c);
+int max_y_coord(Vertex a, Vertex b, Vertex c, int yres);
 
 // Convert to matrix (3d vector)
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect);
-Eigen::MatrixXd ver_to_mat(VertexPtr ver);
+Eigen::MatrixXd ver_to_mat(Vertex ver);
 Eigen::MatrixXd norm_to_mat(NormalPtr norm);
 
 // Normalize 3D vector

@@ -16,7 +16,6 @@ using namespace std;
 
 using NormalPtr = shared_ptr<Normal>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using VertexPtr = shared_ptr<Vertex>;
 
 MatrixPtr inverse_transform(vector<string> lines) {
   MatrixPtr prod = multiply_matrices(lines);
@@ -177,11 +176,11 @@ MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle
   return mat;
 }
 
-VertexPtr transform_vertex(MatrixPtr trans_mat, VertexPtr vertex) {
+Vertex transform_vertex(MatrixPtr trans_mat, Vertex vertex) {
   MatrixPtr vertex_mat = MatrixPtr(new Eigen::MatrixXd(4, 1));
-  *vertex_mat << vertex->x, // row1
-                 vertex->y, // row2
-                 vertex->z, // row3
+  *vertex_mat << vertex.x, // row1
+                 vertex.y, // row2
+                 vertex.z, // row3
                  1;         // row4
 
   Eigen::MatrixXd transformed = *trans_mat * *vertex_mat;
@@ -190,7 +189,7 @@ VertexPtr transform_vertex(MatrixPtr trans_mat, VertexPtr vertex) {
   double new_y = transformed(1) / transformed(3);
   double new_z = transformed(2) / transformed(3);
 
-  return VertexPtr(new Vertex(new_x, new_y, new_z));
+  return Vertex(new_x, new_y, new_z);
 }
 
 NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr normal) {
@@ -209,10 +208,10 @@ NormalPtr transform_normal(MatrixPtr trans_mat, NormalPtr normal) {
   return NormalPtr(new Normal(new_x, new_y, new_z));
 }
 
-VertexPtr scale_vertex(double factor, VertexPtr vertex) {
-  double new_x = vertex->x * factor;
-  double new_y = vertex->y * factor;
-  double new_z = vertex->z * factor;
+Vertex scale_vertex(double factor, Vertex vertex) {
+  double new_x = vertex.x * factor;
+  double new_y = vertex.y * factor;
+  double new_z = vertex.z * factor;
 
-  return VertexPtr(new Vertex(new_x, new_y, new_z));
+  return Vertex(new_x, new_y, new_z);
 }

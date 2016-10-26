@@ -17,21 +17,19 @@ using namespace std;
 using CameraPtr = shared_ptr<Camera>;
 using ModelPtr = shared_ptr<Model>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using VertexPtr = shared_ptr<Vertex>;
 using NormalPtr = shared_ptr<Normal>;
 
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Perform geometric transforms on vertices
-VerVectorPtr ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
-  VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
-  // Index 0 is NULL because vertices are 1-indexed
-  vertices->push_back(NULL);
+vector<Vertex> ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
+  vector<Vertex> vertices = vector<Vertex>();
+  // Index 0 is filler because vertices are 1-indexed
+  vertices.push_back(Vertex());
 
-  vector<VertexPtr>::iterator vertex_it = ++(model.vertices->begin());
-  while (vertex_it != model.vertices->end()) {
-    vertices->push_back(transform_vertex(trans_mat, *vertex_it));
+  vector<Vertex>::iterator vertex_it = ++(model.vertices.begin());
+  while (vertex_it != model.vertices.end()) {
+    vertices.push_back(transform_vertex(trans_mat, *vertex_it));
     ++vertex_it;
   }
 
@@ -54,16 +52,16 @@ NormVectorPtr ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
 }
 
 // Perform geometric and camera perspective transforms on vertices
-VerVectorPtr ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
-  VerVectorPtr vertices = VerVectorPtr(new vector<VertexPtr>());
-  VerVectorPtr geo_transform_vertices = transform_model_vertices(trans_mat);
+vector<Vertex> ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
+  vector<Vertex> vertices = vector<Vertex>();
+  vector<Vertex> geo_transform_vertices = transform_model_vertices(trans_mat);
 
-  // Index 0 is NULL because vertices are 1-indexed
-  vertices->push_back(NULL);
+  // Index 0 is filler because vertices are 1-indexed
+  vertices.push_back(Vertex());
 
-  vector<VertexPtr>::iterator vertex_it = ++(geo_transform_vertices->begin());
-  while (vertex_it != geo_transform_vertices->end()) {
-    vertices->push_back(cam->cam_transform(*vertex_it));
+  vector<Vertex>::iterator vertex_it = ++(geo_transform_vertices.begin());
+  while (vertex_it != geo_transform_vertices.end()) {
+    vertices.push_back(cam->cam_transform(*vertex_it));
     ++vertex_it;
   }
 

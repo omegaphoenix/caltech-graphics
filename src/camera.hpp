@@ -13,12 +13,11 @@
 
 using namespace std;
 
-using VertexPtr = shared_ptr<Vertex>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 
 // Represents the camera position, orientation, and perspective
 struct Camera {
-  VertexPtr pos, orient;
+  Vertex pos, orient;
   double orient_angle;
 
   double near, far, left, right, top, bottom;
@@ -29,7 +28,7 @@ struct Camera {
   Camera(vector<string> lines);
 
   // Returns Cartesian normalized device coordinates (NDC)
-  VertexPtr cam_transform(VertexPtr v);
+  Vertex cam_transform(Vertex v);
 
   // Parse position translation line
   void set_position(string line);

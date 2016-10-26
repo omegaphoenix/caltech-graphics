@@ -64,6 +64,7 @@
 #include "light.hpp"
 #include "normal.hpp"
 #include "parser.hpp"
+#include "shading.hpp"
 #include "transform_obj.hpp"
 #include "model.hpp"
 #include "vertex.hpp"

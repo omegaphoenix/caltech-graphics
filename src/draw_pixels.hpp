@@ -21,11 +21,9 @@ using MaterialPtr = shared_ptr<Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 // Represents the rgb values for one pixel on the screen
 struct Pixel {
@@ -53,12 +51,12 @@ void start_ppm_output(int xres, int yres);
 void output_pixel(int row, int col, Pixel **grid);
 
 // Converts vertices from cartesian NDC to screen location
-VerVectorPtr NDCs_to_pixels(int xres, int yres, VerVectorPtr ndc_vertices);
+vector<Vertex> NDCs_to_pixels(int xres, int yres, vector<Vertex> ndc_vertices);
 // Converts one vertex from cartesian NDC to screen location
-VertexPtr NDC_to_pixel(int xres, int yres, VertexPtr ndc_vertex);
+Vertex NDC_to_pixel(int xres, int yres, Vertex ndc_vertex);
 
 // Draw line between vertices on Pixel array
-void rasterize(VertexPtr v1, VertexPtr v2, Pixel **grid, int xres, int yres);
+void rasterize(Vertex v1, Vertex v2, Pixel **grid, int xres, int yres);
 // Swap points if vector pointing left (octants 3-6)
 void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
 /*
@@ -83,7 +81,7 @@ void bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);
  */
 
 // Return true if vertex is within (0, xres) and (0, yres)
-bool is_on_screen(VertexPtr v, int xres, int yres);
+bool is_on_screen(Vertex v, int xres, int yres);
 
 // Use algorithm from lecture notes without floating point operations
 void first_octant_bresenham(int x_0, int y_0, int x_1, int y_1, Pixel **grid);

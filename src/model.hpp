@@ -20,9 +20,7 @@ using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<struct Material>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-using VertexPtr = shared_ptr<Vertex>;
 
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 /* The following struct is used for storing a set of transformations.
@@ -109,7 +107,7 @@ struct Material {
 class Model {
   public:
     string name;
-    VerVectorPtr vertices;
+    vector<Vertex> vertices;
     NormVectorPtr normals;
     shared_ptr<vector<FacePtr>> faces;
     MaterialPtr material;

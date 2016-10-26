@@ -13,7 +13,6 @@
 using namespace std;
 
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using VertexPtr = shared_ptr<Vertex>;
 
 // Parse lines for setting up camera transforms
 Camera :: Camera(vector<string> lines) {
@@ -26,8 +25,8 @@ Camera :: Camera(vector<string> lines) {
 }
 
 // Returns Cartesian normalized device coordinates (NDC)
-VertexPtr Camera :: cam_transform(VertexPtr v) {
-  VertexPtr transformed = transform_vertex(cam_transform_mat, v);
+Vertex Camera :: cam_transform(Vertex v) {
+  Vertex transformed = transform_vertex(cam_transform_mat, v);
 
   transformed = transform_vertex(perspective_proj_mat, transformed);
   return transformed;
@@ -43,7 +42,7 @@ void Camera :: set_position(string line) {
     throw "Wrong number of arguments to camera position line";
   }
 
-  pos = VertexPtr(new Vertex(x, y, z));
+  pos = Vertex(x, y, z);
 }
 
 // Parse position orientation rotation line
@@ -56,7 +55,7 @@ void Camera :: set_orient(string line) {
     throw "Wrong number of arguments to camera orientation line";
   }
 
-  orient = VertexPtr(new Vertex(x, y, z));
+  orient = Vertex(x, y, z);
 }
 
 // Get all arguments for perspective projection transform
@@ -96,9 +95,9 @@ void Camera :: set_perspective(vector<string> lines) {
 // Calculate position transform matrix from translation and rotation.
 void Camera :: calc_position_mat() {
   MatrixPtr cam_translate_mat =
-    create_translation_mat(pos->x, pos->y, pos->z);
+    create_translation_mat(pos.x, pos.y, pos.z);
   MatrixPtr cam_rotate_mat =
-    create_rotation_mat(orient->x, orient->y, orient->z, orient_angle);
+    create_rotation_mat(orient.x, orient.y, orient.z, orient_angle);
 
   cam_transform_mat = MatrixPtr(new Eigen::MatrixXd(4, 4));
   *cam_transform_mat = (*cam_translate_mat * *cam_rotate_mat).inverse();

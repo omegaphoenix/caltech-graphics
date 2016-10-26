@@ -30,11 +30,9 @@ using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 using ModelPtr = shared_ptr<Model>;
-using VertexPtr = shared_ptr<Vertex>;
 
 using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 void phong(vector<Model> models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
@@ -64,28 +62,28 @@ void phong_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int
 }
 
 void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  VerVectorPtr vertices = model.vertices;
+  vector<Vertex> vertices = model.vertices;
   NormVectorPtr normals = model.normals;
 
-  VertexPtr v_a = (*vertices)[face->vertex1];
-  VertexPtr v_b = (*vertices)[face->vertex2];
-  VertexPtr v_c = (*vertices)[face->vertex3];
+  Vertex v_a = vertices[face->vertex1];
+  Vertex v_b = vertices[face->vertex2];
+  Vertex v_c = vertices[face->vertex3];
 
   NormalPtr n_a = (*normals)[face->normal1];
   NormalPtr n_b = (*normals)[face->normal2];
   NormalPtr n_c = (*normals)[face->normal3];
 
   // Transform to NDC coordinates
-  VertexPtr NDC_a = cam->cam_transform(v_a);
-  VertexPtr NDC_b = cam->cam_transform(v_b);
-  VertexPtr NDC_c = cam->cam_transform(v_c);
+  Vertex NDC_a = cam->cam_transform(v_a);
+  Vertex NDC_b = cam->cam_transform(v_b);
+  Vertex NDC_c = cam->cam_transform(v_c);
 
   // backface culling
   if (backfacing(NDC_a, NDC_b, NDC_c)) return;
 
-  VertexPtr screen_a = NDC_to_pixel(xres, yres, NDC_a);
-  VertexPtr screen_b = NDC_to_pixel(xres, yres, NDC_b);
-  VertexPtr screen_c = NDC_to_pixel(xres, yres, NDC_c);
+  Vertex screen_a = NDC_to_pixel(xres, yres, NDC_a);
+  Vertex screen_b = NDC_to_pixel(xres, yres, NDC_b);
+  Vertex screen_c = NDC_to_pixel(xres, yres, NDC_c);
 
   int min_x = min_x_coord(screen_a, screen_b, screen_c);
   int max_x = max_x_coord(screen_a, screen_b, screen_c, xres);
@@ -100,13 +98,13 @@ void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light
       double gamma = compute_gamma(screen_a, screen_b, screen_c, x, y);
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
-        VertexPtr NDC = combine_vertices(alpha, beta, gamma, NDC_a, NDC_b, NDC_c);
+        Vertex NDC = combine_vertices(alpha, beta, gamma, NDC_a, NDC_b, NDC_c);
 
-        if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
+        if (inside_NDC_cube(NDC) && (NDC.z <= buffer[y][x])) {
           // update buffer
-          buffer[y][x] = NDC->z;
+          buffer[y][x] = NDC.z;
 
-          VertexPtr v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
+          Vertex v = combine_vertices(alpha, beta, gamma, v_a, v_b, v_c);
           NormalPtr n = combine_normals(alpha, beta, gamma, n_a, n_b, n_c);
 
           // Calculate lighting per pixel
@@ -126,12 +124,12 @@ void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, i
 }
 
 void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  VerVectorPtr vertices = model.vertices;
+  vector<Vertex> vertices = model.vertices;
   NormVectorPtr normals = model.normals;
 
-  VertexPtr v_a = (*vertices)[face->vertex1];
-  VertexPtr v_b = (*vertices)[face->vertex2];
-  VertexPtr v_c = (*vertices)[face->vertex3];
+  Vertex v_a = vertices[face->vertex1];
+  Vertex v_b = vertices[face->vertex2];
+  Vertex v_c = vertices[face->vertex3];
 
   // Calculate lighting each each vertex of face
   Pixel color_a = lighting(v_a, (*normals)[face->normal1], model.material, lights, cam);
@@ -139,9 +137,9 @@ void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr 
   Pixel color_c = lighting(v_c, (*normals)[face->normal3], model.material, lights, cam);
 
   // Transform to NDC coordinates
-  VertexPtr NDC_a = cam->cam_transform(v_a);
-  VertexPtr NDC_b = cam->cam_transform(v_b);
-  VertexPtr NDC_c = cam->cam_transform(v_c);
+  Vertex NDC_a = cam->cam_transform(v_a);
+  Vertex NDC_b = cam->cam_transform(v_b);
+  Vertex NDC_c = cam->cam_transform(v_c);
 
   ColorVertex a = ColorVertex(NDC_a, color_a);
   ColorVertex b = ColorVertex(NDC_b, color_b);
@@ -159,21 +157,21 @@ NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a
   return NormalPtr(new Normal(x, y, z));
 }
 
-VertexPtr combine_vertices(double alpha, double beta, double gamma, VertexPtr v_a, VertexPtr v_b, VertexPtr v_c) {
-  double x = alpha*v_a->x + beta*v_b->x + gamma*v_c->x;
-  double y = alpha*v_a->y + beta*v_b->y + gamma*v_c->y;
-  double z = alpha*v_a->z + beta*v_b->z + gamma*v_c->z;
+Vertex combine_vertices(double alpha, double beta, double gamma, Vertex v_a, Vertex v_b, Vertex v_c) {
+  double x = alpha*v_a.x + beta*v_b.x + gamma*v_c.x;
+  double y = alpha*v_a.y + beta*v_b.y + gamma*v_c.y;
+  double z = alpha*v_a.z + beta*v_b.z + gamma*v_c.z;
 
-  return VertexPtr(new Vertex(x, y, z));
+  return Vertex(x, y, z);
 }
 
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer) {
   // backface culling
   if (backfacing(NDC_a.ver, NDC_b.ver, NDC_c.ver)) return;
 
-  VertexPtr a = NDC_to_pixel(xres, yres, NDC_a.ver);
-  VertexPtr b = NDC_to_pixel(xres, yres, NDC_b.ver);
-  VertexPtr c = NDC_to_pixel(xres, yres, NDC_c.ver);
+  Vertex a = NDC_to_pixel(xres, yres, NDC_a.ver);
+  Vertex b = NDC_to_pixel(xres, yres, NDC_b.ver);
+  Vertex c = NDC_to_pixel(xres, yres, NDC_c.ver);
 
   int min_x = min_x_coord(a, b, c);
   int max_x = max_x_coord(a, b, c, xres);
@@ -188,10 +186,10 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
       double gamma = compute_gamma(a, b, c, x, y);
 
       if (valid_alpha_beta_gamma(alpha, beta, gamma)) {
-        VertexPtr NDC = combine_vertices(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
-        if (inside_NDC_cube(NDC) && (NDC->z <= buffer[y][x])) {
+        Vertex NDC = combine_vertices(alpha, beta, gamma, NDC_a.ver, NDC_b.ver, NDC_c.ver);
+        if (inside_NDC_cube(NDC) && (NDC.z <= buffer[y][x])) {
           // update buffer
-          buffer[y][x] = NDC->z;
+          buffer[y][x] = NDC.z;
 
           // Combine colors based on proximity to each vertex of face
           double red = alpha * NDC_a.col.red + beta * NDC_b.col.red + gamma * NDC_c.col.red;
@@ -206,7 +204,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   }
 }
 
-Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
+Pixel lighting(Vertex v, NormalPtr n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
   // 3D vectors
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
@@ -256,7 +254,7 @@ Pixel lighting(VertexPtr v, NormalPtr n, MaterialPtr material, vector<Light> lig
 }
 
 // Backfacing if z-coordinate of cross product of (c-b) x (a-b) is negative
-bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c) {
+bool backfacing(Vertex NDC_a, Vertex NDC_b, Vertex NDC_c) {
   // Cross product of (c-b) x (a-b)
   Eigen::MatrixXd cross =
     cross_product_vec(ver_to_mat(NDC_c) - ver_to_mat(NDC_b),
@@ -266,8 +264,8 @@ bool backfacing(VertexPtr NDC_a, VertexPtr NDC_b, VertexPtr NDC_c) {
   return cross(0,2) < 0;
 }
 
-bool inside_NDC_cube(VertexPtr NDC) {
-  return in_range(NDC->x, -1, 1) && in_range(NDC->y, -1, 1) && in_range(NDC->z, -1, 1);
+bool inside_NDC_cube(Vertex NDC) {
+  return in_range(NDC.x, -1, 1) && in_range(NDC.y, -1, 1) && in_range(NDC.z, -1, 1);
 }
 
 bool valid_alpha_beta_gamma(double alpha, double beta, double gamma) {
@@ -278,36 +276,36 @@ bool in_range(double val, double low, double high) {
   return low <= val && high >= val;
 }
 
-double compute_alpha(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(b, c, x, y) / f_ij(b, c, a->x, a->y);
+double compute_alpha(Vertex a, Vertex b, Vertex c, int x, int y) {
+  return f_ij(b, c, x, y) / f_ij(b, c, a.x, a.y);
 }
 
-double compute_beta(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(a, c, x, y) / f_ij(a, c, b->x, b->y);
+double compute_beta(Vertex a, Vertex b, Vertex c, int x, int y) {
+  return f_ij(a, c, x, y) / f_ij(a, c, b.x, b.y);
 }
 
-double compute_gamma(VertexPtr a, VertexPtr b, VertexPtr c, int x, int y) {
-  return f_ij(a, b, x, y) / f_ij(a, b, c->x, c->y);
+double compute_gamma(Vertex a, Vertex b, Vertex c, int x, int y) {
+  return f_ij(a, b, x, y) / f_ij(a, b, c.x, c.y);
 }
 
-double f_ij(VertexPtr i, VertexPtr j, double x, double y) {
-  return (i->y - j->y)*x + (j->x - i->x)*y + i->x*j->y - j->x*i->y;
+double f_ij(Vertex i, Vertex j, double x, double y) {
+  return (i.y - j.y)*x + (j.x - i.x)*y + i.x*j.y - j.x*i.y;
 }
 
-int min_x_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
-  return max(0, (int)min(a->x, min(b->x, c->x)));
+int min_x_coord(Vertex a, Vertex b, Vertex c) {
+  return max(0, (int)min(a.x, min(b.x, c.x)));
 }
 
-int max_x_coord(VertexPtr a, VertexPtr b, VertexPtr c, int xres) {
-  return min(xres-1, (int)max(a->x, max(b->x, c->x)));
+int max_x_coord(Vertex a, Vertex b, Vertex c, int xres) {
+  return min(xres-1, (int)max(a.x, max(b.x, c.x)));
 }
 
-int min_y_coord(VertexPtr a, VertexPtr b, VertexPtr c) {
-  return max(0, (int)min(a->y, min(b->y, c->y)));
+int min_y_coord(Vertex a, Vertex b, Vertex c) {
+  return max(0, (int)min(a.y, min(b.y, c.y)));
 }
 
-int max_y_coord(VertexPtr a, VertexPtr b, VertexPtr c, int yres) {
-  return min(yres-1, (int)max(a->y, max(b->y, c->y)));
+int max_y_coord(Vertex a, Vertex b, Vertex c, int yres) {
+  return min(yres-1, (int)max(a.y, max(b.y, c.y)));
 }
 
 Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {
@@ -316,9 +314,9 @@ Eigen::MatrixXd ref_to_mat(ReflectPtr reflect) {
   return res;
 }
 
-Eigen::MatrixXd ver_to_mat(VertexPtr ver) {
+Eigen::MatrixXd ver_to_mat(Vertex ver) {
   Eigen::MatrixXd res(1, 3);
-  res << ver->x, ver->y, ver->z;
+  res << ver.x, ver.y, ver.z;
   return res;
 }
 
