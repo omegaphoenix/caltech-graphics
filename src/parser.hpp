@@ -23,14 +23,14 @@ using LightVecPtr = shared_ptr<vector<LightPtr>>;
 
 // parse camera and light lines
 CameraPtr parse_camera_data(char *file_name);
-LightVecPtr parse_light_data(char *file_name);
+vector<Light> parse_light_data(char *file_name);
 
 // helper functions for parsing camera and light lines
 CameraPtr get_camera_data(ifstream& obj_transform_file);
-LightVecPtr get_light_data(ifstream& obj_transform_file);
+vector<Light> get_light_data(ifstream& obj_transform_file);
 
 // adds Light to lights
-void store_light_line(string line, LightVecPtr lights);
+Light store_light_line(string line);
 
 // parses multiple .obj files
 shared_ptr<vector<ModelPtr>> store_file_objects(int argc, char **argv);

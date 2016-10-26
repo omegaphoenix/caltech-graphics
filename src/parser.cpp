@@ -33,7 +33,7 @@ CameraPtr parse_camera_data(char *file_name) {
   return get_camera_data(obj_transform_file);
 }
 
-LightVecPtr parse_light_data(char *file_name) {
+vector<Light> parse_light_data(char *file_name) {
   ifstream obj_transform_file(file_name);
   get_camera_data(obj_transform_file);
   return get_light_data(obj_transform_file);
@@ -53,20 +53,20 @@ CameraPtr get_camera_data(ifstream& obj_transform_file) {
   return cam;
 }
 
-LightVecPtr get_light_data(ifstream& obj_transform_file) {
-  LightVecPtr lights = LightVecPtr(new vector<LightPtr>());
+vector<Light> get_light_data(ifstream& obj_transform_file) {
+  vector<Light> lights = vector<Light>();
   string line;
 
   getline(obj_transform_file, line);
   while (line != "") {
-    store_light_line(line, lights);
+    lights.push_back(store_light_line(line));
     getline(obj_transform_file, line);
   }
 
   return lights;
 }
 
-void store_light_line(string line, LightVecPtr lights) {
+Light store_light_line(string line) {
   istringstream line_stream(line);
   string light;
   char comma1, comma2;
@@ -75,7 +75,7 @@ void store_light_line(string line, LightVecPtr lights) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  lights->push_back(LightPtr(new Light(x, y, z, r, g, b, att)));
+  return Light(x, y, z, r, g, b, att);
 }
 
 shared_ptr<vector<ModelPtr>> store_file_objects(int argc, char **argv) {

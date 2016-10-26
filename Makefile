@@ -22,55 +22,43 @@ LIBS = -lGLEW -lGL -lGLU -lglut -lm
 LIBDIR = -L/usr/X11R6/lib -L/usr/local/lib
 
 all: $(TARGET)
-	./$(TARGET)
+	./$(TARGET) data/scene_cube1.txt 800 800
 
 cube1: $(TARGET)
-	./$(TARGET) data/scene_cube1.txt 800 800 0 | display
-	./$(TARGET) data/scene_cube1.txt 800 800 1 | display
+	./$(TARGET) data/scene_cube1.txt 800 800
 
 cube2: $(TARGET)
-	./$(TARGET) data/scene_cube2.txt 800 800 0 | display
-	./$(TARGET) data/scene_cube2.txt 800 800 1 | display
+	./$(TARGET) data/scene_cube2.txt 800 800
 
 cube3: $(TARGET)
-	./$(TARGET) data/scene_cube3.txt 800 800 0 | display
-	./$(TARGET) data/scene_cube3.txt 800 800 1 | display
+	./$(TARGET) data/scene_cube3.txt 800 800
 
 bunny1: $(TARGET)
-	./$(TARGET) data/scene_bunny1.txt 800 800 0 | display
-	./$(TARGET) data/scene_bunny1.txt 800 800 1 | display
+	./$(TARGET) data/scene_bunny1.txt 800 800
 
 bunny1_attenuated: $(TARGET)
-	./$(TARGET) data/scene_bunny1_attenuated.txt 800 800 0 | display
-	./$(TARGET) data/scene_bunny1_attenuated.txt 800 800 1 | display
+	./$(TARGET) data/scene_bunny1_attenuated.txt 800 800
 
 bunny2: $(TARGET)
-	./$(TARGET) data/scene_bunny2.txt 800 800 0 | display
-	./$(TARGET) data/scene_bunny2.txt 800 800 1 | display
+	./$(TARGET) data/scene_bunny2.txt 800 800
 
 fourCubes: $(TARGET)
-	./$(TARGET) data/scene_fourCubes.txt 800 800 0 | display
-	./$(TARGET) data/scene_fourCubes.txt 800 800 1 | display
+	./$(TARGET) data/scene_fourCubes.txt 800 800
 
 kitten: $(TARGET)
-	./$(TARGET) data/scene_kitten.txt 800 800 0 | display
-	./$(TARGET) data/scene_kitten.txt 800 800 1 | display
+	./$(TARGET) data/scene_kitten.txt 800 800
 
 kitten_attenuated: $(TARGET)
-	./$(TARGET) data/scene_kitten_attenuated.txt 800 800 0 | display
-	./$(TARGET) data/scene_kitten_attenuated.txt 800 800 1 | display
+	./$(TARGET) data/scene_kitten_attenuated.txt 800 800
 
 armadillo: $(TARGET)
-	./$(TARGET) data/scene_armadillo.txt 800 800 0 | display
-	./$(TARGET) data/scene_armadillo.txt 800 800 1 | display
+	./$(TARGET) data/scene_armadillo.txt 800 800
 
 sphere: $(TARGET)
-	./$(TARGET) data/scene_sphere.txt 800 800 0 | display
-	./$(TARGET) data/scene_sphere.txt 800 800 1 | display
+	./$(TARGET) data/scene_sphere.txt 800 800
 
 sphere_attenuated: $(TARGET)
-	./$(TARGET) data/scene_sphere_attenuated.txt 800 800 0 | display
-	./$(TARGET) data/scene_sphere_attenuated.txt 800 800 1 | display
+	./$(TARGET) data/scene_sphere_attenuated.txt 800 800
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
