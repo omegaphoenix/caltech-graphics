@@ -194,7 +194,7 @@ void store_vertex_line(string line, Model &model) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  model.vertex_buffer.push_back(Vertex(x, y, z));
+  model.vertices.push_back(Vertex(x, y, z));
 }
 
 void store_normal_line(string line, Model &model) {

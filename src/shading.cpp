@@ -60,7 +60,7 @@ void phong_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int
 }
 
 void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  vector<Vertex> vertices = model.vertex_buffer;
+  vector<Vertex> vertices = model.vertices;
   vector<Normal> normals = model.normals;
 
   Vertex v_a = vertices[face->vertex1];
@@ -122,7 +122,7 @@ void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, i
 }
 
 void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  vector<Vertex> vertices = model.vertex_buffer;
+  vector<Vertex> vertices = model.vertices;
   vector<Normal> normals = model.normals;
 
   Vertex v_a = vertices[face->vertex1];

@@ -44,9 +44,9 @@ string Model :: get_name(string raw_file_name) {
 
 // helper function for constructor to get vertices
 void Model :: setup_vertices() {
-  vertex_buffer = vector<Vertex>();
+  vertices = vector<Vertex>();
   // Index 0 is filler because vertices are 1-indexed
-  vertex_buffer.push_back(Vertex());
+  vertices.push_back(Vertex());
 }
 
 // helper function for constructor to get normals
@@ -65,9 +65,9 @@ void Model :: draw_model(int xres, int yres, Pixel **grid) {
 
 // Draw a single face on the grid representing the screen
 void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
-  Vertex v1 = NDC_to_pixel(xres, yres, vertex_buffer[face->vertex1]);
-  Vertex v2 = NDC_to_pixel(xres, yres, vertex_buffer[face->vertex2]);
-  Vertex v3 = NDC_to_pixel(xres, yres, vertex_buffer[face->vertex3]);
+  Vertex v1 = NDC_to_pixel(xres, yres, vertices[face->vertex1]);
+  Vertex v2 = NDC_to_pixel(xres, yres, vertices[face->vertex2]);
+  Vertex v3 = NDC_to_pixel(xres, yres, vertices[face->vertex3]);
 
   rasterize(v1, v2, grid, xres, yres);
   rasterize(v2, v3, grid, xres, yres);
