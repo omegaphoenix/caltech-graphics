@@ -151,7 +151,7 @@ void print_vertices(Model model) {
 }
 
 void print_normals(Model model) {
-  vector<Normal> normals = model.normal_buffer;
+  vector<Normal> normals = model.normals;
 
   // 0-indexed vertex is NULL
   vector<Normal>::iterator normal_it = ++(normals.begin());

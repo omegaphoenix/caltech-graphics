@@ -51,9 +51,9 @@ void Model :: setup_vertices() {
 
 // helper function for constructor to get normals
 void Model :: setup_normals() {
-  normal_buffer = vector<Normal>();
+  normals = vector<Normal>();
   // Index 0 is filler because vertices are 1-indexed
-  normal_buffer.push_back(Normal());
+  normals.push_back(Normal());
 }
 
 // Draw model on the grid representing the screen
