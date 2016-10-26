@@ -39,18 +39,18 @@ struct ColorVertex {
 };
 
 // Set 2D pixel array using Phong shading
-void phong(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+void phong(vector<Model> models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 // Set 2D pixel array using Gouraud shading
-void gouraud(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+void gouraud(vector<Model> models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 
 // Use phong shading on single model copy
-void phong_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use phong shading on single triangular face
-void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single model copy
-void gouraud_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single triangular face
-void gouraud_shading(ModelPtr model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 
 // Combine 3 normals by weight
 NormalPtr combine_normals(double alpha, double beta, double gamma, NormalPtr n_a, NormalPtr n_b, NormalPtr n_c);

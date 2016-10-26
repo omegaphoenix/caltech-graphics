@@ -33,7 +33,7 @@ vector<Light> get_light_data(ifstream& obj_transform_file);
 Light store_light_line(string line);
 
 // parses multiple .obj files
-shared_ptr<vector<ModelPtr>> store_file_objects(int argc, char **argv);
+vector<Model> store_file_objects(int argc, char **argv);
 
 // store material properties of object copy
 MaterialPtr store_material_properties(vector<string> lines);
@@ -43,10 +43,10 @@ void store_specular_prop(vector<string> lines, MaterialPtr material);
 void store_shininess_prop(vector<string> lines, MaterialPtr material);
 
 // helper function for parsing one file
-ModelPtr parse_file_to_model(string file_name);
+Model parse_file_to_model(string file_name);
 
 // store one line of file as face or vertex
-void store_obj_line(string line, ModelPtr model);
+void store_obj_line(string line, Model model);
 
 // helper functions for identifying lines of file
 bool is_vertex_line(string line);
@@ -54,9 +54,9 @@ bool is_normal_line(string line);
 bool is_face_line(string line);
 
 // helper functions for storing lines of file
-void store_vertex_line(string line, ModelPtr model);
-void store_normal_line(string line, ModelPtr model);
-void store_face_line(string line, ModelPtr model);
+void store_vertex_line(string line, Model model);
+void store_normal_line(string line, Model model);
+void store_face_line(string line, Model model);
 
 // helper function to get objects from .obj files
 shared_ptr<map<string, ModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam);

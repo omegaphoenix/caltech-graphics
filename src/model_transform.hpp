@@ -22,7 +22,7 @@ using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 class ModelTransform {
   public:
-    ModelPtr model;
+    Model model;
     int copy_num;
     string name;
 
@@ -37,7 +37,7 @@ class ModelTransform {
     VerVectorPtr cartesian_NDC(MatrixPtr trans_mat);
 
     // Apply all transformations to the vertices to cartesian NDC
-    ModelPtr apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat);
+    Model apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat);
 };
 
 #endif

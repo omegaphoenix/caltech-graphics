@@ -78,21 +78,20 @@ Light store_light_line(string line) {
   return Light(x, y, z, r, g, b, att);
 }
 
-shared_ptr<vector<ModelPtr>> store_file_objects(int argc, char **argv) {
-  shared_ptr<vector<ModelPtr>> models =
-    shared_ptr<vector<ModelPtr>>(new vector<ModelPtr>());
+vector<Model> store_file_objects(int argc, char **argv) {
+  vector<Model> models = vector<Model>();
 
   for (int i = 1; i < argc; i++) {
-    ModelPtr model = parse_file_to_model(string(argv[i]));
-    models->push_back(model);
+    Model model = parse_file_to_model(string(argv[i]));
+    models.push_back(model);
   }
 
   return models;
 }
 
-ModelPtr parse_file_to_model(string file_name) {
+Model parse_file_to_model(string file_name) {
   ifstream obj_file(file_name);
-  ModelPtr model = ModelPtr(new Model(file_name));
+  Model model = Model(file_name);
 
   string line;
   while (getline(obj_file, line)) {
@@ -165,7 +164,7 @@ void store_shininess_prop(vector<string> lines, MaterialPtr material) {
   material->shininess = shiny;
 }
 
-void store_obj_line(string line, ModelPtr model) {
+void store_obj_line(string line, Model model) {
   if (is_vertex_line(line)) {
     store_vertex_line(line, model);
 
@@ -189,7 +188,7 @@ bool is_face_line(string line) {
   return line.at(0) == 'f';
 }
 
-void store_vertex_line(string line, ModelPtr model) {
+void store_vertex_line(string line, Model model) {
   istringstream line_stream(line);
   char _;
   double x, y, z;
@@ -197,10 +196,10 @@ void store_vertex_line(string line, ModelPtr model) {
     throw "Wrong number of arguments to vertex line";
   }
 
-  model->vertices->push_back(VertexPtr(new Vertex(x, y, z)));
+  model.vertices->push_back(VertexPtr(new Vertex(x, y, z)));
 }
 
-void store_normal_line(string line, ModelPtr model) {
+void store_normal_line(string line, Model model) {
   istringstream line_stream(line);
   string _;
   double x, y, z;
@@ -208,10 +207,10 @@ void store_normal_line(string line, ModelPtr model) {
     throw "Wrong number of arguments to normal line";
   }
 
-  model->normals->push_back(NormalPtr(new Normal(x, y, z)));
+  model.normals->push_back(NormalPtr(new Normal(x, y, z)));
 }
 
-void store_face_line(string line, ModelPtr model) {
+void store_face_line(string line, Model model) {
   istringstream line_stream(line);
 
   char _;
@@ -239,7 +238,7 @@ void store_face_line(string line, ModelPtr model) {
   int n3 = atoi(vn3.c_str());
 
 
-  model->faces->push_back(shared_ptr<Face>(new Face (v1, v2, v3, n1, n2, n3)));
+  model.faces->push_back(shared_ptr<Face>(new Face (v1, v2, v3, n1, n2, n3)));
 }
 
 shared_ptr<map<string, ModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam) {

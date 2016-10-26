@@ -26,18 +26,10 @@ using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
 vector<Model> parse_obj_data(char *file_name) {
-  vector<Model> objects = vector<Model>();
-
-  ModelVectorPtr models = store_obj_transform_file(file_name);
-  // Convert to vector<Model> from ModelVectorPtr
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
-    objects.push_back(**model_it);
-  }
-
-  return objects;
+  return store_obj_transform_file(file_name);
 }
 
-ModelVectorPtr store_obj_transform_file(char *file_name) {
+vector<Model> store_obj_transform_file(char *file_name) {
   ifstream obj_transform_file(file_name);
   CameraPtr cam = get_camera_data(obj_transform_file);
   // Parse light data to move ifstream along but discard
@@ -46,14 +38,14 @@ ModelVectorPtr store_obj_transform_file(char *file_name) {
   shared_ptr<map<string, ModelTransformPtr>> models =
     get_objects(obj_transform_file, cam);
   // Create copies and perform geometric transformations
-  ModelVectorPtr transformed = perform_transforms(obj_transform_file, models);
+  vector<Model> transformed = perform_transforms(obj_transform_file, models);
 
   return transformed;
 }
 
 // filename lines have been removed from the ifstream
-ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models) {
-  ModelVectorPtr trans_models = ModelVectorPtr(new vector<ModelPtr>());
+vector<Model> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models) {
+  vector<Model> trans_models = vector<Model>();
 
   vector<string> lines;
 
@@ -61,7 +53,7 @@ ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<s
   while (getline(obj_transform_file, line)) {
     if (line == "") {
       // Perform geo transforms to world coord. and store material properties
-      trans_models->push_back(perform_transform(lines, models));
+      trans_models.push_back(perform_transform(lines, models));
       lines.erase(lines.begin(), lines.end());
     } else {
       lines.push_back(line);
@@ -69,13 +61,13 @@ ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<s
   }
 
   if (!lines.empty()) {
-    trans_models->push_back(perform_transform(lines, models));
+    trans_models.push_back(perform_transform(lines, models));
   }
 
   return trans_models;
 }
 
-ModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models) {
+Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models) {
   // Remove name from vector of lines
   string name = lines.front();
   lines.erase(lines.begin());
@@ -87,16 +79,16 @@ ModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ModelTra
   MatrixPtr norm_trans_mat = create_norm_trans_mat(lines);
 
   // Apply geometric transforms to vertices and normals
-  ModelPtr new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
-  new_copy->material = material;
+  Model new_copy = (*models)[name]->apply_trans_mat(trans_mat, norm_trans_mat);
+  new_copy.material = material;
   return new_copy;
 }
 
-void print_ppm(int xres, int yres, ModelVectorPtr models) {
+void print_ppm(int xres, int yres, vector<Model> models) {
   Pixel **grid = new_grid(xres, yres);
 
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
-    (*model_it)->draw_model(xres, yres, grid);
+  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
+    (*model_it).draw_model(xres, yres, grid);
   }
 
   output_ppm(xres, yres, grid);
@@ -124,32 +116,32 @@ void delete_grid(int xres, int yres, Pixel **grid) {
   }
 }
 
-void print_transformed_vertices(ModelVectorPtr models) {
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+void print_transformed_vertices(vector<Model> models) {
+  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     print_model_vertices(*model_it);
   }
 }
 
-void print_transformed_normals(ModelVectorPtr models) {
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+void print_transformed_normals(vector<Model> models) {
+  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     print_model_normals(*model_it);
   }
 }
 
-void print_model_vertices(ModelPtr model) {
-  cout << model->name << endl;
+void print_model_vertices(Model model) {
+  cout << model.name << endl;
   print_vertices(model);
   cout << endl;
 }
 
-void print_model_normals(ModelPtr model) {
-  cout << model->name << endl;
+void print_model_normals(Model model) {
+  cout << model.name << endl;
   print_normals(model);
   cout << endl;
 }
 
-void print_vertices(ModelPtr model) {
-  VerVectorPtr vertices = model->vertices;
+void print_vertices(Model model) {
+  VerVectorPtr vertices = model.vertices;
 
   // 0-indexed vertex is NULL
   vector<VertexPtr>::iterator vertex_it = ++(vertices->begin());
@@ -159,8 +151,8 @@ void print_vertices(ModelPtr model) {
   }
 }
 
-void print_normals(ModelPtr model) {
-  NormVectorPtr normals = model->normals;
+void print_normals(Model model) {
+  NormVectorPtr normals = model.normals;
 
   // 0-indexed vertex is NULL
   vector<NormalPtr>::iterator normal_it = ++(normals->begin());

@@ -19,15 +19,15 @@ using ModelTransformPtr = shared_ptr<ModelTransform>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 
 // store original objects from .obj files
-ModelVectorPtr store_obj_transform_file(char *file_name);
+vector<Model> store_obj_transform_file(char *file_name);
 
 // transforms helper function for all transforms
-ModelVectorPtr perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models);
+vector<Model> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<string, ModelTransformPtr>> models);
 // transforms helper function for one copy
-ModelPtr perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models);
+Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models);
 
 // create copies, transform vectors, and print name and vectors
-void print_ppm(int xres, int yres, ModelVectorPtr models);
+void print_ppm(int xres, int yres, vector<Model> models);
 
 // Create new 2D array of pixels
 Pixel **new_grid(int xres, int yres);
@@ -35,14 +35,14 @@ Pixel **new_grid(int xres, int yres);
 void delete_grid(int xres, int yres, Pixel **grid);
 
 // Print all vertices and normals
-void print_transformed_vertices(ModelVectorPtr models);
-void print_transformed_normals(ModelVectorPtr models);
+void print_transformed_vertices(vector<Model> models);
+void print_transformed_normals(vector<Model> models);
 
 // helper functions to print model name and vertices and normals
-void print_model_vertices(ModelPtr model);
-void print_model_normals(ModelPtr model);
+void print_model_vertices(Model model);
+void print_model_normals(Model model);
 // Prints vertices and normals
-void print_vertices(ModelPtr model);
-void print_normals(ModelPtr model);
+void print_vertices(Model model);
+void print_normals(Model model);
 
 #endif

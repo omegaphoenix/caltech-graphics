@@ -36,9 +36,9 @@ using LightVecPtr = shared_ptr<vector<Light>>;
 using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 using VerVectorPtr = shared_ptr<vector<VertexPtr>>;
 
-void phong(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void phong(vector<Model> models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     phong_faces(*model_it, lights, cam, xres, yres, grid, buffer);
   }
 
@@ -46,9 +46,9 @@ void phong(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres,
   delete[] buffer;
 }
 
-void gouraud(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void gouraud(vector<Model> models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
-  for (vector<ModelPtr>::iterator model_it = models->begin(); model_it != models->end(); ++model_it) {
+  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     gouraud_faces(*model_it, lights, cam, xres, yres, grid, buffer);
   }
 
@@ -56,16 +56,16 @@ void gouraud(ModelVectorPtr models, vector<Light> lights, CameraPtr cam, int xre
   delete[] buffer;
 }
 
-void phong_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
+void phong_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  for (vector<FacePtr>::iterator face_it = model.faces->begin(); face_it != model.faces->end(); ++face_it) {
     FacePtr face = *face_it;
-    phong_shading(model, face, model->material, lights, cam, xres, yres, grid, buffer);
+    phong_shading(model, face, model.material, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  VerVectorPtr vertices = model->vertices;
-  NormVectorPtr normals = model->normals;
+void phong_shading(Model model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VerVectorPtr vertices = model.vertices;
+  NormVectorPtr normals = model.normals;
 
   VertexPtr v_a = (*vertices)[face->vertex1];
   VertexPtr v_b = (*vertices)[face->vertex2];
@@ -118,25 +118,25 @@ void phong_shading(ModelPtr model, FacePtr face, MaterialPtr material, vector<Li
   }
 }
 
-void gouraud_faces(ModelPtr model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  for (vector<FacePtr>::iterator face_it = model->faces->begin(); face_it != model->faces->end(); ++face_it) {
+void gouraud_faces(Model model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  for (vector<FacePtr>::iterator face_it = model.faces->begin(); face_it != model.faces->end(); ++face_it) {
     FacePtr face = *face_it;
     gouraud_shading(model, face, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void gouraud_shading(ModelPtr model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  VerVectorPtr vertices = model->vertices;
-  NormVectorPtr normals = model->normals;
+void gouraud_shading(Model model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+  VerVectorPtr vertices = model.vertices;
+  NormVectorPtr normals = model.normals;
 
   VertexPtr v_a = (*vertices)[face->vertex1];
   VertexPtr v_b = (*vertices)[face->vertex2];
   VertexPtr v_c = (*vertices)[face->vertex3];
 
   // Calculate lighting each each vertex of face
-  Pixel color_a = lighting(v_a, (*normals)[face->normal1], model->material, lights, cam);
-  Pixel color_b = lighting(v_b, (*normals)[face->normal2], model->material, lights, cam);
-  Pixel color_c = lighting(v_c, (*normals)[face->normal3], model->material, lights, cam);
+  Pixel color_a = lighting(v_a, (*normals)[face->normal1], model.material, lights, cam);
+  Pixel color_b = lighting(v_b, (*normals)[face->normal2], model.material, lights, cam);
+  Pixel color_c = lighting(v_c, (*normals)[face->normal3], model.material, lights, cam);
 
   // Transform to NDC coordinates
   VertexPtr NDC_a = cam->cam_transform(v_a);
