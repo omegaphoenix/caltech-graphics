@@ -36,7 +36,7 @@ vector<Vertex> ModelTransform :: transform_model_vertices(MatrixPtr trans_mat) {
 // Perform geometric transforms on normals
 vector<Normal> ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
   vector<Normal> normals = vector<Normal>();
-  // Index 0 is NULL because normals are 1-indexed
+  // Index 0 is filler because normals are 1-indexed
   normals.push_back(Normal());
 
   vector<Normal>::iterator normal_it = ++(model.normals.begin());

@@ -315,7 +315,7 @@ void init(void) {
    * The reason we have these procedures as separate functions is to make
    * the code more organized.
    */
-  create_cubes();
+  // create_cubes();
 
   /* The next line calls our function that tells OpenGL to initialize some
    * lights to represent our Point Light structs. Further details will be
@@ -681,7 +681,8 @@ void draw_objects() {
     /* The following brace is not necessary, but it keeps things organized.
     */
     {
-      int num_transform_sets = objects[i].transform_sets.size();
+      int num_transform_sets = 0;
+      // int num_transform_sets = objects[i].transform_sets.size();
 
       /* The loop tells OpenGL to modify our modelview matrix with the
        * desired geometric transformations for this object. Remember
@@ -1403,7 +1404,14 @@ int main(int argc, char* argv[]) {
   CameraPtr cam = parse_camera_data(file_name);
   lights = parse_light_data(file_name);
   // Parse model data and create geometrically transformed copies with material properties
-  ModelVectorPtr models = store_obj_transform_file(file_name);
+  objects = store_obj_transform_file(file_name);
+  Pixel **grid = new_grid(xres, yres);
+  gouraud(objects, lights, cam, xres, yres, grid);
+  output_ppm(xres, yres, grid);
+  delete_grid(xres, yres, grid);
+  delete[] grid;
+
+  return 0;
 
   /* 'glutInit' intializes the GLUT (Graphics Library Utility Toolkit) library.
    * This is necessary, since a lot of the functions we used above and below
@@ -1413,44 +1421,44 @@ int main(int argc, char* argv[]) {
    * too important for us, but it is possible to give command line specifications
    * to 'glutInit' by putting them with the 'main' function arguments.
    */
-  glutInit(&argc, argv);
+  // glutInit(&argc, argv);
   /* The following line of code tells OpenGL that we need a double buffer,
    * a RGB pixel buffer, and a depth buffer.
    */
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+  // glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   /* The following line tells OpenGL to create a program window of size
    * 'xres' by 'yres'.
    */
-  glutInitWindowSize(xres, yres);
+  // glutInitWindowSize(xres, yres);
   /* The following line tells OpenGL to set the program window in the top-left
    * corner of the computer screen (0, 0).
    */
-  glutInitWindowPosition(0, 0);
+  // glutInitWindowPosition(0, 0);
   /* The following line tells OpenGL to name the program window "Test".
   */
-  glutCreateWindow("Test");
+  // glutCreateWindow("Test");
 
   /* Call our 'init' function...
   */
-  init();
+  // init();
   /* Specify to OpenGL our display function.
   */
-  glutDisplayFunc(display);
+  // glutDisplayFunc(display);
   /* Specify to OpenGL our reshape function.
   */
-  glutReshapeFunc(reshape);
+  // glutReshapeFunc(reshape);
   /* Specify to OpenGL our function for handling mouse presses.
   */
-  glutMouseFunc(mouse_pressed);
+  // glutMouseFunc(mouse_pressed);
   /* Specify to OpenGL our function for handling mouse movement.
   */
-  glutMotionFunc(mouse_moved);
+  // glutMotionFunc(mouse_moved);
   /* Specify to OpenGL our function for handling key presses.
   */
-  glutKeyboardFunc(key_pressed);
+  // glutKeyboardFunc(key_pressed);
   /* The following line tells OpenGL to start the "event processing loop". This
    * is an infinite loop where OpenGL will continuously use our display, reshape,
    * mouse, and keyboard functions to essentially run our program.
    */
-  glutMainLoop();
+  // glutMainLoop();
 }
