@@ -154,17 +154,6 @@ bool wireframe_mode = false;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
-/* The following function prototypes are for helper functions that we made to
- * initialize some point lights and cube objects.
- *
- * Details of the functions will be given in their respective implementations
- * further below.
- */
-
-void create_cubes();
-
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
 /* From here on are all the function implementations.
 */
 
@@ -307,15 +296,6 @@ void init(void) {
    * for details.
    */
   glMatrixMode(GL_MODELVIEW);
-
-  /* The next two lines call our 2 helper functions that create some Point
-   * Light and Object structs for us to render. Further details will be given
-   * in the functions themselves.
-   *
-   * The reason we have these procedures as separate functions is to make
-   * the code more organized.
-   */
-  // create_cubes();
 
   /* The next line calls our function that tells OpenGL to initialize some
    * lights to represent our Point Light structs. Further details will be
@@ -1075,6 +1055,7 @@ int main(int argc, char* argv[]) {
   int xres = atoi(argv[2]);
   int yres = atoi(argv[3]);
 
+  // Set camera position and orientation variables
   CameraPtr cam = parse_camera_data(file_name);
   cam_position[0] = cam->pos.x;
   cam_position[1] = cam->pos.y;
@@ -1083,18 +1064,16 @@ int main(int argc, char* argv[]) {
   cam_orientation_axis[1] = cam->orient.y;
   cam_orientation_axis[2] = cam->orient.z;
   cam_orientation_angle = cam->orient_angle;
+
+  // Get lights as vector<Light>
   lights = parse_light_data(file_name);
+
   // Parse model data and create geometrically transformed copies with material properties
   objects = store_obj_transform_file(file_name);
-  cout << lights.size() << endl;
   /*
   Pixel **grid = new_grid(xres, yres);
   gouraud(objects, lights, cam, xres, yres, grid);
   output_ppm(xres, yres, grid);
-  delete_grid(xres, yres, grid);
-  delete[] grid;
-
-  return 0;
   */
 
   /* 'glutInit' intializes the GLUT (Graphics Library Utility Toolkit) library.
