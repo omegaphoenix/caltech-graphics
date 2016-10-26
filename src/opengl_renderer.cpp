@@ -160,7 +160,6 @@ bool wireframe_mode = false;
  * further below.
  */
 
-void create_lights();
 void create_cubes();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
@@ -316,7 +315,6 @@ void init(void) {
    * the code more organized.
    */
   create_cubes();
-  // create_lights();
 
   /* The next line calls our function that tells OpenGL to initialize some
    * lights to represent our Point Light structs. Further details will be
@@ -1059,70 +1057,6 @@ void key_pressed(unsigned char key, int x, int y) {
       glutPostRedisplay();
     }
   }
-}
-
-/* 'create_lights' function:
- *
- * This function is relatively uninteresting. We are just hardcoding all the
- * properties of our point light objects. You do not need to do this because
- * the parser will already have all the point light objects initialized.
- */
-void create_lights() {
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Light 1 Below
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Light light1;
-
-  light1.position[0] = -0.8;
-  light1.position[1] = 0;
-  light1.position[2] = 1;
-  light1.position[3] = 1;
-
-  light1.color[0] = 1;
-  light1.color[1] = 1;
-  light1.color[2] = 0;
-  light1.attenuation_k = 0.2;
-
-  lights.push_back(light1);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Light 2 Below
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-
-  Light light2;
-
-  light2.position[0] = 0.15;
-  light2.position[1] = 0.85;
-  light2.position[2] = 0.7;
-  light2.position[3] = 1;
-
-  light2.color[0] = 1;
-  light2.color[1] = 0;
-  light2.color[2] = 1;
-
-  light2.attenuation_k = 0.1;
-
-  lights.push_back(light2);
-
-  ///////////////////////////////////////////////////////////////////////////////////////////////
-  // Light 3 Below
-  ///////////////////////////////////////////////////////////////////////////////////////////////    
-
-  Light light3;
-
-  light3.position[0] = 0.5;
-  light3.position[1] = -0.5;
-  light3.position[2] = 0.85;
-  light3.position[3] = 1;
-
-  light3.color[0] = 0;
-  light3.color[1] = 1;
-  light3.color[2] = 1;
-
-  light3.attenuation_k = 0;
-
-  lights.push_back(light3);
 }
 
 /* 'create_cubes' function:
