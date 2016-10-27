@@ -2,12 +2,10 @@
 #define ARCBALL_HPP
 
 #include <GL/glew.h>
+#include <iostream>
 #include <math.h>
 #define _USE_MATH_DEFINES
 
-// iostream and vector are standard libraries that are just generally useful.
-#include <iostream>
-#include <vector>
 
 #include "Eigen/Dense"
 
