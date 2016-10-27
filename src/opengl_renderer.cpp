@@ -26,6 +26,7 @@
 #include <iostream>
 #include <vector>
 
+#include "arcball.hpp"
 #include "camera.hpp"
 #include "light.hpp"
 #include "normal.hpp"
@@ -58,24 +59,6 @@ void draw_objects();
 void mouse_pressed(int button, int state, int x, int y);
 void mouse_moved(int x, int y);
 void key_pressed(unsigned char key, int x, int y);
-
-Eigen::Vector3d create_NDC(int x, int y);
-Eigen::Quaterniond compute_rotation_quaternion(Eigen::Vector3d v0, Eigen::Vector3d v1);
-GLdouble *get_current_rotation();
-Eigen::Vector3d get_unit_rotation_axis(Eigen::Vector3d v0, Eigen::Vector3d v1);
-double get_rotation_angle(int x0, int y0, int x1, int y1);
-double screen_to_NDC(int screen_coord, int coord_res);
-
-///////////////////////////////////////////////////////////////////////////////
-
-/* The following structs do not involve OpenGL, but they are useful ways to
- * store information needed for rendering,
- *
- * After Assignment 2, the 3D shaded surface renderer assignment, you should
- * have a fairly intuitive understanding of what these structs represent.
- */
-
-///////////////////////////////////////////////////////////////////////////////
 
 /* The following are the typical camera specifications and parameters. In
  * general, it is a better idea to keep all this information in a camera
@@ -116,6 +99,7 @@ vector<Model> objects;
  * 'keyPressed' functions for the details.
  */
 
+int xres, yres;
 int mouse_x, mouse_y;
 float mouse_scale_x, mouse_scale_y;
 
@@ -133,9 +117,6 @@ Eigen::Quaterniond curr_rotation;
 
 int p_x_start;
 int p_y_start;
-
-int xres;
-int yres;
 
 /* From here on are all the function implementations.
 */
@@ -463,7 +444,7 @@ void display(void) {
   /* ^ And that should be it for the camera transformations.
   */
 
-  GLdouble *cam_rotation = get_current_rotation();
+  GLdouble *cam_rotation = get_current_rotation(curr_rotation, last_rotation);
   glMultMatrixd(cam_rotation);
   delete[] cam_rotation;
 
@@ -823,78 +804,6 @@ void draw_objects() {
   }
 }
 
-Eigen::Vector3d create_NDC(int x, int y) {
-  double NDC_x = screen_to_NDC(x, xres);
-  double NDC_y = -screen_to_NDC(y, yres);
-  double NDC_z_squared = 1 - NDC_x*NDC_x - NDC_y*NDC_y;
-  double NDC_z = (NDC_z > 0) ? sqrt(NDC_z_squared) : 0;
-
-  Eigen::Vector3d ver(NDC_x, NDC_y, NDC_z);
-  return ver;
-}
-
-Eigen::Vector3d get_unit_rotation_axis(Eigen::Vector3d v0, Eigen::Vector3d v1) {
-  Eigen::Vector3d unit_rotation_axis = v0.cross(v1);
-  if (unit_rotation_axis.norm() != 0)
-    unit_rotation_axis.normalize();
-  return unit_rotation_axis;
-}
-
-double get_rotation_angle(Eigen::Vector3d v0, Eigen::Vector3d v1) {
-  double rot_ang_help = v0.dot(v1) / v0.norm() * v1.norm();
-  double theta = acos(min(1.0, rot_ang_help));
-  return theta;
-}
-
-double screen_to_NDC(int screen_coord, int screen_res) {
-  double NDC = (2.0 * screen_coord / screen_res) - 1.0;
-  return NDC;
-}
-
-Eigen::Quaterniond compute_rotation_quaternion(int x0, int y0, int x1, int y1) {
-  Eigen::Vector3d v0 = create_NDC(x0, y0);
-  Eigen::Vector3d v1 = create_NDC(x1, y1);
-
-  double theta = get_rotation_angle(v0, v1);
-  Eigen::Vector3d rotation_axis = get_unit_rotation_axis(v0, v1);
-
-  double quaternion_real = cos(theta/2.0);
-  double imaginary_scalar = sin(theta/2.0);
-
-  Eigen::Vector3d quaternion_imaginary = rotation_axis * imaginary_scalar;
-  Eigen::Quaterniond q(quaternion_real, quaternion_imaginary(0, 0),
-      quaternion_imaginary(1, 0), quaternion_imaginary(2, 0));
-  return q;
-}
-
-/* 'get_current_rotation' function:
- * Return current rotation as GLdouble array
- */
-GLdouble *get_current_rotation() {
-  Eigen::Quaterniond res = curr_rotation * last_rotation;
-  double x = res.x();
-  double y = res.y();
-  double z = res.z();
-  double s = res.w();
-
-  Eigen::MatrixXd m(4, 4);
-  m << 1 - 2*y*y - 2*z*z, 2*(x*y - z*s), 2*(x*z + y*s), 0,
-       2*(x*y + z*s), 1 - 2*x*x - 2*z*z, 2*(y*z - x*s), 0,
-       2*(x*z - y*s), 2*(y*z + x*s), 1 - 2*x*x - 2*y*y, 0,
-			 0, 0, 0, 1;
-
-  // opengl's matrix is column-major
-  GLdouble *out = new GLdouble[16];
-  int k = 0;
-  for (int row = 0; row < 4; row++) {
-    for (int col = 0; col < 4; col++) {
-      out[k] = m(col, row);
-      k++;
-    }
-  }
-  return out;
-}
-
 /* 'mouse_pressed' function:
  *
  * This function is meant to respond to mouse clicks and releases. The
@@ -961,7 +870,7 @@ void mouse_moved(int x, int y) {
     mouse_x = x;
     mouse_y = y;
 
-    curr_rotation = compute_rotation_quaternion(x, y, p_x_start, p_y_start);
+    curr_rotation = compute_rotation_quaternion(x, y, p_x_start, p_y_start, xres, yres);
 
     /* Tell OpenGL that it needs to re-render our scene with the new camera
      * angles.

@@ -96,4 +96,5 @@ double magnitude(Eigen::MatrixXd diff_mat);
 double **new_buffer(int xres, int yres);
 // Delete 2D array for keeping track of z-coordinate of pixels
 void delete_buffer(int xres, int yres, double **buffer);
+
 #endif
