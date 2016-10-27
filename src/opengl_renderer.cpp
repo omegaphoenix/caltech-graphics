@@ -1,39 +1,6 @@
 /* CS/CNS 171
- * Written by Kevin (Kevli) Li (Class of 2016)
+ * Adapted from opengl_demo.cpp written by Kevin (Kevli) Li (Class of 2016)
  * Originally for Fall 2014
- *
- * This OpenGL demo code is supposed to introduce you to the OpenGL syntax and
- * to good coding practices when writing programs in OpenGL.
- *
- * The example syntax and code organization in this file should hopefully be
- * good references for you to write your own OpenGL code.
- *
- * The advantage of OpenGL is that it turns a lot of complicated procedures
- * (such as the lighting and shading computations in Assignment 2) into simple
- * calls to built-in library functions. OpenGL also provides an easy way to
- * make mouse and keyboard user interfaces, allowing you to make programs that
- * actually let you interact with the graphics instead of just generating
- * static images. OpenGL is in general a nice tool for when you want to make a
- * quick-and-dirty graphics program.
- *
- * Keep in mind that this demo code uses OpenGL 3.0. 3.0 is not the newest
- * version of OpenGL, but it is stable; and it contains all the necessary
- * functionality for this class. Most of the syntax in 3.0 carries over to
- * the newer versions, so you should still be able to use more modern OpenGL
- * without too much difficulty after this class. The main difference between
- * 3.0 and the newer versions is that 3.0 depends on glut, which has been
- * deprecated on Mac OS.
- *
- * This demo does not cover the OpenGL Shading Language (GLSL for short).
- * GLSL will be covered in a future demo and assignment.
- *
- * Note that if you are looking at this code before having completed
- * Assignments 1 and 2, then you will probably have a hard time understanding
- * a lot of what is going on.
- *
- * The overall idea of what this program does is given on the
- * "System Recommendations and Installation Instructions" page of the class
- * website.
  */
 
 
@@ -55,8 +22,7 @@
 #include <math.h>
 #define _USE_MATH_DEFINES
 
-/* iostream and vector are standard libraries that are just generally useful.
-*/
+// iostream and vector are standard libraries that are just generally useful.
 #include <iostream>
 #include <vector>
 
@@ -64,14 +30,15 @@
 #include "light.hpp"
 #include "normal.hpp"
 #include "parser.hpp"
-#include "shading.hpp"
 #include "transform_obj.hpp"
 #include "model.hpp"
 #include "vertex.hpp"
 
+#include "Eigen/Dense"
+
 using namespace std;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /* The following are function prototypes for the functions that you will most
  * often write when working in OpenGL.
@@ -92,7 +59,14 @@ void mouse_pressed(int button, int state, int x, int y);
 void mouse_moved(int x, int y);
 void key_pressed(unsigned char key, int x, int y);
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+Eigen::Vector3d create_NDC(int x, int y);
+Eigen::Quaterniond compute_rotation_quaternion(Eigen::Vector3d v0, Eigen::Vector3d v1);
+GLdouble *get_current_rotation();
+Eigen::Vector3d get_unit_rotation_axis(Eigen::Vector3d v0, Eigen::Vector3d v1);
+double get_rotation_angle(int x0, int y0, int x1, int y1);
+double screen_to_NDC(int screen_coord, int coord_res);
+
+///////////////////////////////////////////////////////////////////////////////
 
 /* The following structs do not involve OpenGL, but they are useful ways to
  * store information needed for rendering,
@@ -101,7 +75,7 @@ void key_pressed(unsigned char key, int x, int y);
  * have a fairly intuitive understanding of what these structs represent.
  */
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /* The following are the typical camera specifications and parameters. In
  * general, it is a better idea to keep all this information in a camera
@@ -126,7 +100,7 @@ float near_param = 1, far_param = 20,
       left_param = -0.5, right_param = 0.5,
       top_param = 0.5, bottom_param = -0.5;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /* Self-explanatory lists of lights and objects.
 */
@@ -134,7 +108,7 @@ float near_param = 1, far_param = 20,
 vector<Light> lights;
 vector<Model> objects;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 /* The following are parameters for creating an interactive first-person camera
  * view of the scene. The variables will make more sense when explained in
@@ -152,7 +126,16 @@ float x_view_angle = 0, y_view_angle = 0;
 bool is_pressed = false;
 bool wireframe_mode = false;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+Eigen::Quaterniond last_rotation;
+Eigen::Quaterniond curr_rotation;
+
+int p_x_start;
+int p_y_start;
+
+int xres;
+int yres;
 
 /* From here on are all the function implementations.
 */
@@ -182,6 +165,9 @@ bool wireframe_mode = false;
  * states that we want it to be in.
  */
 void init(void) {
+  // Initialize to identity
+  last_rotation = Eigen::Quaterniond::Identity();
+  curr_rotation = Eigen::Quaterniond::Identity();
   /* The following line of code tells OpenGL to use "smooth shading" (aka
    * Gouraud shading) when rendering.
    *
@@ -476,6 +462,10 @@ void display(void) {
   glTranslatef(-cam_position[0], -cam_position[1], -cam_position[2]);
   /* ^ And that should be it for the camera transformations.
   */
+
+  GLdouble *cam_rotation = get_current_rotation();
+  glMultMatrixd(cam_rotation);
+  delete[] cam_rotation;
 
   /* Our next step is to set up all the lights in their specified positions.
    * Our helper function, 'set_lights' does this for us. See the function
@@ -831,19 +821,78 @@ void draw_objects() {
      */
     glPopMatrix();
   }
+}
 
+Eigen::Vector3d create_NDC(int x, int y) {
+  double NDC_x = screen_to_NDC(x, xres);
+  double NDC_y = -screen_to_NDC(y, yres);
+  double NDC_z_squared = 1 - NDC_x*NDC_x - NDC_y*NDC_y;
+  double NDC_z = (NDC_z > 0) ? sqrt(NDC_z_squared) : 0;
 
-  /* The following code segment uses OpenGL's built-in sphere rendering
-   * function to render the blue-ground that you are walking on when
-   * you run the program. The blue-ground is just the surface of a big
-   * sphere of radius 100.
-   */
-  glPushMatrix();
-  {
-    glTranslatef(0, -103, 0);
-    glutSolidSphere(100, 100, 100);
+  Eigen::Vector3d ver(NDC_x, NDC_y, NDC_z);
+  return ver;
+}
+
+Eigen::Vector3d get_unit_rotation_axis(Eigen::Vector3d v0, Eigen::Vector3d v1) {
+  Eigen::Vector3d unit_rotation_axis = v0.cross(v1);
+  if (unit_rotation_axis.norm() != 0)
+    unit_rotation_axis.normalize();
+  return unit_rotation_axis;
+}
+
+double get_rotation_angle(Eigen::Vector3d v0, Eigen::Vector3d v1) {
+  double rot_ang_help = v0.dot(v1) / v0.norm() * v1.norm();
+  double theta = acos(min(1.0, rot_ang_help));
+  return theta;
+}
+
+double screen_to_NDC(int screen_coord, int screen_res) {
+  double NDC = (2.0 * screen_coord / screen_res) - 1.0;
+  return NDC;
+}
+
+Eigen::Quaterniond compute_rotation_quaternion(int x0, int y0, int x1, int y1) {
+  Eigen::Vector3d v0 = create_NDC(x0, y0);
+  Eigen::Vector3d v1 = create_NDC(x1, y1);
+
+  double theta = get_rotation_angle(v0, v1);
+  Eigen::Vector3d rotation_axis = get_unit_rotation_axis(v0, v1);
+
+  double quaternion_real = cos(theta/2.0);
+  double imaginary_scalar = sin(theta/2.0);
+
+  Eigen::Vector3d quaternion_imaginary = rotation_axis * imaginary_scalar;
+  Eigen::Quaterniond q(quaternion_real, quaternion_imaginary(0, 0),
+      quaternion_imaginary(1, 0), quaternion_imaginary(2, 0));
+  return q;
+}
+
+/* 'get_current_rotation' function:
+ * Return current rotation as GLdouble array
+ */
+GLdouble *get_current_rotation() {
+  Eigen::Quaterniond res = curr_rotation * last_rotation;
+  double x = res.x();
+  double y = res.y();
+  double z = res.z();
+  double s = res.w();
+
+  Eigen::MatrixXd m(4, 4);
+  m << 1 - 2*y*y - 2*z*z, 2*(x*y - z*s), 2*(x*z + y*s), 0,
+       2*(x*y + z*s), 1 - 2*x*x - 2*z*z, 2*(y*z - x*s), 0,
+       2*(x*z - y*s), 2*(y*z + x*s), 1 - 2*x*x - 2*y*y, 0,
+			 0, 0, 0, 1;
+
+  // opengl's matrix is column-major
+  GLdouble *out = new GLdouble[16];
+  int k = 0;
+  for (int row = 0; row < 4; row++) {
+    for (int col = 0; col < 4; col++) {
+      out[k] = m(col, row);
+      k++;
+    }
   }
-  glPopMatrix();
+  return out;
 }
 
 /* 'mouse_pressed' function:
@@ -865,6 +914,9 @@ void mouse_pressed(int button, int state, int x, int y) {
   /* If the left-mouse button was clicked down, then...
   */
   if(button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+    // store start coordinates
+    p_x_start = x;
+    p_y_start = y;
     /* Store the mouse position in our global variables.
     */
     mouse_x = x;
@@ -878,6 +930,8 @@ void mouse_pressed(int button, int state, int x, int y) {
   /* If the left-mouse button was released up, then...
   */
   else if(button == GLUT_LEFT_BUTTON && state == GLUT_UP) {
+    last_rotation = curr_rotation * last_rotation;
+    curr_rotation = Eigen::Quaterniond::Identity();
     /* Mouse is no longer being pressed, so set our indicator to false.
     */
     is_pressed = false;
@@ -892,54 +946,13 @@ void mouse_pressed(int button, int state, int x, int y) {
  * - int x: the x screen coordinate of where the mouse was clicked or released
  * - int y: the y screen coordinate of where the mouse was clicked or released
  *
- * We compute our camera rotation angles based on the mouse movement in this
+ * We compute our Arcball rotation based on the mouse movement in this
  * function.
  */
 void mouse_moved(int x, int y) {
   /* If the left-mouse button is being clicked down...
   */
   if(is_pressed) {
-    /* You see in the 'mouse_pressed' function that when the left-mouse button
-     * is first clicked down, we store the screen coordinates of where the
-     * mouse was pressed down in 'mouse_x' and 'mouse_y'. When we move the
-     * mouse, its screen coordinates change and are captured by the 'x' and
-     * 'y' parameters to the 'mouse_moved' function. We want to compute a change
-     * in our camera angle based on the distance that the mouse traveled.
-     *
-     * We have two distances traveled: a dx equal to 'x' - 'mouse_x' and a
-     * dy equal to 'y' - 'mouse_y'. We need to compute the desired changes in
-     * the horizontal (x) angle of the camera and the vertical (y) angle of
-     * the camera.
-     *
-     * Let's start with the horizontal angle change. We first need to convert
-     * the dx traveled in screen coordinates to a dx traveled in camera space.
-     * The conversion is done using our 'mouse_scale_x' variable, which we
-     * set in our 'reshape' function. We then multiply by our 'x_view_step'
-     * variable, which is an arbitrary value that determines how "fast" we
-     * want the camera angle to change. Higher values for 'x_view_step' cause
-     * the camera to move more when we drag the mouse. We had set 'x_view_step'
-     * to 90 at the top of this file (where we declared all our variables).
-     *
-     * We then add the horizontal change in camera angle to our 'x_view_angle'
-     * variable, which keeps track of the cumulative horizontal change in our
-     * camera angle. 'x_view_angle' is used in the camera rotations specified
-     * in the 'display' function.
-     */
-    x_view_angle += ((float) x - (float) mouse_x) * mouse_scale_x * x_view_step;
-
-    /* We do basically the same process as above to compute the vertical change
-     * in camera angle. The only real difference is that we want to keep the
-     * camera angle changes realistic, and it is unrealistic for someone in
-     * real life to be able to change their vertical "camera angle" more than
-     * ~90 degrees (they would have to detach their head and spin it vertically
-     * or something...). So we decide to restrict the cumulative vertical angle
-     * change between -90 and 90 degrees.
-     */
-    float temp_y_view_angle = y_view_angle +
-      ((float) y - (float) mouse_y) * mouse_scale_y * y_view_step;
-    y_view_angle = (temp_y_view_angle > 90 || temp_y_view_angle < -90) ?
-      y_view_angle : temp_y_view_angle;
-
     /* We update our 'mouse_x' and 'mouse_y' variables so that if the user moves
      * the mouse again without releasing it, then the distance we compute on the
      * next call to the 'mouse_moved' function will be from this current mouse
@@ -947,6 +960,8 @@ void mouse_moved(int x, int y) {
      */
     mouse_x = x;
     mouse_y = y;
+
+    curr_rotation = compute_rotation_quaternion(x, y, p_x_start, p_y_start);
 
     /* Tell OpenGL that it needs to re-render our scene with the new camera
      * angles.
@@ -977,8 +992,7 @@ float deg2rad(float angle) {
  * use of the 'x' and 'y' parameters.
  */
 void key_pressed(unsigned char key, int x, int y) {
-  /* If 'q' is pressed, quit the program.
-  */
+  // If 'q' is pressed, quit the program.
   if(key == 'q') {
     exit(0);
   }
@@ -1010,29 +1024,25 @@ void key_pressed(unsigned char key, int x, int y) {
 
     float x_view_rad = deg2rad(x_view_angle);
 
-    /* 'w' for step forward
-    */
+    // 'w' for step forward
     if(key == 'w') {
       cam_position[0] += step_size * sin(x_view_rad);
       cam_position[2] -= step_size * cos(x_view_rad);
       glutPostRedisplay();
     }
-    /* 'a' for step left
-    */
+    // 'a' for step left
     else if(key == 'a') {
       cam_position[0] -= step_size * cos(x_view_rad);
       cam_position[2] -= step_size * sin(x_view_rad);
       glutPostRedisplay();
     }
-    /* 's' for step backward
-    */
+    // 's' for step backward
     else if(key == 's') {
       cam_position[0] -= step_size * sin(x_view_rad);
       cam_position[2] += step_size * cos(x_view_rad);
       glutPostRedisplay();
     }
-    /* 'd' for step right
-    */
+    // 'd' for step right
     else if(key == 'd') {
       cam_position[0] += step_size * cos(x_view_rad);
       cam_position[2] += step_size * sin(x_view_rad);
@@ -1041,9 +1051,7 @@ void key_pressed(unsigned char key, int x, int y) {
   }
 }
 
-/* The 'main' function:
- *
- * This function is short, but is basically where everything comes together.
+/* 'main' function:
  */
 int main(int argc, char* argv[]) {
   if (argc != 4) {
@@ -1052,8 +1060,8 @@ int main(int argc, char* argv[]) {
     exit(-1);
   }
   char *file_name = argv[1];
-  int xres = atoi(argv[2]);
-  int yres = atoi(argv[3]);
+  xres = atoi(argv[2]);
+  yres = atoi(argv[3]);
 
   // Set camera position and orientation variables
   CameraPtr cam = parse_camera_data(file_name);
@@ -1063,18 +1071,14 @@ int main(int argc, char* argv[]) {
   cam_orientation_axis[0] = cam->orient.x;
   cam_orientation_axis[1] = cam->orient.y;
   cam_orientation_axis[2] = cam->orient.z;
-  cam_orientation_angle = cam->orient_angle;
+  // Convert to degrees
+  cam_orientation_angle = cam->orient_angle*180.0 / M_PI;
 
   // Get lights as vector<Light>
   lights = parse_light_data(file_name);
 
   // Parse model data and create geometrically transformed copies with material properties
   objects = store_obj_transform_file(file_name);
-  /*
-  Pixel **grid = new_grid(xres, yres);
-  gouraud(objects, lights, cam, xres, yres, grid);
-  output_ppm(xres, yres, grid);
-  */
 
   /* 'glutInit' intializes the GLUT (Graphics Library Utility Toolkit) library.
    * This is necessary, since a lot of the functions we used above and below
@@ -1097,27 +1101,19 @@ int main(int argc, char* argv[]) {
    * corner of the computer screen (0, 0).
    */
   glutInitWindowPosition(0, 0);
-  /* The following line tells OpenGL to name the program window "Test".
-  */
-  glutCreateWindow("Test");
+  // The following line tells OpenGL to name the program window "HW3".
+  glutCreateWindow("HW3");
 
-  /* Call our 'init' function...
-  */
   init();
-  /* Specify to OpenGL our display function.
-  */
+  // Specify to OpenGL our display function.
   glutDisplayFunc(display);
-  /* Specify to OpenGL our reshape function.
-  */
+  // Specify to OpenGL our reshape function.
   glutReshapeFunc(reshape);
-  /* Specify to OpenGL our function for handling mouse presses.
-  */
+  // Specify to OpenGL our function for handling mouse presses.
   glutMouseFunc(mouse_pressed);
-  /* Specify to OpenGL our function for handling mouse movement.
-  */
+  // Specify to OpenGL our function for handling mouse movement.
   glutMotionFunc(mouse_moved);
-  /* Specify to OpenGL our function for handling key presses.
-  */
+  // Specify to OpenGL our function for handling key presses.
   glutKeyboardFunc(key_pressed);
   /* The following line tells OpenGL to start the "event processing loop". This
    * is an infinite loop where OpenGL will continuously use our display, reshape,
