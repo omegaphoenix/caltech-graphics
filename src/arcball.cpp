@@ -1,10 +1,10 @@
 #include "arcball.hpp"
 
 #include <GL/glew.h>
+#include <iostream>
 #include <math.h>
 #define _USE_MATH_DEFINES
 
-#include <iostream>
 
 #include "Eigen/Dense"
 
