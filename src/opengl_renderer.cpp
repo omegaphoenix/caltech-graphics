@@ -739,8 +739,6 @@ void key_pressed(unsigned char key, int x, int y) {
   }
 }
 
-/* 'main' function:
- */
 int main(int argc, char* argv[]) {
   // Parse arguments
   if (argc != 4) {

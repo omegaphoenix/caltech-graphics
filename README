@@ -2,8 +2,8 @@ To display image, run these commands:
   make
 
 OR:
-  make bin/shaded
-  ./bin/shaded [data/scene_description_file.txt] [xres] [yres] [mode] | display
+  make bin/opepgl_renderer
+  ./bin/opepgl_renderer [data/scene_description_file.txt] [xres] [yres]
 
 OR:
   make cube1
