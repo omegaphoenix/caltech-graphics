@@ -9,7 +9,7 @@ CFLAGS := -g -std=c++11
 
 SRCDIR := src
 BUILDDIR := build
-TARGET = bin/opengl_demo
+TARGET = bin/opengl_renderer
 
 # The following line is a relative directory reference that assumes the Eigen
 # folder--which your program will depend on--is located one directory above the

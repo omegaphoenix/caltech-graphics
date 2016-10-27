@@ -32,7 +32,7 @@ GLdouble *get_current_rotation(Eigen::Quaterniond curr_rotation, Eigen::Quaterni
   return out;
 }
 
-Eigen::MatrixXd quaternion_to_rot_mat(int x, int y, int z, int s) {
+Eigen::MatrixXd quaternion_to_rot_mat(double x, double y, double z, double s) {
   Eigen::MatrixXd rot_mat(4, 4);
   double r11 = 1 - 2*y*y - 2*z*z;
   double r12 = 2*(x*y - z*s);

@@ -17,7 +17,7 @@ using namespace std;
 GLdouble *get_current_rotation(Eigen::Quaterniond curr_rotation, Eigen::Quaterniond last_rotation);
 
 // Convert to rotation matrix
-Eigen::MatrixXd quaternion_to_rot_mat(int x, int y, int z, int s);
+Eigen::MatrixXd quaternion_to_rot_mat(double x, double y, double z, double s);
 Eigen::Quaterniond compute_rotation_quaternion(int x0, int y0, int x1, int y1, int xres, int yres);
 
 // Get rotation vector and angle from start and end points
