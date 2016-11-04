@@ -35,18 +35,18 @@ struct ColorVertex {
 };
 
 // Set 2D pixel array using Phong shading
-void phong(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+void phong(vector<Model> &models, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 // Set 2D pixel array using Gouraud shading
-void gouraud(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid);
+void gouraud(vector<Model> &models, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid);
 
 // Use phong shading on single model copy
-void phong_faces(Model &model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_faces(Model &model, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use phong shading on single triangular face
-void phong_shading(Model &model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void phong_shading(Model &model, FacePtr face, MaterialPtr material, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single model copy
-void gouraud_faces(Model &model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_faces(Model &model, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 // Use gouraud shading on single triangular face
-void gouraud_shading(Model &model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
+void gouraud_shading(Model &model, FacePtr face, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer);
 
 // Combine 3 normals by weight
 Normal combine_normals(double alpha, double beta, double gamma, Normal n_a, Normal n_b, Normal n_c);
@@ -56,7 +56,7 @@ Vertex combine_vertices(double alpha, double beta, double gamma, Vertex v_a, Ver
 // Rasterize triangle in Pixel grid
 void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xres, int yres, Pixel **grid, double **buffer);
 // Calculate the lighting of the material at a vertex
-Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> lights, CameraPtr cam);
+Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> &lights, CameraPtr cam);
 
 // Check if face faces away from camera
 bool backfacing(Vertex NDC_a, Vertex NDC_b, Vertex NDC_c);

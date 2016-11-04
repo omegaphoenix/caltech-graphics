@@ -21,17 +21,6 @@ const int MAX_INTENSITY = 255;
 
 using namespace std;
 
-using CameraPtr = shared_ptr<Camera>;
-using FacePtr = shared_ptr<Face>;
-using LightPtr = shared_ptr<Light>;
-using MaterialPtr = shared_ptr<Material>;
-using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-using ReflectPtr = shared_ptr<struct Reflectance>;
-using ModelPtr = shared_ptr<Model>;
-
-using LightVecPtr = shared_ptr<vector<Light>>;
-using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
-
 void output_ppm(int xres, int yres, Pixel **grid) {
   start_ppm_output(xres, yres);
   for (int y = 0; y < yres; y++) {

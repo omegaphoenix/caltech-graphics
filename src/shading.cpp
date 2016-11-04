@@ -25,10 +25,9 @@ using namespace std;
 using CameraPtr = shared_ptr<Camera>;
 using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<Material>;
-using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 
-void phong(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void phong(vector<Model> &models, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     phong_faces(*model_it, lights, cam, xres, yres, grid, buffer);
@@ -38,7 +37,7 @@ void phong(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xres,
   delete[] buffer;
 }
 
-void gouraud(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
+void gouraud(vector<Model> &models, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid) {
   double **buffer = new_buffer(xres, yres); // for depth buffering
   for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
     gouraud_faces(*model_it, lights, cam, xres, yres, grid, buffer);
@@ -48,14 +47,14 @@ void gouraud(vector<Model> &models, vector<Light> lights, CameraPtr cam, int xre
   delete[] buffer;
 }
 
-void phong_faces(Model &model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void phong_faces(Model &model, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   for (vector<FacePtr>::iterator face_it = model.faces->begin(); face_it != model.faces->end(); ++face_it) {
     FacePtr face = *face_it;
     phong_shading(model, face, model.material, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void phong_shading(Model &model, FacePtr face, MaterialPtr material, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void phong_shading(Model &model, FacePtr face, MaterialPtr material, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   Vertex v_a = model.vertices[face->vertex1];
   Vertex v_b = model.vertices[face->vertex2];
   Vertex v_c = model.vertices[face->vertex3];
@@ -107,15 +106,14 @@ void phong_shading(Model &model, FacePtr face, MaterialPtr material, vector<Ligh
   }
 }
 
-void gouraud_faces(Model &model, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
+void gouraud_faces(Model &model, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   for (vector<FacePtr>::iterator face_it = model.faces->begin(); face_it != model.faces->end(); ++face_it) {
     FacePtr face = *face_it;
     gouraud_shading(model, face, lights, cam, xres, yres, grid, buffer);
   }
 }
 
-void gouraud_shading(Model &model, FacePtr face, vector<Light> lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
-  // cout << "Starting face" << endl;
+void gouraud_shading(Model &model, FacePtr face, vector<Light> &lights, CameraPtr cam, int xres, int yres, Pixel **grid, double **buffer) {
   Vertex v_a = model.vertices[face->vertex1];
   Vertex v_b = model.vertices[face->vertex2];
   Vertex v_c = model.vertices[face->vertex3];
@@ -193,7 +191,7 @@ void raster_tri(ColorVertex NDC_a, ColorVertex NDC_b, ColorVertex NDC_c, int xre
   }
 }
 
-Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> lights, CameraPtr cam) {
+Pixel lighting(Vertex v, Normal n, MaterialPtr material, vector<Light> &lights, CameraPtr cam) {
   // 3D vectors
   Eigen::MatrixXd c_d(1, 3), c_a(1, 3), c_s(1, 3), diffuse_sum(1, 3), specular_sum(1, 3), e_dir(1, 3);
   Eigen::MatrixXd l_p(1, 3), l_c(1, 3), l_dir(1, 3), l_diffuse(1, 3), l_specular(1, 3);
