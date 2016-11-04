@@ -19,7 +19,7 @@ GLdouble *get_current_rotation(Eigen::Quaterniond curr_rotation, Eigen::Quaterni
 
   Eigen::MatrixXd rot_mat = quaternion_to_rot_mat(x, y, z, s);
 
-  // return rotation matrix as opengl matrix
+  // Return rotation matrix as opengl matrix
   GLdouble *out = new GLdouble[16];
   int k = 0;
   for (int row = 0; row < 4; row++) {

@@ -20,7 +20,13 @@ OBJECTS := $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 INC := -I include
 
 all: $(TARGET)
-	./$(TARGET) data/scene_cube1.txt 800 800 0 | display
+	./$(TARGET) data/scene_cube2.txt 800 800 1 | display
+
+# Simple benchmark
+benchmark: $(TARGET)
+	time ./$(TARGET) data/scene_armadillo.txt 800 800 0 > armadillo.temp
+	time ./$(TARGET) data/scene_armadillo.txt 800 800 1 > armadillo.temp
+	rm armadillo.temp
 
 # Quick testing for refactoring
 fast: $(TARGET)
