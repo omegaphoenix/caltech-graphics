@@ -19,12 +19,9 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using LightPtr = shared_ptr<Light>;
 using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<Reflectance>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
-
-using LightVecPtr = shared_ptr<vector<Light>>;
 
 CameraPtr parse_camera_data(char *file_name) {
   ifstream obj_transform_file(file_name);
