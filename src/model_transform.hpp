@@ -31,9 +31,6 @@ class ModelTransform {
     // Perform geometric transforms on normals
     vector<Normal> transform_model_normals(MatrixPtr trans_mat);
 
-    // Perform geometric and camera perspective transforms on vertices
-    vector<Vertex> cartesian_NDC(MatrixPtr trans_mat);
-
     // Apply all transformations to the vertices to cartesian NDC
     Model apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat);
 };

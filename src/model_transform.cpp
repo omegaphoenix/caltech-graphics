@@ -48,29 +48,11 @@ vector<Normal> ModelTransform :: transform_model_normals(MatrixPtr trans_mat) {
   return normals;
 }
 
-// Perform geometric and camera perspective transforms on vertices
-vector<Vertex> ModelTransform :: cartesian_NDC(MatrixPtr trans_mat) {
-  vector<Vertex> vertices = vector<Vertex>();
-  vector<Vertex> geo_transform_vertices = transform_model_vertices(trans_mat);
-
-  // Index 0 is filler because vertices are 1-indexed
-  vertices.push_back(Vertex());
-
-  vector<Vertex>::iterator vertex_it = ++(geo_transform_vertices.begin());
-  while (vertex_it != geo_transform_vertices.end()) {
-    vertices.push_back(cam->cam_transform(*vertex_it));
-    ++vertex_it;
-  }
-
-  return vertices;
-}
-
 // Apply all transformations to the vertices to cartesian NDC
 Model ModelTransform :: apply_trans_mat(MatrixPtr trans_mat, MatrixPtr norm_trans_mat) {
   Model copy = Model();
   copy.vertices = transform_model_vertices(trans_mat);
   copy.normals = transform_model_normals(norm_trans_mat);
-  // copy->vertices = cartesian_NDC(trans_mat);
   copy.faces = model.faces;
 
   std::stringstream copy_name;
