@@ -24,7 +24,8 @@ GLdouble *get_current_rotation(Eigen::Quaterniond curr_rotation, Eigen::Quaterni
   int k = 0;
   for (int row = 0; row < 4; row++) {
     for (int col = 0; col < 4; col++) {
-      out[k] = rot_mat(row, col);
+      // opengl matrix is column-major
+      out[k] = rot_mat(col, row);
       k++;
     }
   }
