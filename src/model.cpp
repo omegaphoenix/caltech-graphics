@@ -56,24 +56,6 @@ void Model :: setup_normals() {
   normals.push_back(Normal());
 }
 
-// Draw model on the grid representing the screen
-void Model :: draw_model(int xres, int yres, Pixel **grid) {
-  for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
-    draw_face(xres, yres, *face_it, grid);
-  }
-}
-
-// Draw a single face on the grid representing the screen
-void Model :: draw_face(int xres, int yres, FacePtr face, Pixel **grid) {
-  Vertex v1 = NDC_to_pixel(xres, yres, vertices[face->vertex1]);
-  Vertex v2 = NDC_to_pixel(xres, yres, vertices[face->vertex2]);
-  Vertex v3 = NDC_to_pixel(xres, yres, vertices[face->vertex3]);
-
-  rasterize(v1, v2, grid, xres, yres);
-  rasterize(v2, v3, grid, xres, yres);
-  rasterize(v3, v1, grid, xres, yres);
-}
-
 void Model :: set_variables() {
   for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
     FacePtr face = *face_it;

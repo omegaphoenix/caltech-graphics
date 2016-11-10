@@ -138,10 +138,6 @@ class Model {
     void setup_vertices();
     // helper function for constructor to setup normals
     void setup_normals();
-    // Draw model on the grid representing the screen
-    void draw_model(int xres, int yres, Pixel **grid);
-    // Draw a single face on the grid representing the screen
-    void draw_face(int xres, int yres, FacePtr face, Pixel **grid);
 
     // Set redundant varibles to be used in OpenGL framework
     void set_variables();

@@ -83,19 +83,6 @@ Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransf
   return new_copy;
 }
 
-void print_ppm(int xres, int yres, vector<Model> models) {
-  Pixel **grid = new_grid(xres, yres);
-
-  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
-    (*model_it).draw_model(xres, yres, grid);
-  }
-
-  output_ppm(xres, yres, grid);
-
-  delete_grid(xres, yres, grid);
-  delete[] grid;
-}
-
 Pixel **new_grid(int xres, int yres) {
   Pixel **grid = new Pixel *[yres];
   for (int y = 0; y < yres; y++) {
@@ -112,51 +99,5 @@ Pixel **new_grid(int xres, int yres) {
 void delete_grid(int xres, int yres, Pixel **grid) {
   for (int y = 0; y < yres; y++) {
     delete[] grid[y];
-  }
-}
-
-void print_transformed_vertices(vector<Model> models) {
-  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
-    print_model_vertices(*model_it);
-  }
-}
-
-void print_transformed_normals(vector<Model> models) {
-  for (vector<Model>::iterator model_it = models.begin(); model_it != models.end(); ++model_it) {
-    print_model_normals(*model_it);
-  }
-}
-
-void print_model_vertices(Model model) {
-  cout << model.name << endl;
-  print_vertices(model);
-  cout << endl;
-}
-
-void print_model_normals(Model model) {
-  cout << model.name << endl;
-  print_normals(model);
-  cout << endl;
-}
-
-void print_vertices(Model model) {
-  vector<Vertex> vertices = model.vertices;
-
-  // 0-indexed vertex is NULL
-  vector<Vertex>::iterator vertex_it = ++(vertices.begin());
-  while (vertex_it != vertices.end()) {
-    cout << (*vertex_it).x << " " << (*vertex_it).y << " " << (*vertex_it).z << endl;
-    ++vertex_it;
-  }
-}
-
-void print_normals(Model model) {
-  vector<Normal> normals = model.normals;
-
-  // 0-indexed vertex is NULL
-  vector<Normal>::iterator normal_it = ++(normals.begin());
-  while (normal_it != normals.end()) {
-    cout << (*normal_it).x << " " << (*normal_it).y << " " << (*normal_it).z << endl;
-    ++normal_it;
   }
 }

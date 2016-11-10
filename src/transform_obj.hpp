@@ -26,23 +26,9 @@ vector<Model> perform_transforms(ifstream& obj_transform_file, shared_ptr<map<st
 // transforms helper function for one copy
 Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransformPtr>> models);
 
-// create copies, transform vectors, and print name and vectors
-void print_ppm(int xres, int yres, vector<Model> models);
-
 // Create new 2D array of pixels
 Pixel **new_grid(int xres, int yres);
 // Delete 2D array of pixels
 void delete_grid(int xres, int yres, Pixel **grid);
-
-// Print all vertices and normals
-void print_transformed_vertices(vector<Model> models);
-void print_transformed_normals(vector<Model> models);
-
-// helper functions to print model name and vertices and normals
-void print_model_vertices(Model model);
-void print_model_normals(Model model);
-// Prints vertices and normals
-void print_vertices(Model model);
-void print_normals(Model model);
 
 #endif
