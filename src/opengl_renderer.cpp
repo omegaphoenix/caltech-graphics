@@ -74,7 +74,7 @@ void display(void) {
   glRotatef(x_view_angle, 0, 1, 0);
 
   // Camera rotation and translation
-  glRotatef(-cam->orient_angle*180/M_PI, cam->orient.x, cam->orient.y, cam->orient.z);
+  glRotatef(-1.0*rad2deg(cam->orient_angle), cam->orient.x, cam->orient.y, cam->orient.z);
   glTranslatef(-cam->pos.x, -cam->pos.y, -cam->pos.z);
 
   GLdouble *cam_rotation = get_current_rotation(curr_rotation, last_rotation);
@@ -205,21 +205,15 @@ void mouse_moved(int x, int y) {
   }
 }
 
-float deg2rad(float angle) {
-  return angle * M_PI / 180.0;
-}
-
 void key_pressed(unsigned char key, int x, int y) {
-  // If 'q' is pressed, quit the program.
   if(key == 'q') {
+    // Quit the program.
     exit(0);
-  }
-  // Toggle wireframe mode
-  else if(key == 't') {
+  } else if(key == 't') {
+    // Toggle wireframe mode
     wireframe_mode = !wireframe_mode;
     glutPostRedisplay();
-  }
-  else {
+  } else {
     float x_view_rad = deg2rad(x_view_angle);
 
     // 'w' for step forward
@@ -227,26 +221,31 @@ void key_pressed(unsigned char key, int x, int y) {
       cam->pos.x += step_size * sin(x_view_rad);
       cam->pos.z -= step_size * cos(x_view_rad);
       glutPostRedisplay();
-    }
+    } else if(key == 'a') {
     // 'a' for step left
-    else if(key == 'a') {
       cam->pos.x -= step_size * cos(x_view_rad);
       cam->pos.z -= step_size * sin(x_view_rad);
       glutPostRedisplay();
-    }
+    } else if(key == 's') {
     // 's' for step backward
-    else if(key == 's') {
       cam->pos.x -= step_size * sin(x_view_rad);
       cam->pos.z += step_size * cos(x_view_rad);
       glutPostRedisplay();
-    }
+    } else if(key == 'd') {
     // 'd' for step right
-    else if(key == 'd') {
       cam->pos.x += step_size * cos(x_view_rad);
       cam->pos.z += step_size * sin(x_view_rad);
       glutPostRedisplay();
     }
   }
+}
+
+float deg2rad(float angle) {
+  return angle * M_PI / 180.0;
+}
+
+float rad2deg(float angle) {
+  return angle * 180.0 / M_PI;
 }
 
 int main(int argc, char* argv[]) {
@@ -273,16 +272,13 @@ int main(int argc, char* argv[]) {
   glutInit(&argc, argv);
   // Tell OpenGL we need a double buffer, RGB pixel buffer,and depth buffer
   glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+
   glutInitWindowSize(xres, yres);
-  /* The following line tells OpenGL to set the program window in the top-left
-   * corner of the computer screen (0, 0).
-   */
   glutInitWindowPosition(0, 0);
   glutCreateWindow("HW5");
 
   init();
 
-  // Specify to OpenGL our functions.
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutMouseFunc(mouse_pressed);

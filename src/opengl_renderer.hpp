@@ -39,12 +39,14 @@ void draw_objects();
 
 // Respond to mouse clicks and releases
 void mouse_pressed(int button, int state, int x, int y);
-// Convert degrees to radians
-float deg2rad(float angle);
 // Respond when the mouse is being moved.
 void mouse_moved(int x, int y);
 // Respond to key pressed on the keyboard.
 void key_pressed(unsigned char key, int x, int y);
+
+// Convert between degrees and radians
+float deg2rad(float angle);
+float rad2deg(float angle);
 
 int main(int argc, char* argv[]);
 
