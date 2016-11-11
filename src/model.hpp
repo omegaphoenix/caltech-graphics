@@ -7,7 +7,7 @@
 #include <string>
 #include <vector>
 
-#include "draw_pixels.hpp"
+#include "pixels.hpp"
 #include "face.hpp"
 #include "normal.hpp"
 #include "vertex.hpp"

@@ -5,7 +5,7 @@
 #include <map>
 #include <memory> // shared_ptr
 
-#include "draw_pixels.hpp"
+#include "pixels.hpp"
 #include "camera.hpp"
 #include "geometric_transform.hpp"
 #include "parser.hpp"

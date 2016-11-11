@@ -1,5 +1,5 @@
-#ifndef DRAW_PIXELS_HPP
-#define DRAW_PIXELS_HPP
+#ifndef PIXELS_HPP
+#define PIXELS_HPP
 
 using namespace std;
 

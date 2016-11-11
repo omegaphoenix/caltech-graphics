@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "draw_pixels.hpp"
+#include "pixels.hpp"
 #include "model.hpp"
 #include "model_transform.hpp"
 
