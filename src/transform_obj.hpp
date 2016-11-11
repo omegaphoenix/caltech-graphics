@@ -14,9 +14,7 @@
 
 using namespace std;
 
-using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
-using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 
 // store original objects from .obj files
 vector<Model> store_obj_transform_file(char *file_name);

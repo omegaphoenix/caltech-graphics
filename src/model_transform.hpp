@@ -15,7 +15,6 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using ModelPtr = shared_ptr<Model>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 
 class ModelTransform {

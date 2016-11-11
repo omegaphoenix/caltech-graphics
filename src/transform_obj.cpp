@@ -15,13 +15,8 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using LightPtr = shared_ptr<Light>;
-using ModelPtr = shared_ptr<Model>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
-
-using LightVecPtr = shared_ptr<vector<Light>>;
-using ModelVectorPtr = shared_ptr<vector<ModelPtr>>;
 
 vector<Model> parse_obj_data(char *file_name) {
   return store_obj_transform_file(file_name);
