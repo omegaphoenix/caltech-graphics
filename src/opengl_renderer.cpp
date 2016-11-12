@@ -198,7 +198,7 @@ void mouse_moved(int x, int y) {
     mouse_x = x;
     mouse_y = y;
 
-    curr_rotation = compute_rotation_quaternion(x, y, p_x_start, p_y_start, xres, yres);
+    curr_rotation = compute_rotation_quaternion(p_x_start, p_y_start, x, y, xres, yres);
 
     // Tell OpenGL to re-render our scene with the new camera angles
     glutPostRedisplay();
