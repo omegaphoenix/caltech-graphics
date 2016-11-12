@@ -12,13 +12,13 @@ struct Normal {
   Normal() {
   }
 
-  Normal(double x0, double y0, double z0) {
+  Normal(float x0, float y0, float z0) {
     set_normal(x0, y0, z0);
   }
 
   // Normalize normal on creation
-  void set_normal(double x0, double y0, double z0) {
-    double magnitude = sqrt(x0*x0 + y0*y0 + z0*z0);
+  void set_normal(float x0, float y0, float z0) {
+    float magnitude = sqrt(x0*x0 + y0*y0 + z0*z0);
     x = x0/magnitude;
     y = y0/magnitude;
     z = z0/magnitude;

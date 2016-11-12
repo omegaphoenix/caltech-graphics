@@ -42,7 +42,9 @@ void Camera :: set_orient(string line) {
     throw "Wrong number of arguments to camera orientation line";
   }
 
-  orient = Vertex(x, y, z);
+  // Normalize orientation axis
+  float magnitude = sqrt(x*x + y*y + z*z);
+  orient = Vertex(x/magnitude, y/magnitude, z/magnitude);
 }
 
 // Get all arguments for perspective projection transform
