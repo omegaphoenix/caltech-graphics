@@ -9,12 +9,9 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "face.hpp" // represents triangular face
-#include "light.hpp"
-#include "normal.hpp"
 #include "model.hpp" // .obj file data stored in model
 #include "model_transform.hpp"
-#include "vertex.hpp" // represents 3d coordinate
+#include "structs.hpp"
 
 using namespace std;
 
@@ -163,20 +160,16 @@ void store_obj_line(string line, Model &model) {
   if (is_vertex_line(line)) {
     store_vertex_line(line, model);
 
-  } else if (is_normal_line(line)) {
-    store_normal_line(line, model);
-
   } else if (is_face_line(line)) {
     store_face_line(line, model);
+
+  } else {
+    throw "Unknown line in .obj file";
   }
 }
 
 bool is_vertex_line(string line) {
   return line.at(0) == 'v' && line.at(1) == ' ';
-}
-
-bool is_normal_line(string line) {
-  return line.at(0) == 'v' && line.at(1) == 'n';
 }
 
 bool is_face_line(string line) {
@@ -194,46 +187,15 @@ void store_vertex_line(string line, Model &model) {
   model.vertices.push_back(Vertex(x, y, z));
 }
 
-void store_normal_line(string line, Model &model) {
-  istringstream line_stream(line);
-  string _;
-  double x, y, z;
-  if (!(line_stream >> _ >> x >> y >> z)) {
-    throw "Wrong number of arguments to normal line";
-  }
-
-  model.normals.push_back(Normal(x, y, z));
-}
-
 void store_face_line(string line, Model &model) {
   istringstream line_stream(line);
-
-  char _;
-  string vn1, vn2, vn3;
-
-  if (!(line_stream >> _ >> vn1 >> vn2 >> vn3)) {
+  char f;
+  int v1, v2, v3;
+  if (!(line_stream >> f >> v1 >> v2 >> v3)) {
     throw "Wrong number of arguments to face line";
   }
 
-  string delimiter = "//";
-
-  size_t pos = vn1.find(delimiter);
-  int v1 = atoi(vn1.substr(0, pos).c_str());
-  vn1.erase(0, pos + delimiter.length());
-  int n1 = atoi(vn1.c_str());
-
-  pos = vn2.find(delimiter);
-  int v2 = atoi(vn2.substr(0, pos).c_str());
-  vn2.erase(0, pos + delimiter.length());
-  int n2 = atoi(vn2.c_str());
-
-  pos = vn3.find(delimiter);
-  int v3 = atoi(vn3.substr(0, pos).c_str());
-  vn3.erase(0, pos + delimiter.length());
-  int n3 = atoi(vn3.c_str());
-
-
-  model.faces->push_back(shared_ptr<Face>(new Face (v1, v2, v3, n1, n2, n3)));
+  model.faces.push_back(Face (v1, v2, v3));
 }
 
 shared_ptr<map<string, ModelTransformPtr>> get_objects(ifstream& obj_transform_file, CameraPtr cam) {

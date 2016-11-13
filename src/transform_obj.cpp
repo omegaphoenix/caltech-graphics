@@ -5,12 +5,12 @@
 #include <map>
 #include <memory> // shared_ptr
 
-#include "pixels.hpp"
 #include "camera.hpp"
 #include "geometric_transform.hpp"
-#include "parser.hpp"
 #include "model.hpp"
 #include "model_transform.hpp"
+#include "parser.hpp"
+#include "structs.hpp"
 
 using namespace std;
 

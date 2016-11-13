@@ -4,8 +4,7 @@
 #include <memory> // shared_ptr
 #include <vector>
 
-#include "normal.hpp"
-#include "vertex.hpp"
+#include "structs.hpp"
 
 #include "Eigen/Dense"
 

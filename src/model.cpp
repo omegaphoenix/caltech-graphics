@@ -6,24 +6,18 @@
 #include <string>
 #include <vector>
 
-#include "pixels.hpp"
-#include "face.hpp"
-#include "normal.hpp"
-#include "vertex.hpp"
+#include "halfedge.hpp"
+#include "structs.hpp"
 
 using namespace std;
 
-using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<Material>;
-
-using FaceVectorPtr = shared_ptr<vector<FacePtr>>;
 
 // empty constructor
 Model :: Model() {
   name = "";
   setup_vertices();
-  setup_normals();
-  faces = FaceVectorPtr(new vector<FacePtr>());
+  faces = vector<Face>();
   material = MaterialPtr(new Material());
 }
 
@@ -31,8 +25,7 @@ Model :: Model() {
 Model :: Model(string raw_file_name) {
   name = get_name(raw_file_name);
   setup_vertices();
-  setup_normals();
-  faces = FaceVectorPtr(new vector<FacePtr>());
+  faces = vector<Face>();
   material = MaterialPtr(new Material());
 }
 
@@ -46,25 +39,25 @@ string Model :: get_name(string raw_file_name) {
 void Model :: setup_vertices() {
   vertices = vector<Vertex>();
   // Index 0 is filler because vertices are 1-indexed
-  vertices.push_back(Vertex());
-}
-
-// helper function for constructor to get normals
-void Model :: setup_normals() {
-  normals = vector<Normal>();
-  // Index 0 is filler because vertices are 1-indexed
-  normals.push_back(Normal());
+  vertices.push_back(Vertex(0, 0, 0));
 }
 
 void Model :: set_variables() {
-  for (vector<FacePtr>::iterator face_it = faces->begin(); face_it != faces->end(); face_it++) {
-    FacePtr face = *face_it;
-    vertex_buffer.push_back(vertices[face->vertex1]);
-    vertex_buffer.push_back(vertices[face->vertex2]);
-    vertex_buffer.push_back(vertices[face->vertex3]);
-    normal_buffer.push_back(normals[face->normal1]);
-    normal_buffer.push_back(normals[face->normal2]);
-    normal_buffer.push_back(normals[face->normal3]);
+  Mesh_Data *mesh_data = new Mesh_Data;
+  mesh_data->vertices = &vertices;
+  mesh_data->faces = &faces;
+  vector<HEV*> *hevs = new vector<HEV*>();
+  vector<HEF*> *hefs = new vector<HEF*>();
+  build_HE(mesh_data, hevs, hefs);
+  for (vector<HEF*>::iterator face_it = hefs->begin(); face_it != hefs->end(); face_it++) {
+    HE* half_edge = (*face_it)->edge;
+    vertex_buffer.push_back(vertices[half_edge->vertex->index]);
+    normal_buffer.push_back(calc_vertex_normal(half_edge->vertex));
+    for (int i = 0; i < 2; i++) {
+      half_edge = half_edge->next;
+      vertex_buffer.push_back(vertices[half_edge->vertex->index]);
+      normal_buffer.push_back(calc_vertex_normal(half_edge->vertex));
+    }
   }
 
   ambient_reflect[0] = material->ambient->red;

@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "light.hpp"
 #include "model.hpp" // .obj file data stored in model
 #include "model_transform.hpp"
+#include "structs.hpp"
 
 using namespace std;
 
@@ -50,12 +50,10 @@ void store_obj_line(string line, Model &model);
 
 // helper functions for identifying lines of file
 bool is_vertex_line(string line);
-bool is_normal_line(string line);
 bool is_face_line(string line);
 
 // helper functions for storing lines of file
 void store_vertex_line(string line, Model &model);
-void store_normal_line(string line, Model &model);
 void store_face_line(string line, Model &model);
 
 // helper function to get objects from .obj files

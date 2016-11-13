@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "geometric_transform.hpp"
-#include "vertex.hpp"
+#include "structs.hpp"
 
 #include "Eigen/Dense"
 

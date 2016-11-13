@@ -7,21 +7,15 @@
 #include <string>
 #include <vector>
 
-#include "pixels.hpp"
-#include "face.hpp"
-#include "normal.hpp"
-#include "vertex.hpp"
+#include "halfedge.hpp"
+#include "structs.hpp"
 
 using namespace std;
 
 struct Pixel;
 
-using FacePtr = shared_ptr<Face>;
 using MaterialPtr = shared_ptr<struct Material>;
-using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
-
-using NormVectorPtr = shared_ptr<vector<NormalPtr>>;
 
 /* The following struct is used for storing a set of transformations.
  * Please note that this structure assumes that our scenes will give
@@ -72,46 +66,16 @@ struct Material {
 
 /* The following struct is used to represent objects.
  *
- * The main things to note here are the 'vertex_buffer' and 'normal_buffer'
- * vectors.
- *
- * You will see later in the 'draw_objects' function that OpenGL requires
- * us to supply it all the faces that make up an object in one giant
- * "vertex array" before it can render the object. The faces are each specified
- * by the set of vertices that make up the face, and the giant "vertex array"
- * stores all these sets of vertices consecutively. Our "vertex_buffer" vector
- * below will be our "vertex array" for the object.
- *
- * As an example, let's say that we have a cube object. A cube has 6 faces,
- * each with 4 vertices. Each face is going to be represented by the 4 vertices
- * that make it up. We are going to put each of these 4-vertex-sets one by one
- * into 1 large array. This gives us an array of 36 vertices. e.g.:
- *
- * [face1vertex1, face1vertex2, face1vertex3, face1vertex4,
- *  face2vertex1, face2vertex2, face2vertex3, face2vertex4,
- *  face3vertex1, face3vertex2, face3vertex3, face3vertex4,
- *  face4vertex1, face4vertex2, face4vertex3, face4vertex4,
- *  face5vertex1, face5vertex2, face5vertex3, face5vertex4,
- *  face6vertex1, face6vertex2, face6vertex3, face6vertex4]
- *
- * This array of 36 vertices becomes our 'vertex_array'.
- *
- * While it may be obvious to us that some of the vertices in the array are
- * repeats, OpenGL has no way of knowing this. The redundancy is necessary
- * since OpenGL needs the vertices of every face to be explicitly given.
- *
- * The 'normal_buffer' stores all the normals corresponding to the vertices
- * in the 'vertex_buffer'. With the cube example, since the "vertex array"
- * has "36" vertices, the "normal array" also has "36" normals.
  */
 class Model {
   public:
+    Mesh_Data *mesh_data;
     string name;
     vector<Vertex> vertices;
-    vector<Normal> normals;
-    shared_ptr<vector<FacePtr>> faces;
+    vector<Face> faces;
     MaterialPtr material;
 
+    // Vertices and normals in order by face
     vector<Vertex> vertex_buffer;
     vector<Normal> normal_buffer;
 
@@ -136,8 +100,6 @@ class Model {
     string get_name(string raw_file_name);
     // helper function for constructor to setup vertices
     void setup_vertices();
-    // helper function for constructor to setup normals
-    void setup_normals();
 
     // Set redundant varibles to be used in OpenGL framework
     void set_variables();

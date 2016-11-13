@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "camera.hpp"
-#include "pixels.hpp"
 #include "model.hpp"
 #include "model_transform.hpp"
+#include "structs.hpp"
 
 using namespace std;
 

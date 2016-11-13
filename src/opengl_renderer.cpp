@@ -9,12 +9,10 @@
 
 #include "arcball.hpp"
 #include "camera.hpp"
-#include "light.hpp"
-#include "normal.hpp"
-#include "parser.hpp"
-#include "transform_obj.hpp"
 #include "model.hpp"
-#include "vertex.hpp"
+#include "parser.hpp"
+#include "structs.hpp"
+#include "transform_obj.hpp"
 
 #include "Eigen/Dense"
 
@@ -252,7 +250,7 @@ int main(int argc, char* argv[]) {
   // Parse arguments
   if (argc != 4) {
     cerr << "usage: " << argv[0]
-         << " [scene_description_file.txt] [xres] [yres]" << endl;
+         << " [scene_description_file.txt] [xres] [yres] [h]" << endl;
     exit(-1);
   }
   char *file_name = argv[1];

@@ -8,7 +8,7 @@
 
 #include "camera.hpp"
 #include "model.hpp"
-#include "vertex.hpp"
+#include "structs.hpp"
 
 #include "Eigen/Dense"
 

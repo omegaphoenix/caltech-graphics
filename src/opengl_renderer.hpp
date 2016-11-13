@@ -12,12 +12,10 @@
 
 #include "arcball.hpp"
 #include "camera.hpp"
-#include "light.hpp"
-#include "normal.hpp"
 #include "parser.hpp"
 #include "transform_obj.hpp"
 #include "model.hpp"
-#include "vertex.hpp"
+#include "structs.hpp"
 
 #include "Eigen/Dense"
 
