@@ -9,6 +9,7 @@
 
 #include "arcball.hpp"
 #include "camera.hpp"
+#include "implicit_fairing.hpp"
 #include "model.hpp"
 #include "parser.hpp"
 #include "structs.hpp"
@@ -211,6 +212,11 @@ void key_pressed(unsigned char key, int x, int y) {
     // Toggle wireframe mode
     wireframe_mode = !wireframe_mode;
     glutPostRedisplay();
+  } else if (key == 'f') {
+    // Apply implicit_fairing
+    implicit_fairing(objects, time_step);
+    glutPostRedisplay();
+    cout << "hello" << endl;
   } else {
     float x_view_rad = deg2rad(x_view_angle);
 
@@ -248,7 +254,7 @@ float rad2deg(float angle) {
 
 int main(int argc, char* argv[]) {
   // Parse arguments
-  if (argc != 4) {
+  if (argc != 5) {
     cerr << "usage: " << argv[0]
          << " [scene_description_file.txt] [xres] [yres] [h]" << endl;
     exit(-1);
@@ -256,6 +262,7 @@ int main(int argc, char* argv[]) {
   char *file_name = argv[1];
   xres = atoi(argv[2]);
   yres = atoi(argv[3]);
+  time_step = atoi(argv[4]);
 
   // Parse camera parameters
   cam = parse_camera_data(file_name);

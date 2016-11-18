@@ -148,11 +148,13 @@ MatrixPtr create_scaling_mat(double s_x, double s_y, double s_z) {
 
 MatrixPtr create_rotation_mat(double r_x, double r_y, double r_z, double angle_in_rad) {
   double magnitude = sqrt(r_x*r_x + r_y*r_y + r_z*r_z);
-  double u_x = r_x/magnitude;
-  double u_y = r_y/magnitude;
-  double u_z = r_z/magnitude;
+  magnitude = (magnitude == 0) ? 1 : magnitude;
 
-  return create_rot_mat_helper(u_x, u_y, u_z, angle_in_rad);
+  r_x = r_x/magnitude;
+  r_y = r_y/magnitude;
+  r_z = r_z/magnitude;
+
+  return create_rot_mat_helper(r_x, r_y, r_z, angle_in_rad);
 }
 
 MatrixPtr create_rot_mat_helper(double u_x, double u_y, double u_z, double angle_in_rad) {

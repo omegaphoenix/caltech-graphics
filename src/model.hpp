@@ -74,6 +74,7 @@ class Model {
     vector<Vertex> vertices;
     vector<Face> faces;
     MaterialPtr material;
+    vector<HEV*> *hevs;
 
     // Vertices and normals in order by face
     vector<Vertex> vertex_buffer;
@@ -81,10 +82,7 @@ class Model {
 
     vector<Transforms> transform_sets;
 
-    /* Index 0 has the r-component
-     * Index 1 has the g-component
-     * Index 2 has the b-component
-     */
+    // RGB values
     float ambient_reflect[3];
     float diffuse_reflect[3];
     float specular_reflect[3];

@@ -46,13 +46,17 @@ void Model :: set_variables() {
   Mesh_Data *mesh_data = new Mesh_Data;
   mesh_data->vertices = &vertices;
   mesh_data->faces = &faces;
-  vector<HEV*> *hevs = new vector<HEV*>();
+
+  hevs = new vector<HEV*>();
   vector<HEF*> *hefs = new vector<HEF*>();
   build_HE(mesh_data, hevs, hefs);
+
+
   for (vector<HEF*>::iterator face_it = hefs->begin(); face_it != hefs->end(); face_it++) {
     HE* half_edge = (*face_it)->edge;
     vertex_buffer.push_back(vertices[half_edge->vertex->index]);
     normal_buffer.push_back(calc_vertex_normal(half_edge->vertex));
+
     for (int i = 0; i < 2; i++) {
       half_edge = half_edge->next;
       vertex_buffer.push_back(vertices[half_edge->vertex->index]);

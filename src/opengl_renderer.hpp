@@ -49,6 +49,7 @@ float rad2deg(float angle);
 int main(int argc, char* argv[]);
 
 int xres, yres;
+int time_step;
 
 Eigen::Quaterniond last_rotation;
 Eigen::Quaterniond curr_rotation;

@@ -44,6 +44,7 @@ void Camera :: set_orient(string line) {
 
   // Normalize orientation axis
   float magnitude = sqrt(x*x + y*y + z*z);
+  magnitude = (magnitude == 0) ? 1 : magnitude;
   orient = Vertex(x/magnitude, y/magnitude, z/magnitude);
 }
 

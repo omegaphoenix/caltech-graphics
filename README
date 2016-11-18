@@ -3,28 +3,11 @@ To display image, run these commands:
 
 OR:
   make bin/shaded
-  ./bin/shaded [data/scene_description_file.txt] [xres] [yres] [mode]
+  ./bin/shaded [data/scene_description_file.txt] [xres] [yres] [h]
 Example:
   ./bin/shaded data/scene_sphere.txt 800 800 0
   ./bin/shaded data/kitten.txt 800 800 1
 
 OR:
-  make cube1
-  make cube2
-  make cube3
-  make bunny1
-  make bunny1_attenuated
-  make bunny2
-  make fourCubes
-  make kitten
-  make kitten_attenuated
+  make bunny
   make armadillo
-  make sphere
-  make sphere_attenuated
-
-Note: Tests don't work yet
-
-AUTHORSHIP
-All source files(src/*.cpp, src/*.hpp) were written by Justin Leong
-All data files were provided by the Caltech CS171 Intro to Graphics class
-Inside the include folder is an external library (Eigen) that was downloaded

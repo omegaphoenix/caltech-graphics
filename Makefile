@@ -21,13 +21,13 @@ INC := -I include -I/usr/X11R6/include -I/usr/include/GL -I/usr/include
 LIBS = -lGLEW -lGL -lGLU -lglut -lm
 LIBDIR = -L/usr/X11R6/lib -L/usr/local/lib
 
-all: $(TARGET) bunny
-
 bunny: $(TARGET)
-	./$(TARGET) data/scene_bunny.txt 800 800
+	./$(TARGET) data/scene_bunny.txt 800 800 0.01
 
 armadillo: $(TARGET)
-	./$(TARGET) data/scene_armadillo.txt 800 800
+	./$(TARGET) data/scene_armadillo.txt 800 800 0.01
+
+all: $(TARGET) bunny armadillo
 
 $(TARGET): $(OBJECTS)
 	@echo " Linking..."
