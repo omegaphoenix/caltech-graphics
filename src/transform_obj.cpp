@@ -77,22 +77,3 @@ Model perform_transform(vector<string> lines, shared_ptr<map<string, ModelTransf
   new_copy.set_variables();
   return new_copy;
 }
-
-Pixel **new_grid(int xres, int yres) {
-  Pixel **grid = new Pixel *[yres];
-  for (int y = 0; y < yres; y++) {
-    grid[y] = new Pixel[xres];
-    for (int x = 0; x < xres; x++) {
-      grid[y][x].red = 0;
-      grid[y][x].blue = 0;
-      grid[y][x].green = 0;
-    }
-  }
-  return grid;
-}
-
-void delete_grid(int xres, int yres, Pixel **grid) {
-  for (int y = 0; y < yres; y++) {
-    delete[] grid[y];
-  }
-}

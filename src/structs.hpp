@@ -6,11 +6,6 @@
 
 using namespace std;
 
-struct Vec3f
-{
-	float x, y, z;
-};
-
 // Represents the normal of a vertex
 struct Normal {
   float x;
@@ -106,8 +101,7 @@ struct Light {
   }
 };
 
-struct Mesh_Data
-{
+struct Mesh_Data {
     vector<Vertex> *vertices;
     vector<Face> *faces;
 };

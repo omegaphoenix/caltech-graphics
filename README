@@ -2,12 +2,26 @@ To display image, run these commands:
   make
 
 OR:
-  make bin/shaded
-  ./bin/shaded [data/scene_description_file.txt] [xres] [yres] [h]
+  make bin/opengl_renderer
+  ./bin/opengl_renderer [data/scene_description_file.txt] [xres] [yres] [h]
 Example:
-  ./bin/shaded data/scene_sphere.txt 800 800 0
-  ./bin/shaded data/kitten.txt 800 800 1
+  ./bin/opengl_renderer data/armadillo.txt 800 800 0.01
+  ./bin/opengl_renderer data/kitten.txt 800 800 1
 
 OR:
   make bunny
   make armadillo
+
+Press 'f' to apply implicit fairing
+You will see "Done smoothing" output once it is finished
+
+Part 1 Code: mostly in the model, parser, and halfedge files
+Part 2, 3, 4: mostly in implicit_fairing with explanation in implicit_fairing.cpp
+
+Overview
+arcball was not functionally changed from HW3
+camera, geometric_transform, model_transform were not functionally changed
+  and are just used for parsing the files into data types
+structs now contains the common data structures (Vertex, Normal, etc.)
+opengl_renderer has the main function and was updated to handle the extra
+  argument and the implicit fairing command (press the 'f' key)

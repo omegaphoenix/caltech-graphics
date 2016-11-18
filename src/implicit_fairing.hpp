@@ -22,6 +22,7 @@ void index_vertices(vector<HEV *> *vertices);
 double cot_alpha_beta(HE *he);
 
 /* Function to construct our Laplacian operator in matrix form:
+ * We separate the x_i and x_j terms to get,
  * (Delta x)_i = (1/(2A)) sum((cot(alpha_j) + cot(beta_j))x_j)
  *               - x_i sum(cot(alpha_j) + cot(beta_j))
  * Each row of the Laplacian matrix represents a single x_i.
@@ -30,7 +31,8 @@ double cot_alpha_beta(HE *he);
  * the sum of all the other columns in the row
  *
  * While multiplying the Laplacian terms by (1/2A) we also
- * multiply by -h and add 1 to the diagonal terms
+ * multiply by -h and add 1 to the diagonal terms to get the F
+ * operator as a matrix.
  */
 Eigen::SparseMatrix<double> build_F_operator(vector<HEV *> *vertices,
     double time_step);
@@ -44,8 +46,10 @@ Eigen::VectorXd solve_y(Eigen::SparseMatrix<double> F, Model *model, vector<HEV 
 // Solve for z_h in (I - h Delta) z_h = z_0
 Eigen::VectorXd solve_z(Eigen::SparseMatrix<double> F, Model *model, vector<HEV *> *vertices, double time_step);
 
+// Update vertices (x_0, y_0, z_0) -> (x_h, y_h, z_h)
 void update_vertices(Model *model, Eigen::VectorXd &xh, Eigen::VectorXd &yh, Eigen::VectorXd &zh);
 
+// main function - called to update vertices in opengl_renderer
 void implicit_fairing(vector<Model> &objects, double time_step);
 
 #endif

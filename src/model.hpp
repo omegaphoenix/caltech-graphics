@@ -12,8 +12,6 @@
 
 using namespace std;
 
-struct Pixel;
-
 using MaterialPtr = shared_ptr<struct Material>;
 using ReflectPtr = shared_ptr<struct Reflectance>;
 

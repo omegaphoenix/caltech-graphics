@@ -16,7 +16,6 @@
 using namespace std;
 
 using CameraPtr = shared_ptr<Camera>;
-using NormalPtr = shared_ptr<Normal>;
 using ReflectPtr = shared_ptr<Reflectance>;
 using ModelTransformPtr = shared_ptr<ModelTransform>;
 

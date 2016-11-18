@@ -13,7 +13,6 @@
 
 using namespace std;
 
-using NormalPtr = shared_ptr<Normal>;
 using MatrixPtr = shared_ptr<Eigen::MatrixXd>;
 
 MatrixPtr inverse_transform(vector<string> lines) {

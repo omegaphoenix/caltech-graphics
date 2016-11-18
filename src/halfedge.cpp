@@ -13,8 +13,6 @@
 
 using namespace std;
 
-/* Function implementations */
-
 pair<int, int> get_edge_key(int x, int y) {
   assert(x != y);
   return pair<int, int>(min(x, y), max(x, y));
