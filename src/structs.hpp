@@ -25,7 +25,10 @@ struct Normal {
   void set_normal(float x0, float y0, float z0) {
     float magnitude = sqrt(x0*x0 + y0*y0 + z0*z0);
     if (magnitude == 0) {
-      throw "Normal vector can't be 0";
+      x = 0;
+      y = 0;
+      z = 0;
+      return;
     }
 
     x = x0/magnitude;

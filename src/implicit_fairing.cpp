@@ -97,7 +97,7 @@ Eigen::SparseMatrix<double> build_F_operator(vector<HEV *> *vertices,
         // get index of adjacent vertex to v_i
         int j = he->next->vertex->index;
         // multiply by -h/(2A)
-        F.coeffRef(i-1, j-1) *= -time_step/2.0/neighbor_area;
+        F.coeffRef(i-1, j-1) *= -1.0*time_step/2.0/neighbor_area;
         he = he->flip->next;
       }
       while(he != vertices->at(i)->out);
@@ -109,10 +109,8 @@ Eigen::SparseMatrix<double> build_F_operator(vector<HEV *> *vertices,
 }
 
 // Solve for x_h in (I - h Delta) x_h = x_0
-Eigen::VectorXd solve_x(Model *model, double time_step) {
+Eigen::VectorXd solve_x(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
   vector<HEV *> *vertices = model->hevs;
-  // get our matrix representation of (I - h Delta)
-  Eigen::SparseMatrix<double> F = build_F_operator(vertices, time_step);
 
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
@@ -132,10 +130,8 @@ Eigen::VectorXd solve_x(Model *model, double time_step) {
 }
 
 // Solve for y_h in (I - h Delta) y_h = y_0
-Eigen::VectorXd solve_y(Model *model, double time_step) {
+Eigen::VectorXd solve_y(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
   vector<HEV *> *vertices = model->hevs;
-  // get our matrix representation of (I - h Delta)
-  Eigen::SparseMatrix<double> F = build_F_operator(vertices, time_step);
 
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
@@ -155,10 +151,8 @@ Eigen::VectorXd solve_y(Model *model, double time_step) {
 }
 
 // Solve for z_h in (I - h Delta) z_h = z_0
-Eigen::VectorXd solve_z(Model *model, double time_step) {
+Eigen::VectorXd solve_z(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
   vector<HEV *> *vertices = model->hevs;
-  // get our matrix representation of (I - h Delta)
-  Eigen::SparseMatrix<double> F = build_F_operator(vertices, time_step);
 
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
@@ -192,11 +186,12 @@ void update_vertices(Model *model, Eigen::VectorXd &xh, Eigen::VectorXd &yh, Eig
 void implicit_fairing(vector<Model> &objects, double time_step) {
   for (vector<Model>::iterator obj_it = objects.begin(); obj_it != objects.end(); ++obj_it) {
     Model *model = &(*obj_it);
+    Eigen::SparseMatrix<double> F = build_F_operator(model->hevs, time_step);
 
     // Calculate new vertices
-    Eigen::VectorXd xh = solve_x(model, time_step);
-    Eigen::VectorXd yh = solve_y(model, time_step);
-    Eigen::VectorXd zh = solve_z(model, time_step);
+    Eigen::VectorXd xh = solve_x(F, model, time_step);
+    Eigen::VectorXd yh = solve_y(F, model, time_step);
+    Eigen::VectorXd zh = solve_z(F, model, time_step);
 
     update_vertices(model, xh, yh, zh);
   }

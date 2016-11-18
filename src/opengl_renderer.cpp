@@ -214,9 +214,10 @@ void key_pressed(unsigned char key, int x, int y) {
     glutPostRedisplay();
   } else if (key == 'f') {
     // Apply implicit_fairing
+    cout << "Smoothing image..." << endl;
     implicit_fairing(objects, time_step);
     glutPostRedisplay();
-    cout << "hello" << endl;
+    cout << "Done smoothing" << endl;
   } else {
     float x_view_rad = deg2rad(x_view_angle);
 
@@ -262,7 +263,7 @@ int main(int argc, char* argv[]) {
   char *file_name = argv[1];
   xres = atoi(argv[2]);
   yres = atoi(argv[3]);
-  time_step = atoi(argv[4]);
+  time_step = atof(argv[4]);
 
   // Parse camera parameters
   cam = parse_camera_data(file_name);
