@@ -47,13 +47,14 @@ void Model :: set_variables() {
   mesh_data->vertices = &vertices;
   mesh_data->faces = &faces;
 
-  hevs = new vector<HEV*>();
-  vector<HEF*> *hefs = new vector<HEF*>();
+  vector<HEV *> *hevs = new vector<HEV *>();
+  vector<HEF *> *hefs = new vector<HEF *>();
   build_HE(mesh_data, hevs, hefs);
 
 
+  HE* half_edge;
   for (vector<HEF*>::iterator face_it = hefs->begin(); face_it != hefs->end(); face_it++) {
-    HE* half_edge = (*face_it)->edge;
+    half_edge = (*face_it)->edge;
     vertex_buffer.push_back(vertices[half_edge->vertex->index]);
     normal_buffer.push_back(calc_vertex_normal(half_edge->vertex));
 
@@ -77,4 +78,7 @@ void Model :: set_variables() {
   specular_reflect[2] = material->specular->blue;
 
   shininess = material->shininess;
+
+  delete mesh_data;
+  delete_HE(hevs, hefs);
 }

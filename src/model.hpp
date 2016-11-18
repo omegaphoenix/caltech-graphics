@@ -69,12 +69,10 @@ struct Material {
  */
 class Model {
   public:
-    Mesh_Data *mesh_data;
     string name;
     vector<Vertex> vertices;
     vector<Face> faces;
     MaterialPtr material;
-    vector<HEV*> *hevs;
 
     // Vertices and normals in order by face
     vector<Vertex> vertex_buffer;
@@ -89,7 +87,7 @@ class Model {
 
     float shininess;
 
-    // empty constructor
+    // constructor without arguments
     Model();
     // constructor using file
     Model(string raw_file_name);

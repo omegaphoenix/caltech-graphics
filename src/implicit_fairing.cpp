@@ -109,9 +109,7 @@ Eigen::SparseMatrix<double> build_F_operator(vector<HEV *> *vertices,
 }
 
 // Solve for x_h in (I - h Delta) x_h = x_0
-Eigen::VectorXd solve_x(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
-  vector<HEV *> *vertices = model->hevs;
-
+Eigen::VectorXd solve_x(Eigen::SparseMatrix<double> F, Model *model, vector<HEV *> *vertices, double time_step) {
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
   solver.factorize(F);
@@ -130,9 +128,7 @@ Eigen::VectorXd solve_x(Eigen::SparseMatrix<double> F, Model *model, double time
 }
 
 // Solve for y_h in (I - h Delta) y_h = y_0
-Eigen::VectorXd solve_y(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
-  vector<HEV *> *vertices = model->hevs;
-
+Eigen::VectorXd solve_y(Eigen::SparseMatrix<double> F, Model *model, vector<HEV *> *vertices, double time_step) {
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
   solver.factorize(F);
@@ -151,9 +147,7 @@ Eigen::VectorXd solve_y(Eigen::SparseMatrix<double> F, Model *model, double time
 }
 
 // Solve for z_h in (I - h Delta) z_h = z_0
-Eigen::VectorXd solve_z(Eigen::SparseMatrix<double> F, Model *model, double time_step) {
-  vector<HEV *> *vertices = model->hevs;
-
+Eigen::VectorXd solve_z(Eigen::SparseMatrix<double> F, Model *model, vector<HEV *> *vertices, double time_step) {
   Eigen::SparseLU<Eigen::SparseMatrix<double>, Eigen::COLAMDOrdering<int> > solver;
   solver.analyzePattern(F);
   solver.factorize(F);
@@ -186,13 +180,24 @@ void update_vertices(Model *model, Eigen::VectorXd &xh, Eigen::VectorXd &yh, Eig
 void implicit_fairing(vector<Model> &objects, double time_step) {
   for (vector<Model>::iterator obj_it = objects.begin(); obj_it != objects.end(); ++obj_it) {
     Model *model = &(*obj_it);
-    Eigen::SparseMatrix<double> F = build_F_operator(model->hevs, time_step);
+
+    Mesh_Data *mesh_data = new Mesh_Data;
+    mesh_data->vertices = &(model->vertices);
+    mesh_data->faces = &(model->faces);
+
+    vector<HEV *> *hevs = new vector<HEV *>();
+    vector<HEF *> *hefs = new vector<HEF *>();
+    build_HE(mesh_data, hevs, hefs);
+
+    Eigen::SparseMatrix<double> F = build_F_operator(hevs, time_step);
 
     // Calculate new vertices
-    Eigen::VectorXd xh = solve_x(F, model, time_step);
-    Eigen::VectorXd yh = solve_y(F, model, time_step);
-    Eigen::VectorXd zh = solve_z(F, model, time_step);
+    Eigen::VectorXd xh = solve_x(F, model, hevs, time_step);
+    Eigen::VectorXd yh = solve_y(F, model, hevs, time_step);
+    Eigen::VectorXd zh = solve_z(F, model, hevs, time_step);
 
     update_vertices(model, xh, yh, zh);
+    delete mesh_data;
+    delete_HE(hevs, hefs);
   }
 }
